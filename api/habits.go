@@ -31,6 +31,15 @@ type HabitsRepo struct {
 	db *sqlx.DB
 }
 
+func (r *HabitsRepo) GetByID(id int) (*Habit, error) {
+	habit := Habit{}
+	err := r.db.Get(&habit, "SELECT * FROM habits WHERE id=$1", id)
+	if err != nil {
+		return nil, err
+	}
+	return &habit, nil
+}
+
 func (r *HabitsRepo) List() []Habit {
 	habits := []Habit{}
 	r.db.Select(&habits, "SELECT * FROM habits")

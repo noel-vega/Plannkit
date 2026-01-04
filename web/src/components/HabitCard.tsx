@@ -6,38 +6,10 @@ import { createContribution, deleteContribution, getListHabitsQueryOptions, inva
 import { CheckIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { getDayOfYear } from "date-fns";
+import { Link } from "@tanstack/react-router";
+import { ContributionsGrid } from "./ContributionsGrid";
+import type { MouseEvent } from "react";
 
-type Cell = {
-  checked: boolean
-  day: number
-}
-
-function generateCells() {
-  const cells: Cell[] = []
-  for (let day = 1; day <= 365; day++) {
-    cells.push({ checked: false, day })
-  }
-  return cells
-}
-
-
-function HabitGrid(props: { contributions: Map<number, Contribution> }) {
-  const cells = generateCells()
-  return (
-    <>
-      <ul className="gap-1 grid grid-rows-7 grid-flow-col">
-        {cells.map((cell) => (
-          <li
-            className={cn("size-4 cursor-pointer rounded border text-xs bg-blue-500/10", "hover:border-blue-500",
-              {
-                "bg-blue-500": props.contributions.has(cell.day)
-              }
-            )} key={cell.day}></li>
-        ))}
-      </ul>
-    </>
-  )
-}
 
 // the contributions map should not be the day of year
 function HabitDailyContributionButton(props: { habitId: number, contributions: Map<number, Contribution> }) {
@@ -53,7 +25,9 @@ function HabitDailyContributionButton(props: { habitId: number, contributions: M
     onSuccess: invalidateListHabits
   })
 
-  const handleToggleContribution = async () => {
+  const handleToggleContribution = async (e: MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
     if (!todaysContribution) {
       createContributionMutation.mutate({
         habitId: props.habitId,
@@ -87,7 +61,7 @@ function HabitCard(props: { habit: Habit }) {
         <HabitDailyContributionButton habitId={habit.id} contributions={contributions} />
       </CardHeader>
       <CardContent>
-        <HabitGrid contributions={contributions} />
+        <ContributionsGrid contributions={contributions} />
       </CardContent>
     </Card>
   )
@@ -96,14 +70,15 @@ function HabitCard(props: { habit: Habit }) {
 
 export function HabitCardList() {
   const { data: habits } = useSuspenseQuery(getListHabitsQueryOptions())
-  console.log("habits", habits)
   if (habits.length === 0) {
     return <div>No Habits</div>
   }
   return (
     <ul className="space-y-4">
       {habits.map(habit => <li key={habit.id}>
-        <HabitCard habit={habit} />
+        <Link key={habit.id} to="/habits/$id" params={{ id: habit.id }}>
+          <HabitCard habit={habit} />
+        </Link>
       </li>)}
     </ul>
   )

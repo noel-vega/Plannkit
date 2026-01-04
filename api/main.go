@@ -63,6 +63,33 @@ func main() {
 		c.JSON(http.StatusOK, habitsWithContributions)
 	})
 
+	r.GET("/habits/:id", func(c *gin.Context) {
+		id, err := strconv.Atoi(c.Param("id"))
+		if err != nil {
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		}
+
+		habit, err := repo.Habits.GetByID(id)
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+
+		contributions, err := repo.Contributions.List(habit.ID)
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+		habitWithContributions := HabitWithContributions{
+			ID:            habit.ID,
+			Name:          habit.Name,
+			Description:   habit.Description,
+			Contributions: contributions,
+		}
+		c.JSON(http.StatusOK, habitWithContributions)
+	})
+
 	r.POST("/habits", func(c *gin.Context) {
 		var data CreateHabitParams
 		c.Bind(&data)

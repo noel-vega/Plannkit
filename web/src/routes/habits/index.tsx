@@ -2,10 +2,13 @@ import { createFileRoute } from '@tanstack/react-router'
 import { CreateHabitDialog } from '@/components/HabitsForm'
 import { HabitCardList } from '@/components/HabitCard'
 import { Suspense } from 'react'
+import { queryClient } from '@/lib/react-query'
+import { getListHabitsQueryOptions } from '@/api'
 
 export const Route = createFileRoute('/habits/')({
   beforeLoad: () => {
     const today = new Date();
+    queryClient.ensureQueryData(getListHabitsQueryOptions())
     return { today }
   },
   component: RouteComponent,

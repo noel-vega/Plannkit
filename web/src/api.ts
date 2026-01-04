@@ -2,6 +2,18 @@ import { queryOptions } from "@tanstack/react-query"
 import { HabitSchema, type CreateHabit } from "./types"
 import { queryClient } from "./lib/react-query"
 
+export async function getHabitById(params: { id: number }) {
+  const res = await fetch(`/api/habits/${params.id}`)
+  const data = await res.json()
+  return HabitSchema.parse(data)
+}
+
+export function getHabitByIdQueryOptions(params: { id: number }) {
+  return queryOptions({
+    queryKey: ["habit", params.id],
+    queryFn: () => getHabitById(params)
+  })
+}
 
 export async function listHabits() {
   const res = await fetch("/api/habits")
