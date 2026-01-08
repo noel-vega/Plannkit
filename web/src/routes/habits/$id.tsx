@@ -10,8 +10,7 @@ import { getDayOfYear } from 'date-fns/getDayOfYear'
 import { EditIcon } from 'lucide-react'
 import z from 'zod/v3'
 
-import { DayPicker } from "react-day-picker";
-import "react-day-picker/style.css";
+import { Calendar } from '@/components/ui/calendar'
 
 
 export const Route = createFileRoute('/habits/$id')({
@@ -46,13 +45,14 @@ function RouteComponent() {
       </div>
       <p>{!habit.description ? "No Description" : habit.description}</p>
     </div>
-    <div className="py-4">
+
+    <div className="py-4 mb-4">
       <ContributionsGrid contributions={contributions} />
     </div>
 
-    <div>
-      <DayPicker className='border' />
-    </div>
+    <Calendar
+      className="rounded-lg border shadow-sm w-full [--cell-size:theme(spacing.16)]"
+    />
   </div>
 }
 
