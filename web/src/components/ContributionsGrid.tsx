@@ -28,9 +28,9 @@ export function ContributionsGrid(props: { contributions: Map<number, Contributi
             data-tooltip-id="contrib-tooltip"
             data-tooltip-content={format(setDayOfYear(new Date(), cell.day), "MMMM do")}
             data-tooltip-place="top"
-            className={cn("size-4 cursor-pointer rounded border text-xs bg-blue-500/10", "hover:border-blue-500",
+            className={cn("size-4 rounded border text-xs bg-secondary",
               {
-                "bg-blue-500": props.contributions.has(cell.day)
+                "bg-green-500": props.contributions.has(cell.day)
               }
             )} key={cell.day}></li>
         ))}

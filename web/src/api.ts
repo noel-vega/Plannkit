@@ -72,9 +72,19 @@ export async function createContribution(params: { habitId: number, date: Date, 
   })
 }
 
-
 export async function deleteContribution(params: { id: number }) {
   await fetch(`/api/contributions/${params.id}`, {
     method: "DELETE",
+  })
+}
+
+export async function updateContributionCompletions(params: { contributionId: number, completions: number }) {
+  const { contributionId, completions } = params
+  await fetch(`/api/habits/contributions/${contributionId}/completions`, {
+    method: "PATCH",
+    body: JSON.stringify({ completions }),
+    headers: {
+      "content-type": "application/json"
+    }
   })
 }

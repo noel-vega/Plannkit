@@ -136,15 +136,35 @@ func main() {
 			c.AbortWithError(http.StatusBadRequest, err)
 			return
 		}
-		fmt.Println("create contribution")
+
 		params := CreateContributionParams{
 			HabitID: habitID,
 		}
 		c.Bind(&params)
-		fmt.Printf("%+v", params)
-		err = repo.Contributions.Create(params)
-		if err != nil {
+
+		if err := repo.Contributions.Create(params); err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
+		}
+	})
+
+	r.PATCH("/habits/contributions/:id/completions", func(c *gin.Context) {
+		fmt.Println("Update Completions")
+		contributionID, err := strconv.Atoi(c.Param("id"))
+		if err != nil {
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		}
+
+		params := UpdateCompletionsParams{
+			ID: contributionID,
+		}
+		c.Bind(&params)
+
+		fmt.Printf("%+v", params)
+
+		if err := repo.Contributions.UpdateCompletions(params); err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
 		}
 	})
 

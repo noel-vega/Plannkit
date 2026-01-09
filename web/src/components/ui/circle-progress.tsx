@@ -13,7 +13,7 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
   progress,
   size = 120,
   strokeWidth = 10,
-  primaryColor = '#3b82f6',
+  primaryColor = '#00c951',
   secondaryColor = '#e5e7eb',
   showPercentage = true,
 }) => {

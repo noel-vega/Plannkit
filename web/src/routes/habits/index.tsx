@@ -23,7 +23,7 @@ function RouteComponent() {
         <header className="flex justify-between items-center py-8">
           <h1 className="text-2xl font-semibold">Habits</h1>
           <CreateHabitDialog>
-            <Button size="sm">
+            <Button>
               <PlusIcon /><span>Add Habit</span>
             </Button>
           </CreateHabitDialog>

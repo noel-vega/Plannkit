@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -30,9 +29,13 @@ type DeleteContributionParams struct {
 	Date    time.Time `json:"date" db:"date"`
 }
 
+type UpdateCompletionsParams struct {
+	ID          int `json:"id" db:"id"`
+	Completions int `json:"completions" db:"completions"`
+}
+
 func (r *ContributionsRepo) List(habitID int) ([]Contribution, error) {
 	contributions := []Contribution{}
-	fmt.Println("finding contributions for habit_id", habitID)
 	err := r.db.Select(&contributions, "SELECT * FROM contributions WHERE habit_id=$1", habitID)
 	if err != nil {
 		return nil, err
@@ -46,6 +49,20 @@ func (r *ContributionsRepo) Create(params CreateContributionParams) error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func (r *ContributionsRepo) UpdateCompletions(params UpdateCompletionsParams) error {
+	query := `
+		UPDATE contributions
+	  SET completions = $1 
+		WHERE id = $2;
+	`
+	_, err := r.db.Exec(query, params.Completions, params.ID)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
