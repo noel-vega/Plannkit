@@ -12,6 +12,7 @@ export const HabitSchema = z.object({
   name: z.string().min(1),
   description: z.string(),
   completionType: z.literal("step").or(z.literal("custom")),
+  completionsPerDay: z.number().min(1)
 })
 export type Habit = z.infer<typeof HabitSchema>
 

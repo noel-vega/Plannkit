@@ -10,6 +10,7 @@ import { RadioGroup, RadioGroupItem } from "./ui/radio-group"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog"
 import { Button } from "./ui/button"
 import { useDialog } from "@/hooks"
+import { CompletionsPerDayInput } from "./ui/completions-per-day-input"
 
 type EditHabitFormProps =
   {
@@ -119,6 +120,16 @@ export function EditHabitForm(props: EditHabitFormProps) {
             {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
           </FieldSet>
         )}
+      />
+
+      <Controller control={form.control} name="completionsPerDay"
+        render={({ field, fieldState }) => {
+          return <Field data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor={field.name}>Completions per day</FieldLabel>
+            <CompletionsPerDayInput {...field} />
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        }}
       />
 
       <div className="justify-end gap-3 flex">

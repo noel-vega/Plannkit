@@ -11,7 +11,7 @@ import { createHabit, getListHabitsQueryOptions } from "@/api"
 import { queryClient } from "@/lib/react-query"
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group"
 import { useDialog } from "@/hooks"
-
+import { CompletionsPerDayInput } from "./ui/completions-per-day-input"
 
 type CreateHabitFormProps =
   {
@@ -24,7 +24,8 @@ export function CreateHabitForm(props: CreateHabitFormProps) {
     defaultValues: {
       name: "",
       description: "",
-      completionType: "step" as const
+      completionType: "step" as const,
+      completionsPerDay: 1,
     }
   })
 
@@ -129,6 +130,15 @@ export function CreateHabitForm(props: CreateHabitFormProps) {
         )}
       />
 
+      <Controller control={form.control} name="completionsPerDay"
+        render={({ field, fieldState }) => {
+          return <Field data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor={field.name}>Completions per day</FieldLabel>
+            <CompletionsPerDayInput {...field} />
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        }}
+      />
 
 
 

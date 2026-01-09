@@ -54,11 +54,12 @@ func main() {
 				return
 			}
 			habitsWithContributions = append(habitsWithContributions, HabitWithContributions{
-				ID:             habit.ID,
-				Name:           habit.Name,
-				Description:    habit.Description,
-				CompletionType: habit.CompletionType,
-				Contributions:  contributions,
+				ID:                habit.ID,
+				Name:              habit.Name,
+				Description:       habit.Description,
+				CompletionType:    habit.CompletionType,
+				CompletionsPerDay: habit.CompletionsPerDay,
+				Contributions:     contributions,
 			})
 		}
 		c.JSON(http.StatusOK, habitsWithContributions)
@@ -83,11 +84,12 @@ func main() {
 			return
 		}
 		habitWithContributions := HabitWithContributions{
-			ID:             habit.ID,
-			Name:           habit.Name,
-			Description:    habit.Description,
-			CompletionType: habit.CompletionType,
-			Contributions:  contributions,
+			ID:                habit.ID,
+			Name:              habit.Name,
+			Description:       habit.Description,
+			CompletionType:    habit.CompletionType,
+			CompletionsPerDay: habit.CompletionsPerDay,
+			Contributions:     contributions,
 		}
 		c.JSON(http.StatusOK, habitWithContributions)
 	})
@@ -118,11 +120,12 @@ func main() {
 		}
 
 		c.JSON(http.StatusOK, HabitWithContributions{
-			ID:             habit.ID,
-			Description:    habit.Description,
-			Name:           habit.Name,
-			CompletionType: habit.CompletionType,
-			Contributions:  []Contribution{},
+			ID:                habit.ID,
+			Description:       habit.Description,
+			Name:              habit.Name,
+			CompletionType:    habit.CompletionType,
+			CompletionsPerDay: habit.CompletionsPerDay,
+			Contributions:     []Contribution{},
 		})
 	})
 
