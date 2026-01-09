@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -135,10 +136,12 @@ func main() {
 			c.AbortWithError(http.StatusBadRequest, err)
 			return
 		}
+		fmt.Println("create contribution")
 		params := CreateContributionParams{
 			HabitID: habitID,
 		}
 		c.Bind(&params)
+		fmt.Printf("%+v", params)
 		err = repo.Contributions.Create(params)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)

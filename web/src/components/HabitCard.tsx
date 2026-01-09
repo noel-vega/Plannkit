@@ -31,7 +31,8 @@ function HabitDailyContributionButton(props: { habitId: number, contributions: M
     if (!todaysContribution) {
       createContributionMutation.mutate({
         habitId: props.habitId,
-        date: new Date()
+        date: new Date(),
+        completions: 1,
       })
     } else {
       deleteContributionMutation.mutate({ id: todaysContribution.id })
@@ -50,8 +51,8 @@ function HabitCard(props: { habit: HabitWithContributions }) {
   const { habit } = props
   const contributions = new Map(props.habit.contributions.map(contrib => [getDayOfYear(contrib.date), contrib]));
   return (
-    <Card className="pb-0 pt-4 md:py-6 gap-3 md:gap-6">
-      <CardHeader className="flex px-3 md:px-6">
+    <Card className="pb-0 pt-4 xl:py-6 gap-3 xl:gap-6">
+      <CardHeader className="flex px-3 xl:px-6">
         <div className="flex-1 space-y-2">
           <CardTitle>
             {habit.name}
@@ -60,7 +61,7 @@ function HabitCard(props: { habit: HabitWithContributions }) {
         </div>
         <HabitDailyContributionButton habitId={habit.id} contributions={contributions} />
       </CardHeader>
-      <CardContent className="px-3 md:px-6">
+      <CardContent className="px-3 xl:px-6">
         <div className="overflow-x-auto pb-4">
           <ContributionsGrid contributions={contributions} />
         </div>

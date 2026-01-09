@@ -8,10 +8,11 @@ import (
 )
 
 type Contribution struct {
-	ID        int       `json:"id"`
-	Date      time.Time `json:"date"`
-	HabitID   int       `json:"habitId" db:"habit_id"`
-	CreatedAt time.Time `json:"createdAt" db:"created_at"`
+	ID          int       `json:"id"`
+	Date        time.Time `json:"date"`
+	HabitID     int       `json:"habitId" db:"habit_id"`
+	Compeltions int       `json:"completions" db:"completions"`
+	CreatedAt   time.Time `json:"createdAt" db:"created_at"`
 }
 
 type ContributionsRepo struct {
@@ -19,8 +20,9 @@ type ContributionsRepo struct {
 }
 
 type CreateContributionParams struct {
-	HabitID int       `json:"habitId" db:"habit_id"`
-	Date    time.Time `json:"date" db:"date"`
+	HabitID     int       `json:"habitId" db:"habit_id"`
+	Compeltions int       `json:"completions" db:"completions"`
+	Date        time.Time `json:"date" db:"date"`
 }
 
 type DeleteContributionParams struct {
@@ -39,7 +41,7 @@ func (r *ContributionsRepo) List(habitID int) ([]Contribution, error) {
 }
 
 func (r *ContributionsRepo) Create(params CreateContributionParams) error {
-	query := "INSERT INTO contributions (habit_id, date) VALUES (:habit_id, :date)"
+	query := "INSERT INTO contributions (habit_id, completions, date) VALUES (:habit_id, :completions, :date)"
 	_, err := r.db.NamedExec(query, params)
 	if err != nil {
 		return err
