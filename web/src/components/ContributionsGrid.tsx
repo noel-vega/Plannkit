@@ -30,12 +30,12 @@ export function ContributionsGrid(props: { habit: Habit; contributions: Map<numb
             data-tooltip-id="contrib-tooltip"
             data-tooltip-content={format(setDayOfYear(new Date(), cell.day), "MMMM do")}
             data-tooltip-place="top"
-            className={cn("size-4 rounded border text-xs bg-secondary",
+            className={cn("h-[12px] w-[12px] rounded-[.18rem] border text-xs bg-secondary overflow-clip",
               {
-                "bg-[#c6e48b]": progress > 0,
-                "bg-[#7bc96f]": progress > 25,
-                "bg-[#239a3b]": progress > 75,
-                "bg-[#196127]": progress === 100,
+                "bg-[#c6e48b] border-[#c6e48b]": progress > 0,
+                "bg-[#7bc96f] border-[#7bc96f]": progress > 25,
+                "bg-[#239a3b] border-[#239a3b]": progress > 75,
+                "bg-[#196127] border-[#196127]": progress === 100,
               }
             )} key={cell.day}></li>
         })}

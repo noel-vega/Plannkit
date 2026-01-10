@@ -28,7 +28,7 @@ function RouteComponent() {
   })
   return (
     <div className="px-3 xl:px-0">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         {!habitRouteMatch && isDesktop && (
           <header className="flex justify-between items-center py-8">
             <h1 className="text-2xl font-semibold">Habits</h1>
