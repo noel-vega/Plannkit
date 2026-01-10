@@ -199,7 +199,6 @@ function HabitCard(props: { habit: HabitWithContributions }) {
           <CardTitle>
             {habit.name}
           </CardTitle>
-          <Badge>{habit.completionType}</Badge>
           <CardDescription>{habit.description}</CardDescription>
         </div>
         <HabitContributionButton habit={habit} contributions={contributions} />
