@@ -8,7 +8,7 @@ import { Button } from "./ui/button";
 import { getDayOfYear } from "date-fns";
 import { Link } from "@tanstack/react-router";
 import { ContributionsGrid } from "./ContributionsGrid";
-import type { MouseEvent } from "react";
+import { useState, type MouseEvent } from "react";
 import { CircularProgress } from "./ui/circle-progress";
 import { Tooltip } from "react-tooltip";
 import { Badge } from "./ui/badge";
@@ -19,7 +19,8 @@ import { useDialog } from "@/hooks";
 import { Progress } from "./ui/progress";
 import { ButtonGroup } from "./ui/button-group";
 import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
+import { useDebouncedCallback } from 'use-debounce';
 
 
 // the contributions map should not be the day of year
@@ -32,10 +33,6 @@ function HabitContributionButton(props: { habit: Habit, contributions: Map<numbe
     mutationFn: createContribution,
     onSuccess: invalidateListHabits
   })
-  const deleteContributionMutation = useMutation({
-    mutationFn: deleteContribution,
-    onSuccess: invalidateListHabits
-  })
 
   const updateCompletionsMutation = useMutation({
     mutationFn: updateContributionCompletions,
@@ -46,6 +43,7 @@ function HabitContributionButton(props: { habit: Habit, contributions: Map<numbe
     e.preventDefault()
     e.stopPropagation()
     if (habit.completionType === "custom") {
+      console.log("custom dialog")
       setOpen(true)
       return
     }
@@ -59,7 +57,7 @@ function HabitContributionButton(props: { habit: Habit, contributions: Map<numbe
     }
 
     if (todaysContribution.completions === habit.completionsPerDay) {
-      deleteContributionMutation.mutate({ id: todaysContribution.id })
+      updateCompletionsMutation.mutate({ contributionId: todaysContribution.id, completions: 0 })
     } else {
       updateCompletionsMutation.mutate({ contributionId: todaysContribution.id, completions: todaysContribution.completions + 1 })
     }
@@ -86,21 +84,38 @@ function HabitContributionButton(props: { habit: Habit, contributions: Map<numbe
           <CircularProgress progress={progress} size={50} strokeWidth={5} showPercentage={false} />
         </button>
 
-        {todaysContribution && (
-          <CustomContributionCompletionsDialog habit={props.habit} contribution={todaysContribution} open={open} onOpenChange={setOpen} progress={progress} />
-        )}
+        <CustomContributionCompletionsDialog habit={props.habit} contribution={todaysContribution} open={open} onOpenChange={setOpen} progress={progress} />
       </>
     )
   }
   return (<Button variant="outline" onClick={handleContribution}
     className={cn({
-      "bg-green-500 text-white hover:bg-green-500 hover:text-white": !!todaysContribution
+      "bg-green-500 text-white hover:bg-green-500 hover:text-white": todaysContribution?.completions === habit.completionsPerDay
     })}>
     <CheckIcon />
   </Button>)
 }
 
-function CustomContributionCompletionsDialog(props: { contribution: Contribution; habit: Habit; progress: number; open: boolean; onOpenChange: (open: boolean) => void }) {
+function CustomContributionCompletionsDialog(props: { contribution?: Contribution; habit: Habit; progress: number; open: boolean; onOpenChange: (open: boolean) => void }) {
+  const debounce = useDebouncedCallback(() => { }, 500,)
+  const [progress, setProgress] = useState(props.progress)
+  const [incrementBy, setIncremetBy] = useState(1)
+
+  const createContributionMutation = useMutation({
+    mutationFn: createContribution,
+    onSuccess: invalidateListHabits
+  })
+
+  const updateCompletionsMutation = useMutation({
+    mutationFn: updateContributionCompletions,
+    onSuccess: invalidateListHabits
+  })
+  const form = useForm({
+    defaultValues: {
+      completions: props.contribution?.completions ?? 0
+    }
+  })
+
   return (
     <Dialog open={props.open} onOpenChange={props.onOpenChange}>
       <DialogContent onClick={e => e.stopPropagation()}>
@@ -116,13 +131,32 @@ function CustomContributionCompletionsDialog(props: { contribution: Contribution
         </DialogHeader>
         <FieldLabel>Completions</FieldLabel>
 
-        <ButtonGroup className="w-full" >
-          <Button variant="secondary"><MinusIcon /></Button>
-          <Input type="number" value={props.contribution.completions ?? 0} className="text-center" />
-          <Button variant="secondary"><PlusIcon /></Button>
-        </ButtonGroup>
+        <Controller control={form.control} name="completions" render={({ field }) => (
+          <ButtonGroup className="w-full" >
+            <Button variant="secondary" onClick={() => {
+              const newValue = field.value - incrementBy
+              if (newValue < 0) {
+                field.onChange(0)
+              } else {
+                field.onChange(newValue)
+              }
+            }}><MinusIcon /></Button>
+            <Input type="number" className="text-center" {...field} />
+            <Button variant="secondary"
+              onClick={() => {
+                const newValue = field.value + incrementBy
+                if (newValue > props.habit.completionsPerDay) {
+                  field.onChange(props.habit.completionsPerDay)
+                } else {
+                  field.onChange(newValue)
+                }
+              }}>
+              <PlusIcon />
+            </Button>
+          </ButtonGroup>
+        )} />
 
-        <ToggleGroup type="single" className="w-full border divide-x" defaultValue="1">
+        <ToggleGroup type="single" className="w-full border divide-x" defaultValue={incrementBy.toString()} onValueChange={(val) => setIncremetBy(Number(val))}>
           <ToggleGroupItem value="1" className="flex-1">1</ToggleGroupItem>
           <ToggleGroupItem value="5" className="flex-1">5</ToggleGroupItem>
           <ToggleGroupItem value="10" className="flex-1">10</ToggleGroupItem>
@@ -133,7 +167,7 @@ function CustomContributionCompletionsDialog(props: { contribution: Contribution
 
         <DialogFooter>
           <Button variant="secondary" className="flex-1">Reset</Button>
-          <Button variant="secondary" className="flex-1">Fill Day</Button>
+          <Button variant="secondary" className="flex-1">Complete</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

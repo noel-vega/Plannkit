@@ -3,7 +3,7 @@ import z from "zod/v3";
 export const ContributionSchema = z.object({
   id: z.number(),
   habitId: z.number(),
-  completions: z.number().min(1),
+  completions: z.number().min(0),
   date: z.coerce.date(),
 })
 export type Contribution = z.infer<typeof ContributionSchema>
