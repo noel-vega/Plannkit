@@ -9,58 +9,64 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as HabitsRouteImport } from './routes/habits'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as HabitsIndexRouteImport } from './routes/habits/index'
-import { Route as HabitsIdRouteImport } from './routes/habits/$id'
+import { Route as HabitsIdRouteImport } from './routes/habits.$id'
 
+const HabitsRoute = HabitsRouteImport.update({
+  id: '/habits',
+  path: '/habits',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const HabitsIndexRoute = HabitsIndexRouteImport.update({
-  id: '/habits/',
-  path: '/habits/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const HabitsIdRoute = HabitsIdRouteImport.update({
-  id: '/habits/$id',
-  path: '/habits/$id',
-  getParentRoute: () => rootRouteImport,
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => HabitsRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/habits': typeof HabitsRouteWithChildren
   '/habits/$id': typeof HabitsIdRoute
-  '/habits': typeof HabitsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/habits': typeof HabitsRouteWithChildren
   '/habits/$id': typeof HabitsIdRoute
-  '/habits': typeof HabitsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/habits': typeof HabitsRouteWithChildren
   '/habits/$id': typeof HabitsIdRoute
-  '/habits/': typeof HabitsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/habits/$id' | '/habits'
+  fullPaths: '/' | '/habits' | '/habits/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/habits/$id' | '/habits'
-  id: '__root__' | '/' | '/habits/$id' | '/habits/'
+  to: '/' | '/habits' | '/habits/$id'
+  id: '__root__' | '/' | '/habits' | '/habits/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  HabitsIdRoute: typeof HabitsIdRoute
-  HabitsIndexRoute: typeof HabitsIndexRoute
+  HabitsRoute: typeof HabitsRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/habits': {
+      id: '/habits'
+      path: '/habits'
+      fullPath: '/habits'
+      preLoaderRoute: typeof HabitsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -68,27 +74,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/habits/': {
-      id: '/habits/'
-      path: '/habits'
-      fullPath: '/habits'
-      preLoaderRoute: typeof HabitsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/habits/$id': {
       id: '/habits/$id'
-      path: '/habits/$id'
+      path: '/$id'
       fullPath: '/habits/$id'
       preLoaderRoute: typeof HabitsIdRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof HabitsRoute
     }
   }
 }
 
+interface HabitsRouteChildren {
+  HabitsIdRoute: typeof HabitsIdRoute
+}
+
+const HabitsRouteChildren: HabitsRouteChildren = {
+  HabitsIdRoute: HabitsIdRoute,
+}
+
+const HabitsRouteWithChildren =
+  HabitsRoute._addFileChildren(HabitsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  HabitsIdRoute: HabitsIdRoute,
-  HabitsIndexRoute: HabitsIndexRoute,
+  HabitsRoute: HabitsRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
