@@ -206,7 +206,7 @@ function HabitCard(props: { habit: HabitWithContributions }) {
       </CardHeader>
       <CardContent className="px-3 xl:px-6">
         <div className="overflow-x-auto pb-4">
-          <ContributionsGrid contributions={contributions} />
+          <ContributionsGrid habit={habit} contributions={contributions} />
         </div>
       </CardContent>
     </Card>

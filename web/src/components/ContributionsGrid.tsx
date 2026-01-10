@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils"
-import type { Contribution } from "@/types"
+import type { Contribution, Habit } from "@/types"
 import { format, setDayOfYear } from "date-fns"
 import { Tooltip } from 'react-tooltip'
 
@@ -17,23 +17,28 @@ export function generateCells() {
 }
 
 
-export function ContributionsGrid(props: { contributions: Map<number, Contribution> }) {
+export function ContributionsGrid(props: { habit: Habit; contributions: Map<number, Contribution> }) {
   const cells = generateCells()
   return (
     <>
       <Tooltip id="contrib-tooltip" delayShow={500} />
       <ul className="gap-1 grid grid-rows-7 grid-flow-col">
-        {cells.map((cell) => (
-          <li
+        {cells.map((cell) => {
+          const completions = props.contributions.get(cell.day)?.completions ?? 0
+          const progress = completions / props.habit.completionsPerDay * 100
+          return <li
             data-tooltip-id="contrib-tooltip"
             data-tooltip-content={format(setDayOfYear(new Date(), cell.day), "MMMM do")}
             data-tooltip-place="top"
             className={cn("size-4 rounded border text-xs bg-secondary",
               {
-                "bg-green-500": props.contributions.has(cell.day)
+                "bg-[#c6e48b]": progress > 0,
+                "bg-[#7bc96f]": progress > 25,
+                "bg-[#239a3b]": progress > 75,
+                "bg-[#196127]": progress === 100,
               }
             )} key={cell.day}></li>
-        ))}
+        })}
       </ul>
     </>
   )

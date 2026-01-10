@@ -47,7 +47,7 @@ function RouteComponent() {
     </div>
 
     <div className="py-4 mb-4">
-      <ContributionsGrid contributions={contributions} />
+      <ContributionsGrid habit={habit} contributions={contributions} />
     </div>
 
     <Calendar
