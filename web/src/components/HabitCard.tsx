@@ -77,7 +77,7 @@ function HabitContributionButton(props: { habit: Habit, contributions: Map<numbe
           {progress !== 100 ? (
             <PlusIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2" />
           ) : (
-            <CheckIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 text-green-500" />
+            <CheckIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 text-green-700" />
           )}
           <CircularProgress progress={progress} size={50} strokeWidth={5} showPercentage={false} />
         </button>
@@ -87,7 +87,7 @@ function HabitContributionButton(props: { habit: Habit, contributions: Map<numbe
   }
   return (<Button variant="outline" onClick={handleContribution}
     className={cn({
-      "bg-green-500 text-white hover:bg-green-500 hover:text-white": todaysContribution?.completions === habit.completionsPerDay
+      "bg-green-700 text-white hover:bg-green-700 hover:text-white": todaysContribution?.completions === habit.completionsPerDay
     })}>
     <CheckIcon />
   </Button>)
