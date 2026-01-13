@@ -89,6 +89,18 @@ func (r *HabitsRepo) Update(params UpdateHabitParams) error {
 	return nil
 }
 
+func (r *HabitsRepo) Delete(ID int) error {
+	query := `
+		DELETE FROM habits
+		WHERE id = $1;
+	`
+	_, err := r.db.Exec(query, ID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func NewHabitsRepository(db *sqlx.DB) *HabitsRepo {
 	return &HabitsRepo{
 		db: db,
