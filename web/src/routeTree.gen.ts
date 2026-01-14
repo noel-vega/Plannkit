@@ -10,7 +10,11 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TodosIndexRouteImport } from './routes/todos/index'
 import { Route as HabitsIndexRouteImport } from './routes/habits/index'
+import { Route as FinancesIndexRouteImport } from './routes/finances/index'
+import { Route as FilesIndexRouteImport } from './routes/files/index'
+import { Route as EmailIndexRouteImport } from './routes/email/index'
 import { Route as HabitsIdRouteImport } from './routes/habits/$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -18,9 +22,29 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TodosIndexRoute = TodosIndexRouteImport.update({
+  id: '/todos/',
+  path: '/todos/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HabitsIndexRoute = HabitsIndexRouteImport.update({
   id: '/habits/',
   path: '/habits/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FinancesIndexRoute = FinancesIndexRouteImport.update({
+  id: '/finances/',
+  path: '/finances/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FilesIndexRoute = FilesIndexRouteImport.update({
+  id: '/files/',
+  path: '/files/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmailIndexRoute = EmailIndexRouteImport.update({
+  id: '/email/',
+  path: '/email/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HabitsIdRoute = HabitsIdRouteImport.update({
@@ -32,31 +56,69 @@ const HabitsIdRoute = HabitsIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/habits/$id': typeof HabitsIdRoute
+  '/email': typeof EmailIndexRoute
+  '/files': typeof FilesIndexRoute
+  '/finances': typeof FinancesIndexRoute
   '/habits': typeof HabitsIndexRoute
+  '/todos': typeof TodosIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/habits/$id': typeof HabitsIdRoute
+  '/email': typeof EmailIndexRoute
+  '/files': typeof FilesIndexRoute
+  '/finances': typeof FinancesIndexRoute
   '/habits': typeof HabitsIndexRoute
+  '/todos': typeof TodosIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/habits/$id': typeof HabitsIdRoute
+  '/email/': typeof EmailIndexRoute
+  '/files/': typeof FilesIndexRoute
+  '/finances/': typeof FinancesIndexRoute
   '/habits/': typeof HabitsIndexRoute
+  '/todos/': typeof TodosIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/habits/$id' | '/habits'
+  fullPaths:
+    | '/'
+    | '/habits/$id'
+    | '/email'
+    | '/files'
+    | '/finances'
+    | '/habits'
+    | '/todos'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/habits/$id' | '/habits'
-  id: '__root__' | '/' | '/habits/$id' | '/habits/'
+  to:
+    | '/'
+    | '/habits/$id'
+    | '/email'
+    | '/files'
+    | '/finances'
+    | '/habits'
+    | '/todos'
+  id:
+    | '__root__'
+    | '/'
+    | '/habits/$id'
+    | '/email/'
+    | '/files/'
+    | '/finances/'
+    | '/habits/'
+    | '/todos/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   HabitsIdRoute: typeof HabitsIdRoute
+  EmailIndexRoute: typeof EmailIndexRoute
+  FilesIndexRoute: typeof FilesIndexRoute
+  FinancesIndexRoute: typeof FinancesIndexRoute
   HabitsIndexRoute: typeof HabitsIndexRoute
+  TodosIndexRoute: typeof TodosIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -68,11 +130,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/todos/': {
+      id: '/todos/'
+      path: '/todos'
+      fullPath: '/todos'
+      preLoaderRoute: typeof TodosIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/habits/': {
       id: '/habits/'
       path: '/habits'
       fullPath: '/habits'
       preLoaderRoute: typeof HabitsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/finances/': {
+      id: '/finances/'
+      path: '/finances'
+      fullPath: '/finances'
+      preLoaderRoute: typeof FinancesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/files/': {
+      id: '/files/'
+      path: '/files'
+      fullPath: '/files'
+      preLoaderRoute: typeof FilesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/email/': {
+      id: '/email/'
+      path: '/email'
+      fullPath: '/email'
+      preLoaderRoute: typeof EmailIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/habits/$id': {
@@ -88,7 +178,11 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   HabitsIdRoute: HabitsIdRoute,
+  EmailIndexRoute: EmailIndexRoute,
+  FilesIndexRoute: FilesIndexRoute,
+  FinancesIndexRoute: FinancesIndexRoute,
   HabitsIndexRoute: HabitsIndexRoute,
+  TodosIndexRoute: TodosIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

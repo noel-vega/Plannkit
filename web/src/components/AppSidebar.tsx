@@ -25,23 +25,23 @@ const items = [
   },
   {
     title: "Todos",
-    url: "/habits",
+    url: "/todos",
     icon: ListIcon,
   },
   {
     title: "Finances",
-    url: "#",
+    url: "/finances",
     icon: BanknoteIcon,
   },
   {
     title: "Email",
-    url: "#",
+    url: "/email",
     icon: MailIcon,
   },
 
   {
     title: "Files",
-    url: "#",
+    url: "/files",
     icon: FilesIcon,
   },
 ]
