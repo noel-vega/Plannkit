@@ -25,11 +25,11 @@ func newTodosRepo(db *sqlx.DB) *TodosRepo {
 	}
 }
 
-func (r *TodosRepo) List() ([]Todo, error) {
+func (r *TodosRepo) List() (*[]Todo, error) {
 	query := `
 		SELECT * FROM todos
 	`
-	var todos []Todo
+	todos := &[]Todo{}
 	err := r.DB.Select(todos, query)
 	if err != nil {
 		return nil, err

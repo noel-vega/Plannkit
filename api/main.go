@@ -46,6 +46,15 @@ func main() {
 		})
 	})
 
+	r.GET("/todos", func(c *gin.Context) {
+		todos, err := repo.Todos.List()
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+		c.JSON(http.StatusOK, todos)
+	})
+
 	r.GET("/habits", func(c *gin.Context) {
 		// Return JSON response
 		habitsWithContributions := []HabitWithContributions{}

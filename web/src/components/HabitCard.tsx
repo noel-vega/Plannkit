@@ -1,8 +1,8 @@
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
-import type { Contribution, Habit, HabitWithContributions } from "@/types";
+import type { Contribution, Habit, HabitWithContributions } from "@/features/habits/types";
 import { useMutation } from "@tanstack/react-query";
-import { createContribution, invalidateHabitById, invalidateListHabits, updateContributionCompletions } from "@/api";
+import { createContribution, invalidateHabitById, invalidateListHabits, updateContributionCompletions } from "@/features/habits/api";
 import { CalendarIcon, CheckIcon, MinusIcon, PlusIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { format, getDayOfYear } from "date-fns";

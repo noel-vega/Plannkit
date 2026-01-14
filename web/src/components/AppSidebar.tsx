@@ -48,23 +48,6 @@ const items = [
 export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
-      {/* <SidebarHeader> */}
-      {/*   <SidebarMenu> */}
-      {/*     <SidebarMenuItem> */}
-      {/*       <SidebarMenuButton */}
-      {/*         size="lg" */}
-      {/*         className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground hover:bg-transparent" */}
-      {/*       > */}
-      {/*         <div className={cn("flex flex-col gap-0.5 leading-none font-semibold text-lg border border-red-500", { */}
-      {/*         })}> */}
-      {/*           {open ? "Plannkit" : "P"} */}
-      {/*         </div> */}
-      {/*       </SidebarMenuButton> */}
-      {/**/}
-      {/*     </SidebarMenuItem> */}
-      {/*   </SidebarMenu> */}
-      {/**/}
-      {/* </SidebarHeader> */}
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
@@ -72,7 +55,9 @@ export function AppSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild className="">
-                    <Link to={item.url}>
+                    <Link to={item.url} className="border border-transparent" activeProps={{
+                      className: "font-semibold border-border"
+                    }}>
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>
