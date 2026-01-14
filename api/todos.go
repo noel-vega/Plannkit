@@ -41,4 +41,13 @@ func (r *TodosRepo) Create() {}
 
 func (r *TodosRepo) Update() {}
 
-func (r *TodosRepo) Delete() {}
+func (r *TodosRepo) Delete(id int) error {
+	query := `
+		DELETE FROM todos WHERE id = $1
+	`
+	_, err := r.DB.Exec(query, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
