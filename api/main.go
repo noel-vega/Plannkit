@@ -15,12 +15,14 @@ import (
 type PostgresRepository struct {
 	Habits        *HabitsRepo
 	Contributions *ContributionsRepo
+	Todos         *TodosRepo
 }
 
 func NewPostgresRepository(db *sqlx.DB) *PostgresRepository {
 	return &PostgresRepository{
 		Habits:        NewHabitsRepository(db),
 		Contributions: NewContributionsRepo(db),
+		Todos:         newTodosRepo(db),
 	}
 }
 
