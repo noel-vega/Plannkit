@@ -1,5 +1,4 @@
 import { createRootRoute, Outlet } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import "../index.css"
 import { queryClient } from '@/lib/react-query'
 import { getListHabitsQueryOptions } from '@/api'
@@ -11,7 +10,9 @@ const RootLayout = () => (
     <SidebarProvider >
       <AppSidebar />
       <main className="w-full">
-        <SidebarTrigger>Menu</SidebarTrigger>
+        <div className="h-12 border-b flex items-center px-4">
+          <SidebarTrigger>Menu</SidebarTrigger>
+        </div>
         <Outlet />
       </main>
     </SidebarProvider>

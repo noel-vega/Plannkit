@@ -84,7 +84,7 @@ function RouteComponent() {
               </Button>
             </EditHabitDialog>
             <DeleteHabitDialog habitId={habit.id}>
-              <Button variant="destructive" size="icon"><Trash2Icon /></Button>
+              <Button variant="secondary" size="icon"><Trash2Icon /></Button>
             </DeleteHabitDialog>
           </div>
         </div>
