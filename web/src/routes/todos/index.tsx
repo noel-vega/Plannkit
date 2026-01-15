@@ -31,10 +31,10 @@ function Lane(props: { title: string, status: TodoStatus, todos: Todo[] }) {
       <div className="p-4 uppercase text-xs">{props.title}</div>
 
       <div className="px-1.5 pb-1.5 space-y-1">
-        <ul>
+        <ul className="space-y-1">
           {props.todos.map(x => (
             <li key={x.id}>
-              <Card className="py-0 rounded hover:cursor-grab hover:bg-neutral-200 hover:border shadow-none">
+              <Card className="py-0 rounded hover:cursor-grab hover:bg-neutral-100 hover:border shadow-none">
                 <CardContent className="p-4">
                   <div className="text-sm">{x.name}</div>
                 </CardContent>
