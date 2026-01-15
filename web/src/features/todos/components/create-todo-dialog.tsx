@@ -8,12 +8,27 @@ import { Textarea } from "@/components/ui/textarea"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { DialogTrigger } from "@radix-ui/react-dialog"
 import { Button } from "@/components/ui/button"
+import { useMutation } from "@tanstack/react-query"
+import { createTodo, invalidateListTodosQuery } from "@/features/todos/api"
+import { Spinner } from "@/components/ui/spinner"
+import { useDialog } from "@/hooks"
 
 type Props = {
   status?: TodoStatus
 } & PropsWithChildren
 
 export function CreateTodoDialog({ status = "todo", ...props }: Props) {
+  const { isOpen, setIsOpen, close } = useDialog()
+  const createTodoMutation = useMutation({
+    mutationFn: createTodo,
+    onSuccess: async () => {
+      await invalidateListTodosQuery()
+      close()
+      form.reset()
+
+    }
+  })
+
   const form = useForm({
     defaultValues: {
       name: "",
@@ -25,15 +40,12 @@ export function CreateTodoDialog({ status = "todo", ...props }: Props) {
   const handleSubmit = (e: FormEvent) => {
     form.handleSubmit((data) => {
       console.log("CREATE TODO:", data)
+      createTodoMutation.mutate(data)
     })(e)
   }
 
-  const handleDialogOpenChange = (isOpen: boolean) => {
-    if (!isOpen) form.reset()
-  }
-
   return (
-    <Dialog onOpenChange={handleDialogOpenChange}>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         {props.children}
       </DialogTrigger>
@@ -80,8 +92,10 @@ export function CreateTodoDialog({ status = "todo", ...props }: Props) {
             />
           </FieldSet>
           <DialogFooter>
-            <Button>Submit</Button>
-
+            <Button type="submit" disabled={createTodoMutation.isPending || form.formState.isSubmitting}>
+              {createTodoMutation.isPending && <Spinner />}
+              Submit
+            </Button>
           </DialogFooter>
         </form>
 

@@ -11,22 +11,13 @@ export const Route = createFileRoute('/todos/')({
   component: RouteComponent,
 })
 
-const dummyTodos: Todo[] = [
-  {
-    id: 1,
-    name: "Noah doctors appointment",
-    description: "Sample description",
-    status: "todo"
-  }
-]
-
 function RouteComponent() {
   const { data } = useQuery(getListTodosQueryOptions())
-  console.log(data)
+  const todos = data ?? []
   return (
     <div className="p-8">
       <div className="flex gap-4 ">
-        <Lane title="Todo" status={"todo"} todos={dummyTodos.filter(x => x.status === "todo")} />
+        <Lane title="Todo" status={"todo"} todos={todos.filter(x => x.status === "todo")} />
         <Lane title="In Progress" status={"in-progress"} todos={[]} />
         <Lane title="Done" status={"done"} todos={[]} />
       </div>

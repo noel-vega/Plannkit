@@ -142,9 +142,9 @@ export function EditHabitForm(props: EditHabitFormProps) {
 }
 
 export function EditHabitDialog(props: { habit: Habit } & PropsWithChildren) {
-  const { open, setOpen, close } = useDialog()
+  const { isOpen, setIsOpen, close } = useDialog()
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         {props.children}
       </DialogTrigger>

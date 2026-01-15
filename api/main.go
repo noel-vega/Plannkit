@@ -55,6 +55,21 @@ func main() {
 		c.JSON(http.StatusOK, todos)
 	})
 
+	r.POST("/todos", func(c *gin.Context) {
+		var todo CreateTodoParams
+		err := c.Bind(&todo)
+		if err != nil {
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		}
+
+		err = repo.Todos.Create(todo)
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+	})
+
 	r.GET("/habits", func(c *gin.Context) {
 		// Return JSON response
 		habitsWithContributions := []HabitWithContributions{}

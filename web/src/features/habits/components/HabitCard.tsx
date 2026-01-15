@@ -23,7 +23,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 // TODO: the contributions map should not be the day of year
 function HabitContributionButton(props: { habit: Habit, contributions: Map<number, Contribution> }) {
-  const { open, setOpen } = useDialog()
+  const { isOpen, setIsOpen } = useDialog()
   const { habit, contributions } = props
   const todaysContribution = contributions.get(getDayOfYear(new Date()))
 
@@ -42,7 +42,7 @@ function HabitContributionButton(props: { habit: Habit, contributions: Map<numbe
     e.stopPropagation()
     if (habit.completionType === "custom") {
       console.log("custom dialog")
-      setOpen(true)
+      setIsOpen(true)
       return
     }
     if (!todaysContribution) {
@@ -81,7 +81,7 @@ function HabitContributionButton(props: { habit: Habit, contributions: Map<numbe
           )}
           <CircularProgress progress={progress} size={50} strokeWidth={5} showPercentage={false} />
         </button>
-        <CustomContributionCompletionsDialog date={new Date()} habit={props.habit} contribution={todaysContribution} open={open} onOpenChange={setOpen} />
+        <CustomContributionCompletionsDialog date={new Date()} habit={props.habit} contribution={todaysContribution} open={isOpen} onOpenChange={setIsOpen} />
       </>
     )
   }

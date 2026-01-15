@@ -45,7 +45,7 @@ type CreateTodoParams struct {
 
 func (r *TodosRepo) Create(params CreateTodoParams) error {
 	query := `
-		INSERT INTO todos (name, status, description) VALUES () 
+	INSERT INTO todos (name, status, description) VALUES (:name, :status, :description) 
 	`
 	_, err := r.DB.NamedExec(query, params)
 	if err != nil {

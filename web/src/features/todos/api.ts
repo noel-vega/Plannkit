@@ -1,5 +1,6 @@
 import { queryOptions } from "@tanstack/react-query"
 import { TodoSchema, type CreateTodo } from "./types"
+import { queryClient } from "@/lib/react-query"
 
 export async function listTodos() {
   const res = await fetch("/api/todos")
@@ -12,6 +13,10 @@ export function getListTodosQueryOptions() {
     queryFn: listTodos,
     queryKey: ["todos"]
   })
+}
+
+export async function invalidateListTodosQuery() {
+  return queryClient.invalidateQueries(getListTodosQueryOptions())
 }
 
 export async function createTodo(params: CreateTodo) {
