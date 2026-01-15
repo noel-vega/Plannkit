@@ -101,7 +101,7 @@ function RouteComponent() {
       onDragEnd={handleDragEnd}
       onDragStart={handleDragStart}
     >
-      <div className="p-8 h-full">
+      <div className="p-8 h-full w-full">
         <div className="flex gap-4">
           <Lane title="Todo" status={"todo"} todos={todos.filter(x => x.status === "todo")} showDropZone={activeTodo && activeTodo.status !== "todo" ? true : false} />
           <Lane title="In Progress" status={"in-progress"} todos={todos.filter(x => x.status === "in-progress")} showDropZone={activeTodo && activeTodo.status !== "in-progress" ? true : false} />
@@ -110,7 +110,7 @@ function RouteComponent() {
       </div>
       <DragOverlay>
         {activeTodo && (
-          <TodoCard todo={activeTodo} className="shadow-lg" isDragging={true} />
+          <TodoCard todo={activeTodo} className="shadow-lg hover:cursor-grabbing" isDragging={true} />
         )}
       </DragOverlay>
     </DndContext>
@@ -128,7 +128,7 @@ function Lane(props: LaneProps) {
       strategy={verticalListSortingStrategy}
     >
 
-      <div ref={setNodeRef} className={cn("w-96 border bg-gray-50 rounded")}>
+      <div ref={setNodeRef} className={cn("w-72 border bg-gray-50 rounded")}>
         <div className="p-4 uppercase text-xs">{props.title}</div>
         {props.showDropZone && (
           <div className={cn("h-40 border border-blue-500 flex items-center justify-center bg-blue-500/10", {
