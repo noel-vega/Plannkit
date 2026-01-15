@@ -1,7 +1,8 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { getListTodosQueryOptions } from '@/features/todos/api'
-import type { Todo } from '@/features/todos/types'
+import { CreateTodoDialog } from '@/features/todos/components/create-todo-dialog'
+import type { Todo, TodoStatus } from '@/features/todos/types'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { PlusIcon } from 'lucide-react'
@@ -25,15 +26,15 @@ function RouteComponent() {
   return (
     <div className="p-8">
       <div className="flex gap-4 ">
-        <Lane title="Todo" todos={dummyTodos.filter(x => x.status === "todo")} />
-        <Lane title="In Progress" todos={[]} />
-        <Lane title="Done" todos={[]} />
+        <Lane title="Todo" status={"todo"} todos={dummyTodos.filter(x => x.status === "todo")} />
+        <Lane title="In Progress" status={"in-progress"} todos={[]} />
+        <Lane title="Done" status={"done"} todos={[]} />
       </div>
     </div>
   )
 }
 
-function Lane(props: { title: string, todos: Todo[] }) {
+function Lane(props: { title: string, status: TodoStatus, todos: Todo[] }) {
   return (
     <div className="w-96 border bg-gray-50 rounded">
       <div className="p-4 uppercase text-xs">{props.title}</div>
@@ -51,7 +52,9 @@ function Lane(props: { title: string, todos: Todo[] }) {
           ))}
         </ul>
         <div>
-          <Button variant="ghost" className="w-full justify-start hover:bg-neutral-200" ><PlusIcon /> <span>Create</span></Button>
+          <CreateTodoDialog status={props.status}>
+            <Button variant="ghost" className="w-full justify-start hover:bg-neutral-200" ><PlusIcon /> <span>Create</span></Button>
+          </CreateTodoDialog>
         </div>
       </div>
     </div>
