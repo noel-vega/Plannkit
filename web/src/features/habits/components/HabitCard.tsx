@@ -1,25 +1,25 @@
+import { useEffect, useState, type ChangeEvent, type MouseEvent } from "react";
 import { cn } from "@/lib/utils";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import type { Contribution, Habit, HabitWithContributions } from "@/features/habits/types";
 import { useMutation } from "@tanstack/react-query";
 import { createContribution, invalidateHabitById, invalidateListHabits, updateContributionCompletions } from "@/features/habits/api";
 import { CalendarIcon, CheckIcon, MinusIcon, PlusIcon } from "lucide-react";
-import { Button } from "./ui/button";
 import { format, getDayOfYear } from "date-fns";
 import { Link } from "@tanstack/react-router";
 import { ContributionsGrid } from "./ContributionsGrid";
-import { useEffect, useState, type ChangeEvent, type MouseEvent } from "react";
-import { CircularProgress } from "./ui/circle-progress";
 import { Tooltip } from "react-tooltip";
-import { Badge } from "./ui/badge";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
-import { Input } from "./ui/input";
-import { FieldLabel } from "./ui/field";
 import { useDialog } from "@/hooks";
-import { Progress } from "./ui/progress";
-import { ButtonGroup } from "./ui/button-group";
-import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
 import { useDebouncedCallback } from 'use-debounce';
+import { ButtonGroup } from "@/components/ui/button-group";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { CircularProgress } from "@/components/ui/circle-progress";
+import { FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 // TODO: the contributions map should not be the day of year
 function HabitContributionButton(props: { habit: Habit, contributions: Map<number, Contribution> }) {

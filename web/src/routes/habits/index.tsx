@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { HabitCardList } from '@/components/HabitCard'
-import { CreateHabitDialog } from '@/components/CreateHabitForm'
+import { HabitCardList } from '@/features/habits/components/HabitCard'
+import { CreateHabitDialog } from '@/features/habits/components/CreateHabitForm'
 import { Button } from '@/components/ui/button'
 import { PlusIcon } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'

@@ -2,16 +2,16 @@ import { CreateHabitSchema } from "@/features/habits/types"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { type FormEvent, type PropsWithChildren } from "react"
 import { Controller, useForm } from "react-hook-form"
-import { Field, FieldContent, FieldDescription, FieldError, FieldLabel, FieldSet, FieldTitle } from "./ui/field"
-import { Button } from "./ui/button"
-import { Input } from "./ui/input"
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog"
 import { useMutation } from "@tanstack/react-query"
 import { createHabit, getListHabitsQueryOptions } from "@/features/habits/api"
 import { queryClient } from "@/lib/react-query"
-import { RadioGroup, RadioGroupItem } from "./ui/radio-group"
 import { useDialog } from "@/hooks"
-import { CompletionsPerDayInput } from "./ui/completions-per-day-input"
+import { Input } from "@/components/ui/input"
+import { Field, FieldContent, FieldDescription, FieldError, FieldLabel, FieldSet, FieldTitle } from "@/components/ui/field"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { CompletionsPerDayInput } from "@/components/ui/completions-per-day-input"
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 
 type CreateHabitFormProps =
   {
@@ -58,31 +58,35 @@ export function CreateHabitForm(props: CreateHabitFormProps) {
     <form onSubmit={handleSubmit} className="space-y-4">
       <Controller control={form.control} name="name"
         render={({ field, fieldState }) => {
-          return <Field data-invalid={fieldState.invalid}>
-            <FieldLabel htmlFor={field.name}>Name</FieldLabel>
-            <Input
-              {...field}
-              id={field.name}
-              aria-invalid={fieldState.invalid}
-              autoComplete="off"
-            />
-            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-          </Field>
+          return (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor={field.name}>Name</FieldLabel>
+              <Input
+                {...field}
+                id={field.name}
+                aria-invalid={fieldState.invalid}
+                autoComplete="off"
+              />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )
         }}
       />
 
       <Controller control={form.control} name="description"
         render={({ field, fieldState }) => {
-          return <Field data-invalid={fieldState.invalid}>
-            <FieldLabel htmlFor={field.name}>Description</FieldLabel>
-            <Input
-              {...field}
-              id={field.name}
-              aria-invalid={fieldState.invalid}
-              autoComplete="off"
-            />
-            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-          </Field>
+          return (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor={field.name}>Description</FieldLabel>
+              <Input
+                {...field}
+                id={field.name}
+                aria-invalid={fieldState.invalid}
+                autoComplete="off"
+              />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )
         }}
       />
 

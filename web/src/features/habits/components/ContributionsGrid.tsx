@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils"
-import type { Contribution, Habit } from "@/types"
+import type { Contribution, Habit } from "@/features/habits/types"
 import { format, setDayOfYear } from "date-fns"
 import { Tooltip } from 'react-tooltip'
 
