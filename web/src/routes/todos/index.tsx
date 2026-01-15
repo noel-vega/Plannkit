@@ -1,12 +1,11 @@
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { deleteTodo, getListTodosQueryOptions, invalidateListTodosQuery } from '@/features/todos/api'
+import { getListTodosQueryOptions } from '@/features/todos/api'
 import { CreateTodoDialog } from '@/features/todos/components/create-todo-dialog'
+import { TodoCard } from '@/features/todos/components/todo-card'
 import type { Todo, TodoStatus } from '@/features/todos/types'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { EllipsisIcon, PlusIcon } from 'lucide-react'
+import { PlusIcon } from 'lucide-react'
 
 export const Route = createFileRoute('/todos/')({
   component: RouteComponent,
@@ -27,49 +26,15 @@ function RouteComponent() {
 }
 
 function Lane(props: { title: string, status: TodoStatus, todos: Todo[] }) {
-  const deleteTodoMutation = useMutation({
-    mutationFn: deleteTodo,
-    onSuccess: () => {
-      invalidateListTodosQuery()
-    }
-  })
-
-  const handleDeleteTodo = (params: { id: number }) => {
-    deleteTodoMutation.mutate(params)
-  }
-
   return (
     <div className="w-96 border bg-gray-50 rounded">
       <div className="p-4 uppercase text-xs">{props.title}</div>
 
       <div className="px-1.5 pb-1.5 space-y-1">
         <ul className="space-y-1">
-          {props.todos.map(x => (
-            <li key={x.id}>
-              <Card className="rounded hover:cursor-grab hover:bg-neutral-100 hover:border shadow-none p-4 group">
-                <CardHeader className="p-0">
-                  <CardTitle className="flex w-full font-normal">
-                    <p className="flex-1">{x.name}</p>
-                    {/*Quick Todo Card Options */}
-                    <div className="w-10">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon-sm" className="hover:bg-neutral-200 rounded invisible group-hover:visible transition-none">
-                            <EllipsisIcon />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="min-w-40">
-                          <DropdownMenuItem onClick={() => {
-                            handleDeleteTodo({ id: x.id })
-                          }}>Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent >
-                </CardContent>
-              </Card>
+          {props.todos.map(todo => (
+            <li key={todo.id}>
+              <TodoCard todo={todo} />
             </li>
           ))}
         </ul>
