@@ -37,7 +37,6 @@ export async function invalidateListHabits() {
 }
 
 export async function createHabit(params: CreateHabit) {
-  console.log("create habit")
   const res = await fetch("/api/habits", {
     method: "POST",
     body: JSON.stringify(params),
@@ -52,7 +51,6 @@ export async function createHabit(params: CreateHabit) {
 
 export async function updateHabit(params: Habit) {
   const { id, ...rest } = params
-  console.log("Update habit", params)
   await fetch(`/api/habits/${id}`, {
     method: "PATCH",
     body: JSON.stringify(rest),

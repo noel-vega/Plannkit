@@ -39,7 +39,6 @@ export function CreateTodoDialog({ status = "todo", ...props }: Props) {
   })
   const handleSubmit = (e: FormEvent) => {
     form.handleSubmit((data) => {
-      console.log("CREATE TODO:", data)
       createTodoMutation.mutate(data)
     })(e)
   }

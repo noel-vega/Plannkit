@@ -43,7 +43,7 @@ export function CreateHabitForm(props: CreateHabitFormProps) {
           })
           props.onSubmit()
         }, onError: (e) => {
-          console.log("Could not create habit", e.message)
+          console.error("Could not create habit", e.message)
         }
       })
     })(e)

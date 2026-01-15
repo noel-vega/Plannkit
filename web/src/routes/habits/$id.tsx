@@ -194,12 +194,6 @@ export function HabitCalendar(props: { habit: HabitWithContributions }) {
             </>
           }
         }}
-        onDayClick={(date) => {
-          const dayOfYear = getDayOfYear(date)
-          const contribution = contributions.get(dayOfYear)
-          console.log(contribution)
-
-        }}
       />
 
       <CustomContributionCompletionsDialog

@@ -41,7 +41,6 @@ function HabitContributionButton(props: { habit: Habit, contributions: Map<numbe
     e.preventDefault()
     e.stopPropagation()
     if (habit.completionType === "custom") {
-      console.log("custom dialog")
       setIsOpen(true)
       return
     }
@@ -96,7 +95,6 @@ function HabitContributionButton(props: { habit: Habit, contributions: Map<numbe
 export function CustomContributionCompletionsDialog(props: { date: Date; contribution?: Contribution; habit: Habit; open: boolean; onOpenChange: (open: boolean) => void }) {
   const [completions, setCompletions] = useState(props.contribution?.completions ?? 0)
   const [incrementBy, setIncremetBy] = useState(1)
-  console.log(props.contribution)
 
   const createContributionMutation = useMutation({
     mutationFn: createContribution,
@@ -120,7 +118,6 @@ export function CustomContributionCompletionsDialog(props: { date: Date; contrib
 
   const debounce = useDebouncedCallback((completions: number) => {
     if (!props.contribution) {
-      console.log("create contribution")
       createContributionMutation.mutate({ habitId: props.habit.id, date: props.date, completions })
 
     } else {

@@ -9,11 +9,13 @@ const RootLayout = () => (
   <>
     <SidebarProvider >
       <AppSidebar />
-      <main className="w-full">
+      <main className="w-full flex flex-col">
         <div className="h-12 border-b flex items-center px-4">
           <SidebarTrigger>Menu</SidebarTrigger>
         </div>
-        <Outlet />
+        <div className="flex-1 flex">
+          <Outlet />
+        </div>
       </main>
     </SidebarProvider>
   </>

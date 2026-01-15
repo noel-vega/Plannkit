@@ -35,7 +35,7 @@ export function EditHabitForm(props: EditHabitFormProps) {
           invalidateHabitById(data.id)
           props.onSubmit()
         }, onError: (e) => {
-          console.log("Could not create habit", e.message)
+          console.error("Could not create habit", e.message)
         }
       })
     })(e)
