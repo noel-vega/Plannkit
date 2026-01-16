@@ -7,15 +7,14 @@ import { useQuery } from '@tanstack/react-query'
 import { getListHabitsQueryOptions } from '@/features/habits/api'
 
 export const Route = createFileRoute('/habits/')({
-  beforeLoad: () => {
-    const today = new Date();
-    return { today }
+  loader: async ({ context: { queryClient } }) => {
+    return await queryClient.ensureQueryData(getListHabitsQueryOptions())
   },
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const { initialHabits } = Route.useRouteContext()
+  const initialHabits = Route.useLoaderData()
   const habits = useQuery({ ...getListHabitsQueryOptions(), initialData: initialHabits })
   return (
     <div className="p-8 max-w-6xl w-full">

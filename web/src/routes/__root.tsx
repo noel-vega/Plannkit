@@ -1,9 +1,8 @@
-import { createRootRoute, Outlet } from '@tanstack/react-router'
+import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
 import "../index.css"
-import { queryClient } from '@/lib/react-query'
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/AppSidebar'
-import { getListHabitsQueryOptions } from '@/features/habits/api'
+import type { QueryClient } from '@tanstack/react-query'
 
 const RootLayout = () => (
   <>
@@ -21,10 +20,9 @@ const RootLayout = () => (
   </>
 )
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   beforeLoad: async () => {
-    const initialHabits = await queryClient.ensureQueryData(getListHabitsQueryOptions())
-    return { initialHabits, today: new Date() }
+    return { today: new Date() }
   },
 
 
