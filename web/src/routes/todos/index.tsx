@@ -22,11 +22,16 @@ import { cn } from '@/lib/utils'
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 
 export const Route = createFileRoute('/todos/')({
+  loader: async ({ context: { queryClient } }) => {
+    const todos = await queryClient.ensureQueryData(getListTodosQueryOptions())
+    return { todos }
+  },
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const { data } = useQuery(getListTodosQueryOptions())
+  const loaderData = Route.useLoaderData()
+  const { data } = useQuery({ ...getListTodosQueryOptions(), initialData: loaderData.todos })
   const [todos, setTodos] = useState(data ?? [])
 
   useEffect(() => {

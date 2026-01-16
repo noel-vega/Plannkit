@@ -23,9 +23,8 @@ export const Route = createFileRoute('/habits/$id')({
   params: {
     parse: z.object({ id: z.coerce.number() }).parse
   },
-  beforeLoad: async ({ params }) => {
-    const habit = await queryClient.ensureQueryData(getHabitByIdQueryOptions(params))
-    return { habit }
+  loader: async ({ context: { queryClient }, params }) => {
+    return await queryClient.ensureQueryData(getHabitByIdQueryOptions(params))
   },
   component: RouteComponent,
 })
@@ -66,13 +65,13 @@ function DeleteHabitDialog(props: { habitId: number } & PropsWithChildren) {
 
 function RouteComponent() {
   const params = Route.useParams()
-  const rtContext = Route.useRouteContext()
+  const initialHabit = Route.useLoaderData()
 
-  const { data: habit } = useQuery({ ...getHabitByIdQueryOptions(params), initialData: rtContext.habit })
+  const { data: habit } = useQuery({ ...getHabitByIdQueryOptions(params), initialData: initialHabit })
 
   const contributions = new Map(habit.contributions.map(contrib => [getDayOfYear(contrib.date), contrib]));
   return (
-    <div className="px-3 max-w-6xl w-full mx-auto">
+    <div className="px-3 max-w-6xl w-full">
       <div>
         <div className="flex gap-8 items-center py-8">
           <BackButton to="/habits" />
