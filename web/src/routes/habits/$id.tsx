@@ -14,7 +14,7 @@ import { useState } from 'react'
 import { CustomContributionCompletionsDialog } from '@/features/habits/components/HabitCard'
 import { Progress } from '@/components/ui/progress'
 import { cn } from '@/lib/utils'
-import type { Contribution, HabitWithContributions } from '@/features/habits/types'
+import type { Contribution, Habit, HabitWithContributions } from '@/features/habits/types'
 import { DeleteHabitDialog } from '@/features/habits/components/delete-habit-dialog'
 import { useDialog } from '@/hooks'
 
@@ -35,43 +35,49 @@ function RouteComponent() {
 
   const { data: habit } = useQuery({ ...getHabitByIdQueryOptions(routeParams), initialData: initialHabit })
 
-  const deleteDialog = useDialog()
-  const editDialog = useDialog()
 
 
   const contributions = new Map(habit.contributions.map(contrib => [getDayOfYear(contrib.date), contrib]));
 
-  const handleOpenDeleteDialog = () =>
-    deleteDialog.onOpenChange(true)
-
-  const handleOpenEditDialog = () =>
-    editDialog.onOpenChange(true)
 
   return (
     <>
-      <div className="px-3 max-w-6xl w-full">
-        <div>
-          <div className="flex gap-8 items-center py-8">
-            <BackButton to="/habits" />
-            <h2 className="text-2xl font-semibold">{habit.name}</h2>
-            <div className='space-x-2 ml-auto'>
-
-              <Button className="ml-auto" onClick={handleOpenEditDialog}>
-                <EditIcon /> <span>Edit</span>
-              </Button>
-              <Button variant="secondary" size="icon" onClick={handleOpenDeleteDialog}>
-                <Trash2Icon />
-              </Button>
-            </div>
-          </div>
-          <p>{!habit.description ? "No Description" : habit.description}</p>
-        </div>
-
+      <div className="p-8 max-w-6xl w-full">
+        <Header habit={habit} />
+        <p>{!habit.description ? "No Description" : habit.description}</p>
         <div className="py-4 mb-4 overflow-x-auto">
           <ContributionsGrid habit={habit} contributions={contributions} />
         </div>
         <HabitCalendar habit={habit} />
       </div>
+
+    </>
+  )
+}
+
+function Header({ habit }: { habit: HabitWithContributions }) {
+  const deleteDialog = useDialog()
+  const editDialog = useDialog()
+  const handleOpenDeleteDialog = () =>
+    deleteDialog.onOpenChange(true)
+
+  const handleOpenEditDialog = () =>
+    editDialog.onOpenChange(true)
+  return (
+    <>
+      <header className="flex gap-8 items-center mb-8">
+        <BackButton to="/habits" />
+        <h2 className="text-2xl font-semibold">{habit.name}</h2>
+        <div className='space-x-2 ml-auto'>
+
+          <Button className="ml-auto" onClick={handleOpenEditDialog}>
+            <EditIcon /> <span>Edit</span>
+          </Button>
+          <Button variant="secondary" size="icon" onClick={handleOpenDeleteDialog}>
+            <Trash2Icon />
+          </Button>
+        </div>
+      </header>
 
       <EditHabitDialog habit={habit} {...editDialog} />
       <DeleteHabitDialog id={habit.id} {...deleteDialog} />
