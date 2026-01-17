@@ -49,7 +49,7 @@ type MoveTodoParams = {
 }
 export async function moveTodo(params: MoveTodoParams) {
   const { id, ...rest } = params
-  await fetch(`/api/todos/${params}`, {
+  await fetch(`/api/todos/${id}`, {
     method: "PATCH",
     body: JSON.stringify(rest),
     headers: {
