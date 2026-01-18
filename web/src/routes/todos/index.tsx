@@ -1,9 +1,9 @@
 import { Button } from '@/components/ui/button'
-import { getBoard, getBoardQueryOptions, getListTodosQueryOptions, invalidateGetBoardQuery, invalidateListTodosQuery, moveTodo } from '@/features/todos/api'
+import { getBoardQueryOptions, getListTodosQueryOptions, invalidateGetBoardQuery, moveTodo } from '@/features/todos/api'
 import { CreateTodoDialog } from '@/features/todos/components/create-todo-dialog'
 import { TodoCard } from '@/features/todos/components/todo-card'
 import { TodoSchema, TodoStatusSchema, type Todo, type TodoStatus } from '@/features/todos/types'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { PlusIcon } from 'lucide-react'
 import {
@@ -19,10 +19,11 @@ import {
 
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
-import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
+
 import { useDialog } from '@/hooks'
 import { TodoInfoDialog } from '@/features/todos/components/todo-info-dialog'
 import z from 'zod/v3'
+import { generateKeyBetween } from 'fractional-indexing'
 
 export const Route = createFileRoute('/todos/')({
   loader: async ({ context: { queryClient } }) => {
@@ -39,10 +40,79 @@ function RouteComponent() {
   const [activeTodo, setActiveTodo] = useState<Todo | null>(null)
   const [openTodo, setOpenTodo] = useState<Todo | null>(null)
   const todoDialog = useDialog()
+  const queryClient = useQueryClient()
 
   const moveMutation = useMutation({
     mutationFn: moveTodo,
-    onSuccess: () => {
+    onMutate: async (params) => {
+      // Cancel outgoing refetches so they don't overwrite optimistic update
+      await queryClient.cancelQueries({ queryKey: ['board'] })
+
+      // Snapshot the previous value for rollback
+      const previousBoard = queryClient.getQueryData(['board'])
+
+      // Apply optimistic update
+      queryClient.setQueryData(['board'], (oldBoard: typeof board) => {
+        if (!oldBoard) return oldBoard
+
+        // Find the todo by ID across all statuses
+        let todo: Todo | undefined
+        for (const status of Object.keys(oldBoard) as TodoStatus[]) {
+          todo = oldBoard[status]?.find(t => t.id === params.id)
+          if (todo) break
+        }
+
+        if (!todo) return oldBoard
+
+        const newBoard = { ...oldBoard }
+
+        // Remove from old status
+        newBoard[todo.status] = newBoard[todo.status]?.filter(t => t.id !== params.id) ?? []
+
+        // Calculate new position
+        const newPosition = generateKeyBetween(
+          params.afterPosition || null,
+          params.beforePosition || null
+        )
+
+        // Add to new status with updated position
+        const updatedTodo: Todo = {
+          ...todo,
+          status: params.status,
+          position: newPosition
+        }
+
+        // Insert at specific index instead of sorting
+        const targetLane = [...(newBoard[params.status] ?? [])]
+        
+        // Adjust target index if moving within same lane
+        let insertIndex = params.targetIndex ?? targetLane.length
+        if (todo.status === params.status && todo.id !== undefined) {
+          // If moving within same lane, check if we need to adjust the index
+          const originalIndex = oldBoard[todo.status]?.findIndex(t => t.id === todo.id) ?? -1
+          if (originalIndex !== -1 && originalIndex < insertIndex) {
+            // Item was removed from before the target position, so decrease index by 1
+            insertIndex = Math.max(0, insertIndex - 1)
+          }
+        }
+        
+        targetLane.splice(insertIndex, 0, updatedTodo)
+        newBoard[params.status] = targetLane
+
+        return newBoard
+      })
+      
+      // Return context for rollback
+      return { previousBoard }
+    },
+    onError: (_err, _params, context) => {
+      // Rollback on error
+      if (context?.previousBoard) {
+        queryClient.setQueryData(['board'], context.previousBoard)
+      }
+    },
+    onSettled: () => {
+      // Refetch to sync with server state
       invalidateGetBoardQuery()
     }
   })
@@ -55,78 +125,96 @@ function RouteComponent() {
     }),
   );
 
-  const SortableSchema = z.object({
-    containerId: TodoStatusSchema,
-    index: z.number(),
-    items: z.number().array()
-  })
-
-  const SortableTodoSchema = z.object({
+  const DraggableTodoSchema = z.object({
     type: z.literal("todo"),
-    sortable: SortableSchema,
     todo: TodoSchema,
+    index: z.number()
   })
 
-  const DroppableLane = z.object({
+  const DroppableLaneSchema = z.object({
     type: z.literal("lane"),
     status: TodoStatusSchema
   })
 
-  const OverSchema = z.discriminatedUnion("type", [SortableTodoSchema, DroppableLane])
+  const DroppableTodoSchema = z.object({
+    type: z.literal("todo"),
+    todo: TodoSchema,
+    index: z.number(),
+    position: z.enum(["before", "after"])
+  })
+
+  const OverSchema = z.discriminatedUnion("type", [DroppableTodoSchema, DroppableLaneSchema])
 
   function handleDragEnd(event: DragEndEvent) {
+    // Clear overlay immediately when drop happens
     setActiveTodo(null)
+    
     if (!event.over) {
       console.log("no over")
       return
     };
 
-    const active = SortableTodoSchema.parse(event.active.data.current)
+    const active = DraggableTodoSchema.parse(event.active.data.current)
     const over = OverSchema.parse(event.over.data.current)
 
     if (over.type === "todo") {
-      const activeIndex = active.sortable.index
-      const overIndex = over.sortable.index
+      const activeIndex = active.index
+      const overIndex = over.index
       const todos = board[over.todo.status]!
+      const isSameLane = active.todo.status === over.todo.status
 
-      if (overIndex === 0) {
-        moveMutation.mutate({
-          id: active.todo.id,
-          status: over.todo.status,
-          afterPosition: "",
-          beforePosition: over.todo.position
-        })
+      // If dropping on itself in the same position, do nothing
+      if (active.todo.id === over.todo.id) {
+        return
+      }
+
+      let afterPosition = ""
+      let beforePosition = ""
+      let targetIndex = overIndex
+
+      if (over.position === "before") {
+        // Insert BEFORE the over card (top half)
+        afterPosition = overIndex > 0 ? todos[overIndex - 1].position : ""
+        beforePosition = over.todo.position
+        targetIndex = overIndex
+        
+        // Adjust for same-lane removal
+        if (isSameLane && activeIndex < overIndex) {
+          targetIndex = overIndex - 1
+        }
       } else {
-        if (activeIndex < overIndex) {
-          moveMutation.mutate({
-            id: active.todo.id,
-            status: over.todo.status,
-            afterPosition: over.todo.position,
-            beforePosition: todos[overIndex + 1]?.position ?? "",
-          })
-        } else {
-          moveMutation.mutate({
-            id: active.todo.id,
-            status: over.todo.status,
-            afterPosition: todos[overIndex - 1]?.position ?? "",
-            beforePosition: over.todo.position,
-          })
+        // Insert AFTER the over card (bottom half)
+        afterPosition = over.todo.position
+        beforePosition = todos[overIndex + 1]?.position ?? ""
+        targetIndex = overIndex + 1
+        
+        // Adjust for same-lane removal
+        if (isSameLane && activeIndex < overIndex) {
+          targetIndex = overIndex
+        } else if (isSameLane && activeIndex > overIndex) {
+          targetIndex = overIndex + 1
         }
       }
+
+      moveMutation.mutate({
+        id: active.todo.id,
+        status: over.todo.status,
+        afterPosition,
+        beforePosition,
+        targetIndex
+      })
     } else {
+      // Dropping on empty lane
       const todos = board[over.status]
       moveMutation.mutate({
         id: active.todo.id,
         status: over.status,
         afterPosition: !todos ? "" : todos[todos.length - 1].position,
         beforePosition: "",
+        targetIndex: todos?.length ?? 0
       })
 
     }
-  }
-
-  function findTodoById(status: TodoStatus, id: number) {
-    return board[status]?.find(x => x.id === id) ?? null
   }
 
   function handleDragStart({ active }: DragStartEvent) {
@@ -149,16 +237,16 @@ function RouteComponent() {
       >
         <div className="p-8 h-full w-full">
           <div className="flex gap-4">
-            <Lane onTodoClick={handleTodoClick} title="Todo" status={"todo"} todos={board["todo"] ?? []} showDropZone={activeTodo && activeTodo.status !== "todo" ? true : false} />
-            <Lane onTodoClick={handleTodoClick} title="In Progress" status={"in-progress"} todos={board["in-progress"] ?? []} showDropZone={activeTodo && activeTodo.status !== "in-progress" ? true : false} />
-            <Lane onTodoClick={handleTodoClick} title="Done" status={"done"} todos={board["done"] ?? []} showDropZone={activeTodo && activeTodo.status !== "done" ? true : false} />
+            <Lane activeTodo={activeTodo} onTodoClick={handleTodoClick} title="Todo" status={"todo"} todos={board["todo"] ?? []} showDropZone={activeTodo && activeTodo.status !== "todo" ? true : false} />
+            <Lane activeTodo={activeTodo} onTodoClick={handleTodoClick} title="In Progress" status={"in-progress"} todos={board["in-progress"] ?? []} showDropZone={activeTodo && activeTodo.status !== "in-progress" ? true : false} />
+            <Lane activeTodo={activeTodo} onTodoClick={handleTodoClick} title="Done" status={"done"} todos={board["done"] ?? []} showDropZone={activeTodo && activeTodo.status !== "done" ? true : false} />
           </div>
         </div>
-        <DragOverlay>
-          {activeTodo && (
-            <TodoCard index={0} todo={activeTodo} className="shadow-lg hover:cursor-grabbing" isDragging={true} />
-          )}
-        </DragOverlay>
+        {activeTodo && (
+          <DragOverlay>
+            <TodoCard index={0} todo={activeTodo} className="shadow-lg hover:cursor-grabbing" />
+          </DragOverlay>
+        )}
       </DndContext>
 
       <TodoInfoDialog todo={openTodo} onClose={() => setOpenTodo(null)} />
@@ -166,7 +254,7 @@ function RouteComponent() {
   )
 }
 
-type LaneProps = { title: string, status: TodoStatus, todos: Todo[], showDropZone?: boolean, onTodoClick: (todo: Todo) => void }
+type LaneProps = { title: string, status: TodoStatus, todos: Todo[], showDropZone?: boolean, onTodoClick: (todo: Todo) => void, activeTodo: Todo | null }
 
 function Lane(props: LaneProps) {
   const createTodoDialog = useDialog()
@@ -174,11 +262,7 @@ function Lane(props: LaneProps) {
   const handleCreateBtnClick = () => createTodoDialog.onOpenChange(true)
 
   return (
-    <SortableContext
-      id={props.status}
-      items={props.todos.map(t => t.id)}
-      strategy={verticalListSortingStrategy}
-    >
+    <>
       <div ref={setNodeRef} className={cn("w-72 border bg-gray-50 rounded")}>
         <div className="p-4 uppercase text-xs flex gap-2 justify-between">
           {props.title}
@@ -196,11 +280,22 @@ function Lane(props: LaneProps) {
           <>
             <div className="px-1.5 pb-1.5 space-y-1">
               <ul className="space-y-1">
-                {props.todos.map((todo, index) => (
-                  <li key={todo.id}>
-                    <TodoCard index={index} todo={todo} onClick={() => props.onTodoClick(todo)} />
-                  </li>
-                ))}
+                {props.todos.map((todo, index) => {
+                  const activeIndex = props.activeTodo && props.activeTodo.status === props.status 
+                    ? props.todos.findIndex(t => t.id === props.activeTodo?.id)
+                    : -1;
+                  return (
+                    <li key={todo.id}>
+                      <TodoCard 
+                        activeTodo={props.activeTodo} 
+                        activeIndex={activeIndex}
+                        index={index} 
+                        todo={todo} 
+                        onClick={() => props.onTodoClick(todo)} 
+                      />
+                    </li>
+                  );
+                })}
               </ul>
               <div>
                 <Button variant="ghost" className="w-full justify-start hover:bg-neutral-200" onClick={handleCreateBtnClick}>
@@ -213,7 +308,7 @@ function Lane(props: LaneProps) {
         )}
       </div>
       <CreateTodoDialog status={props.status} {...createTodoDialog} />
-    </SortableContext>
+    </>
   )
 }
 

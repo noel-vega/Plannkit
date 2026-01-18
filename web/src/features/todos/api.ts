@@ -67,13 +67,14 @@ type MoveTodoParams = {
   status: TodoStatus;
   afterPosition: string;
   beforePosition: string;
+  targetIndex?: number; // Optional - used for optimistic update only
 }
 export async function moveTodo(params: MoveTodoParams) {
-  const { id, ...rest } = params
+  const { id, targetIndex, ...rest } = params
   console.log("MOVE TODO:", params)
   await fetch(`/api/todos/${id}/position`, {
     method: "PATCH",
-    body: JSON.stringify(rest),
+    body: JSON.stringify(rest), // Don't send targetIndex to server
     headers: {
       "content-type": "application/json"
     }
