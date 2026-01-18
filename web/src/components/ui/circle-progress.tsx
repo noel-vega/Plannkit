@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils';
 import React, { useState } from 'react';
 
 interface CircularProgressProps {
@@ -13,7 +14,7 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
   progress,
   size = 120,
   strokeWidth = 10,
-  primaryColor = '#15803D',
+  primaryColor = 'stroke-green-600',
   secondaryColor = '#e5e7eb',
   showPercentage = true,
 }) => {
@@ -44,11 +45,11 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
           strokeDasharray={circumference}
           strokeDashoffset={offset}
           strokeLinecap="round"
-          className="transition-all duration-300 ease-out"
+          className={cn("transition-all duration-300 ease-out", primaryColor)}
         />
       </svg>
       {showPercentage && (
-        <span className="absolute text-xl font-semibold text-gray-700">
+        <span className="absolute font-semibold text-gray-700">
           {Math.round(progress)}%
         </span>
       )}

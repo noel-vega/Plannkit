@@ -1,17 +1,14 @@
 import { useEffect, useState, type ChangeEvent, type MouseEvent } from "react";
-import { cn } from "@/lib/utils";
 import type { Contribution, Habit, HabitWithContributions } from "@/features/habits/types";
 import { useMutation } from "@tanstack/react-query";
 import { createContribution, invalidateHabitById, invalidateListHabits, updateContributionCompletions } from "@/features/habits/api";
-import { CalendarIcon, CheckIcon, MinusIcon, PlusIcon } from "lucide-react";
+import { CalendarIcon, CheckIcon, DotIcon, FlameIcon, MinusIcon, PlusIcon } from "lucide-react";
 import { format, getDayOfYear } from "date-fns";
-import { Link } from "@tanstack/react-router";
-import { ContributionsGrid } from "./contributions-grid";
 import { Tooltip } from "react-tooltip";
 import { useDialog } from "@/hooks";
 import { useDebouncedCallback } from 'use-debounce';
 import { ButtonGroup } from "@/components/ui/button-group";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CircularProgress } from "@/components/ui/circle-progress";
 import { FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -62,40 +59,32 @@ function HabitContributionButton(props: { habit: Habit, contributions: Map<numbe
   }
 
 
-  if (habit.completionsPerDay > 1) {
-    const progress = !todaysContribution ? 0 : todaysContribution.completions / habit.completionsPerDay * 100
-    const tooltipId = `completions-habit-${habit.id}`
-    const tooltipContent = `${todaysContribution?.completions ?? 0} / ${habit.completionsPerDay}`
-    return (
-      <>
-        <Tooltip id={tooltipId} delayShow={500} />
-        <button
-          data-tooltip-id={tooltipId}
-          data-tooltip-content={tooltipContent}
-          data-tooltip-place="top"
-          className="cursor-pointer relative h-fit grid place-content-center" onClick={handleContribution}>
-          {progress !== 100 ? (
-            <PlusIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2" />
-          ) : (
-            <CheckIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2" />
-          )}
-          <CircularProgress progress={progress} size={50} strokeWidth={5} showPercentage={false} />
-        </button>
-        <CustomContributionCompletionsDialog
-          date={new Date()}
-          habit={props.habit}
-          {...contributionsDialog}
-          contribution={todaysContribution}
-        />
-      </>
-    )
-  }
-  return (<Button onClick={handleContribution} size="lg" variant="outline"
-    className={cn({
-      "bg-primary text-white hover:bg-primary hover:text-white": todaysContribution?.completions === habit.completionsPerDay
-    })}>
-    <CheckIcon className="size-5 stroke-3" />
-  </Button>)
+  const progress = !todaysContribution ? 0 : todaysContribution.completions / habit.completionsPerDay * 100
+  const tooltipId = `completions-habit-${habit.id}`
+  const tooltipContent = `${todaysContribution?.completions ?? 0} / ${habit.completionsPerDay}`
+  return (
+    <>
+      <Tooltip id={tooltipId} delayShow={500} />
+      <button
+        data-tooltip-id={tooltipId}
+        data-tooltip-content={tooltipContent}
+        data-tooltip-place="top"
+        className="cursor-pointer relative h-fit grid place-content-center" onClick={handleContribution}>
+        {progress !== 100 ? (
+          <PlusIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2" />
+        ) : (
+          <CheckIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 stroke-green-600" />
+        )}
+        <CircularProgress progress={progress} size={50} strokeWidth={5} showPercentage={false} />
+      </button>
+      <CustomContributionCompletionsDialog
+        date={new Date()}
+        habit={props.habit}
+        {...contributionsDialog}
+        contribution={todaysContribution}
+      />
+    </>
+  )
 }
 
 export function CustomContributionCompletionsDialog(props: { date: Date; contribution?: Contribution; habit: Habit; } & DialogProps) {
@@ -202,42 +191,36 @@ export function CustomContributionCompletionsDialog(props: { date: Date; contrib
 
 }
 
-function HabitCard(props: { habit: HabitWithContributions }) {
+export function HabitCard(props: { habit: HabitWithContributions }) {
   const { habit } = props
   const contributions = new Map(props.habit.contributions.map(contrib => [getDayOfYear(contrib.date), contrib]));
   return (
-    <Card className="shadow-none hover:shadow">
+    <Card className="">
       <CardHeader className="flex">
         <div className="flex-1 space-y-2">
-          <CardTitle>
-            {habit.name}
+          <CardTitle className="font-normal">
+            <div className="flex gap-4">
+              <div className="size-12 bg-neutral-300 animate-pulse rounded" />
+              <div>
+                <p className="font-bold text-lg">{habit.name}</p>
+                <div className="flex gap-2 items-center text-sm">
+                  <p>3 / 7 this week</p>
+                  <DotIcon />
+                  <div className="flex items-center gap-1.5">
+                    <FlameIcon size={16} />
+                    <p>3 day streak</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </CardTitle>
           <CardDescription>{habit.description}</CardDescription>
         </div>
         <HabitContributionButton habit={habit} contributions={contributions} />
       </CardHeader>
-      <CardContent>
-        <div className="overflow-x-auto">
-          <ContributionsGrid habit={habit} contributions={contributions} />
-        </div>
-      </CardContent>
     </Card>
   )
 }
 
 
-export function HabitCardList(props: { habits: HabitWithContributions[] }) {
-  if (props.habits.length === 0) {
-    return <div>No Habits</div>
-  }
-  return (
-    <ul className="space-y-4">
-      {props.habits.map(habit => <li key={habit.id}>
-        <Link key={habit.id} to="/habits/$id" params={{ id: habit.id }}>
-          <HabitCard habit={habit} />
-        </Link>
-      </li>)}
-    </ul>
-  )
-}
 

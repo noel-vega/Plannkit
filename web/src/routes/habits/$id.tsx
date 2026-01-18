@@ -42,7 +42,7 @@ function RouteComponent() {
 
   return (
     <>
-      <div className="p-8 max-w-6xl w-full">
+      <div className="p-8 max-w-5xl mx-auto w-full">
         <Header habit={habit} />
         <p>{!habit.description ? "No Description" : habit.description}</p>
         <div className="py-4 mb-4 overflow-x-auto">
