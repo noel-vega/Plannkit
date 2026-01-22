@@ -150,6 +150,7 @@ func main() {
 			habitsWithContributions = append(habitsWithContributions, HabitWithContributions{
 				ID:                habit.ID,
 				Name:              habit.Name,
+				Icon:              habit.Icon,
 				Description:       habit.Description,
 				CompletionType:    habit.CompletionType,
 				CompletionsPerDay: habit.CompletionsPerDay,
@@ -180,6 +181,7 @@ func main() {
 		habitWithContributions := HabitWithContributions{
 			ID:                habit.ID,
 			Name:              habit.Name,
+			Icon:              habit.Icon,
 			Description:       habit.Description,
 			CompletionType:    habit.CompletionType,
 			CompletionsPerDay: habit.CompletionsPerDay,

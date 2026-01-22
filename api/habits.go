@@ -9,6 +9,8 @@ import (
 type Habit struct {
 	ID                int       `json:"id" db:"id"`
 	Name              string    `json:"name" db:"name"`
+	Icon              string    `json:"icon" db:"icon"`
+	UnitOfMeasurement string    `json:"unitOfMeasurement" db:"unit_of_measurement"`
 	Description       string    `json:"description" db:"description"`
 	CompletionType    string    `json:"completionType" db:"completion_type"`
 	CompletionsPerDay int       `json:"completionsPerDay" db:"completions_per_day"`
@@ -19,6 +21,8 @@ type Habit struct {
 type HabitWithContributions struct {
 	ID                int            `json:"id"`
 	Name              string         `json:"name"`
+	Icon              string         `json:"icon" db:"icon"`
+	UnitOfMeasurement string         `json:"unitOfMeasurement" db:"unit_of_measurement"`
 	Description       string         `json:"description"`
 	CompletionType    string         `json:"completionType" db:"completion_type"`
 	CompletionsPerDay int            `json:"completionsPerDay" db:"completions_per_day"`
@@ -27,6 +31,8 @@ type HabitWithContributions struct {
 
 type CreateHabitParams struct {
 	Name              string `json:"name" db:"name"`
+	Icon              string `json:"icon" db:"icon"`
+	UnitOfMeasurement string `json:"unitOfMeasurement" db:"unit_of_measurement"`
 	Description       string `json:"description" db:"description"`
 	CompletionType    string `json:"completionType" db:"completion_type"`
 	CompletionsPerDay int    `json:"completionsPerDay" db:"completions_per_day"`
@@ -35,6 +41,8 @@ type CreateHabitParams struct {
 type UpdateHabitParams struct {
 	ID                int    `json:"id" db:"id"`
 	Name              string `json:"name" db:"name"`
+	Icon              string `json:"icon" db:"icon"`
+	UnitOfMeasurement string `json:"unitOfMeasurement" db:"unit_of_measurement"`
 	Description       string `json:"description" db:"description"`
 	CompletionType    string `json:"completionType" db:"completion_type"`
 	CompletionsPerDay int    `json:"completionsPerDay" db:"completions_per_day"`
@@ -61,13 +69,13 @@ func (r *HabitsRepo) List() []Habit {
 
 func (r *HabitsRepo) Create(params CreateHabitParams) (*Habit, error) {
 	query := `
-        INSERT INTO habits (name, description, completion_type, completions_per_day) 
-        VALUES ($1, $2, $3, $4)
+        INSERT INTO habits (name, description, completion_type, completions_per_day, icon) 
+        VALUES ($1, $2, $3, $4, $5)
 				RETURNING *
     `
 	var habit Habit
 
-	err := r.db.Get(&habit, query, params.Name, params.Description, params.CompletionType, params.CompletionsPerDay)
+	err := r.db.Get(&habit, query, params.Name, params.Description, params.CompletionType, params.CompletionsPerDay, params.Icon)
 	if err != nil {
 		return nil, err
 	}

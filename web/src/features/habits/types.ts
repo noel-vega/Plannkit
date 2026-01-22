@@ -1,3 +1,4 @@
+import { IconNameSchema } from "@/components/ui/dynamic-icon";
 import z from "zod/v3";
 
 export const ContributionSchema = z.object({
@@ -10,6 +11,7 @@ export type Contribution = z.infer<typeof ContributionSchema>
 
 export const HabitSchema = z.object({
   id: z.number(),
+  icon: IconNameSchema,
   name: z.string().min(1),
   description: z.string(),
   completionType: z.literal("step").or(z.literal("custom")),

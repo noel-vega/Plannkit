@@ -26,9 +26,7 @@ function RouteComponent() {
     <Page title="Habits">
       <div className="max-w-5xl space-y-6">
         <Header />
-        <div>
-          <WeekdayIndicator habits={habits.data} />
-        </div>
+        <WeekdayIndicator habits={habits.data} />
 
         {habits.data.length === 0 ? (
           <div className="bg-secondary border rounded p-8">
@@ -36,9 +34,7 @@ function RouteComponent() {
           </div>
         ) : (
           <>
-            <div className="">
-              <TodaysProgress habits={habits.data} />
-            </div>
+            <TodaysProgress habits={habits.data} />
 
             <ul className="space-y-4">
               {habits.data.map(habit => <li key={habit.id}>

@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import type { DialogProps } from "@/types";
+import { DynamicIcon } from "@/components/ui/dynamic-icon"
 
 // TODO: the contributions map should not be the day of year
 function HabitContributionButton(props: { habit: Habit, contributions: Map<number, Contribution> }) {
@@ -200,7 +201,7 @@ export function HabitCard(props: { habit: HabitWithContributions }) {
         <div className="flex-1 space-y-2">
           <CardTitle className="font-normal">
             <div className="flex gap-4">
-              <div className="size-12 bg-neutral-300 animate-pulse rounded" />
+              <DynamicIcon className="size-10" name={habit.icon} />
               <div>
                 <p className="font-bold text-lg">{habit.name}</p>
                 <div className="flex gap-2 items-center text-sm">
