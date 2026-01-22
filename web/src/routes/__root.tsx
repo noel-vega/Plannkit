@@ -1,7 +1,7 @@
 import "../index.css"
 import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
-import { AppSidebar } from '@/components/AppSidebar'
+import { AppSidebar } from '@/components/app-sidebar'
 import type { QueryClient } from '@tanstack/react-query'
 import type { PropsWithChildren } from 'react'
 import { useHeaderStore } from '@/hooks/use-header'

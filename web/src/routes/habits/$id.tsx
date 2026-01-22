@@ -1,5 +1,5 @@
 import { createContribution, getHabitByIdQueryOptions, invalidateHabitById, invalidateListHabits, updateContributionCompletions } from '@/features/habits/api'
-import { BackButton } from '@/components/BackButton'
+import { BackButton } from '@/components/back-button'
 import { ContributionsGrid } from '@/features/habits/components/contributions-grid'
 import { EditHabitDialog } from '@/features/habits/components/edit-habit-form'
 import { Button } from '@/components/ui/button'

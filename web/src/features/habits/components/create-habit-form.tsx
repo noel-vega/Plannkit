@@ -12,8 +12,7 @@ import { CompletionsPerDayInput } from "@/components/ui/completions-per-day-inpu
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import type { DialogProps } from "@/types"
-import { Label } from "@/components/ui/label"
-import { ActivityIcon, DumbbellIcon, MonitorIcon } from "lucide-react"
+import { ActivityIcon } from "lucide-react"
 
 type CreateHabitFormProps =
   {

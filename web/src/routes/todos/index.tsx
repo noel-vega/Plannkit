@@ -24,7 +24,7 @@ import { useDialog } from '@/hooks'
 import { TodoInfoDialog } from '@/features/todos/components/todo-info-dialog'
 import z from 'zod/v3'
 import { generateKeyBetween } from 'fractional-indexing'
-import { Page } from '@/components/Page'
+import { Page } from '@/components/page'
 
 export const Route = createFileRoute('/todos/')({
   loader: async ({ context: { queryClient } }) => {
