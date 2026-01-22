@@ -19,6 +19,9 @@ export function getWeekDays() {
 
 
 export function getCompletedHabits(params: { day: Date, habits: HabitWithContributions[] }) {
+  if (params.habits.length === 0) {
+    return { completed: 0, isDone: false, progress: 0 }
+  }
   const completed = params.habits.reduce((prev, curr) => {
     const completionsToday = curr.contributions.find(x => getDayOfYear(x.date) === getDayOfYear(params.day))?.completions ?? 0
     return curr.completionsPerDay === completionsToday ? prev + 1 : prev
