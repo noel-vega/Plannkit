@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { HabitCard } from '@/features/habits/components/habit-card'
-import { CreateHabitDialog } from '@/features/habits/components/create-habit-form'
+import { CreateHabitDialog, CreateHabitDialogDrawer, CreateHabitDrawer } from '@/features/habits/components/create-habit-form'
 import { Button } from '@/components/ui/button'
 import { PlusIcon } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
@@ -37,7 +37,7 @@ function RouteComponent() {
             <PlusIcon /><span>Habit</span>
           </Button>
         </header>
-        <CreateHabitDialog {...createHabitDialog} />
+        <CreateHabitDialogDrawer {...createHabitDialog} />
         <div className="@xl:hidden">
           <WeekdayIndicator habits={habits.data} day={new Date()} around={1} />
         </div>

@@ -12,7 +12,11 @@ import { CompletionsPerDayInput } from "@/components/ui/completions-per-day-inpu
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import type { DialogProps } from "@/types"
-import { ActivityIcon } from "lucide-react"
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer"
+import { useDialog, useMediaQuery } from "@/hooks"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { IconPicker, icons } from "@/components/ui/icon-picker"
+import { DynamicIcon } from "@/components/ui/dynamic-icon"
 
 type CreateHabitFormProps =
   {
@@ -20,6 +24,7 @@ type CreateHabitFormProps =
     onCancel: () => void
   }
 export function CreateHabitForm(props: CreateHabitFormProps) {
+  const { open, onOpenChange } = useDialog()
   const form = useForm({
     resolver: zodResolver(CreateHabitSchema),
     defaultValues: {
@@ -61,10 +66,34 @@ export function CreateHabitForm(props: CreateHabitFormProps) {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="flex flex-col gap-2">
         <div className="flex justify-center items-end">
-          <div className="size-20 border-3 rounded-full flex items-center justify-center bg-secondary">
-            <ActivityIcon size={32} className="text-muted-foreground" />
-          </div>
-          <div className="bg-blue-500 size-4 rounded border border-blue-500" />
+          <Controller control={form.control} name="icon" render={({ field }) => (
+            <Popover modal open={open} onOpenChange={onOpenChange}>
+              <PopoverTrigger asChild>
+                <Button variant="outline" type="button" className="size-20 border-3 rounded-full flex items-center justify-center bg-secondary/50 hover:bg-secondary cursor-pointer">
+                  <DynamicIcon name={field.value} size={20} />
+                </Button>
+              </PopoverTrigger>
+
+              <PopoverContent className="shadow-2xl p-0">
+                <div className="max-h-96 max-w-96 w-full  h-full flex flex-col gap-2">
+                  <div className="font-semibold p-3 border-b">Pick Icon</div>
+                  <div className="overflow-auto flex-1 p-3">
+                    <div className="overflow-auto">
+                      <IconPicker
+                        value={field.value}
+                        onChange={(icon) => {
+                          field.onChange(icon)
+                          onOpenChange(false)
+                        }}
+                        icons={icons}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </PopoverContent>
+
+            </Popover>
+          )} />
         </div>
         <Controller control={form.control} name="name"
           render={({ field, fieldState }) => {
@@ -173,11 +202,38 @@ export function CreateHabitDialog(props: DialogProps) {
     props.onOpenChange(false)
   }
   return (
-    <Dialog {...props}>
+    <Dialog {...props} modal>
       <DialogContent>
         <DialogTitle>Create Habit</DialogTitle>
         <CreateHabitForm onSubmit={closeDialog} onCancel={closeDialog} />
       </DialogContent>
     </Dialog>
   )
+}
+
+export function CreateHabitDrawer(props: DialogProps) {
+  const closeDrawer = () => {
+    props.onOpenChange(false)
+  }
+  return (
+    <Drawer  {...props} modal>
+      <DrawerContent className="px-3 pb-3 min-h-[90%]">
+        <DrawerHeader>
+          <DrawerTitle>Create Habit</DrawerTitle>
+        </DrawerHeader>
+        <div className="overflow-scroll">
+          <CreateHabitForm onSubmit={closeDrawer} onCancel={closeDrawer} />
+        </div>
+      </DrawerContent>
+
+    </Drawer>
+  )
+}
+
+export function CreateHabitDialogDrawer(props: DialogProps) {
+  const isDesktop = useMediaQuery('(min-width: 768px)')
+  if (isDesktop) {
+    return <CreateHabitDialog {...props} />
+  }
+  return <CreateHabitDrawer {...props} />
 }
