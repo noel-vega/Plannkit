@@ -211,16 +211,16 @@ export function HabitCard(props: { habit: HabitWithContributions }) {
         </CardTitle>
         <HabitContributionButton habit={habit} contributions={contributions} />
       </CardHeader>
-      <CardFooter>
-        <div className="flex gap-2 items-center text-sm">
-          <p>3 / 7 this week</p>
-          <DotIcon />
-          <div className="flex items-center gap-1.5">
-            <FlameIcon size={16} />
-            <p>3 day streak</p>
-          </div>
-        </div>
-      </CardFooter>
+      {/* <CardFooter> */}
+      {/*   <div className="flex gap-2 items-center text-sm"> */}
+      {/*     <p>3 / 7 this week</p> */}
+      {/*     <DotIcon /> */}
+      {/*     <div className="flex items-center gap-1.5"> */}
+      {/*       <FlameIcon size={16} /> */}
+      {/*       <p>3 day streak</p> */}
+      {/*     </div> */}
+      {/*   </div> */}
+      {/* </CardFooter> */}
     </Card>
   )
 }

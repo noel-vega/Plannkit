@@ -217,12 +217,14 @@ export function CreateHabitDrawer(props: DialogProps) {
   }
   return (
     <Drawer  {...props} modal>
-      <DrawerContent className="px-3 pb-3 min-h-[90%]">
-        <DrawerHeader>
-          <DrawerTitle>Create Habit</DrawerTitle>
-        </DrawerHeader>
-        <div className="overflow-scroll">
-          <CreateHabitForm onSubmit={closeDrawer} onCancel={closeDrawer} />
+      <DrawerContent className="pb-3 min-h-[90%]">
+        <div className="overflow-scroll px-3">
+          <DrawerHeader>
+            <DrawerTitle>Create Habit</DrawerTitle>
+          </DrawerHeader>
+          <div className="overflow-scroll">
+            <CreateHabitForm onSubmit={closeDrawer} onCancel={closeDrawer} />
+          </div>
         </div>
       </DrawerContent>
 

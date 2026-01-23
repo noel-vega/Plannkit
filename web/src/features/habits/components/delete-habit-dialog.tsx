@@ -24,7 +24,7 @@ export function DeleteHabitDialog(props: Props) {
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Delete Habit</AlertDialogTitle>
-          <AlertDialogDescription>Permenantley delete this habit</AlertDialogDescription>
+          <AlertDialogDescription>Are you sure you want to permanently delete this habit?</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
