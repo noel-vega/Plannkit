@@ -33,7 +33,6 @@ func main() {
 	}
 	Init()
 
-	habitHandler := habit.NewHandler(db)
 	todosHandler := todos.NewHandler(db)
 
 	// Create a Gin router with default middleware (logger and recovery)
@@ -47,16 +46,7 @@ func main() {
 			"message": "pong",
 		})
 	})
-
-	// habit routes
-	r.GET("/habits", habitHandler.ListHabits)
-	r.POST("/habits", habitHandler.CreateHabit)
-	r.GET("/habits/:id", habitHandler.GetHabitByID)
-	r.PATCH("/habits/:id", habitHandler.UpdateHabit)
-	r.DELETE("/habits/:id", habitHandler.DeleteHabit)
-	r.POST("/habits/:id/contributions", habitHandler.CreateHabitContribution)
-	r.DELETE("/habits/contributions/:id", habitHandler.DeleteHabitContribution)
-	r.PATCH("/habits/contributions/:id", habitHandler.UpdateHabitContribution)
+	habit.AttachRoutes(r, db)
 
 	r.GET("/todos", todosHandler.ListTodos)
 	r.GET("/todos/board", todosHandler.GetTodosBoard)
