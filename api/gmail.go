@@ -20,7 +20,7 @@ var (
 	oauthConfig  *oauth2.Config
 )
 
-func Init() {
+func InitGoogleOAuth() {
 	oauthConfig = &oauth2.Config{
 		ClientID:     "",
 		ClientSecret: "",
