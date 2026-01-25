@@ -65,20 +65,7 @@ func main() {
 	r.GET("/todos/board", todosHandler.GetTodosBoard)
 	r.POST("/todos", todosHandler.CreateTodo)
 	r.PATCH("/todos/:id/position", todosHandler.UpdateTodoPosition)
-
-	r.DELETE("/todos/:id", func(c *gin.Context) {
-		id, err := strconv.Atoi(c.Param("id"))
-		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
-			return
-		}
-
-		err = repo.Todos.Delete(id)
-		if err != nil {
-			c.AbortWithError(http.StatusInternalServerError, err)
-			return
-		}
-	})
+	r.DELETE("/todos/:id", todosHandler.DeleteTodo)
 
 	r.GET("/todos/:id", func(c *gin.Context) {
 		id, err := strconv.Atoi(c.Param("id"))

@@ -79,3 +79,17 @@ func (handler *Handler) UpdateTodoPosition(c *gin.Context) {
 		return
 	}
 }
+
+func (handler *Handler) DeleteTodo(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	err = handler.TodosRepo.Delete(id)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+}
