@@ -2,6 +2,7 @@ package todos
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
@@ -55,6 +56,24 @@ func (handler *Handler) CreateTodo(c *gin.Context) {
 	}
 
 	err = handler.TodosRepo.Create(todo)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+}
+
+func (handler *Handler) UpdateTodoPosition(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+	params := UpdatePositionParams{
+		ID: id,
+	}
+	c.Bind(&params)
+
+	err = handler.TodosRepo.UpdatePosition(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
