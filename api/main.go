@@ -42,31 +42,8 @@ func main() {
 	r := gin.Default()
 	r.Use(cors.Default())
 
-	r.GET("/habits", func(c *gin.Context) {
-		// Return JSON response
-		habitsWithContributions := []habit.HabitWithContributions{}
-		habits := repo.Habits.List()
-		for _, h := range habits {
-			contributions, err := repo.Contributions.List(h.ID)
-			if err != nil {
-				c.AbortWithError(http.StatusInternalServerError, err)
-				return
-			}
-			habitsWithContributions = append(habitsWithContributions, habit.HabitWithContributions{
-				ID:                h.ID,
-				Name:              h.Name,
-				Icon:              h.Icon,
-				Description:       h.Description,
-				CompletionType:    h.CompletionType,
-				CompletionsPerDay: h.CompletionsPerDay,
-				Contributions:     contributions,
-			})
-		}
-		c.JSON(http.StatusOK, habitsWithContributions)
-	})
-
+	r.GET("/habits", habitHandler.ListHabits)
 	r.GET("/habits/:id", habitHandler.GetHabitByID)
-
 	r.PATCH("/habits/:id", func(c *gin.Context) {
 		id, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
