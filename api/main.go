@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -44,48 +43,11 @@ func main() {
 
 	r.GET("/habits", habitHandler.ListHabits)
 	r.POST("/habits", habitHandler.CreateHabit)
-
 	r.GET("/habits/:id", habitHandler.GetHabitByID)
 	r.PATCH("/habits/:id", habitHandler.UpdateHabit)
 	r.DELETE("/habits/:id", habitHandler.DeleteHabit)
-
-	r.POST("/habits/:habit_id/contributions", func(c *gin.Context) {
-		habitID, err := strconv.Atoi(c.Param("habit_id"))
-		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
-			return
-		}
-
-		params := habit.CreateContributionParams{
-			HabitID: habitID,
-		}
-		c.Bind(&params)
-
-		if err := repo.Contributions.Create(params); err != nil {
-			c.AbortWithError(http.StatusInternalServerError, err)
-		}
-	})
-
-	r.PATCH("/habits/contributions/:id/completions", func(c *gin.Context) {
-		fmt.Println("Update Completions")
-		contributionID, err := strconv.Atoi(c.Param("id"))
-		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
-			return
-		}
-
-		params := habit.UpdateCompletionsParams{
-			ID: contributionID,
-		}
-		c.Bind(&params)
-
-		fmt.Printf("%+v", params)
-
-		if err := repo.Contributions.UpdateCompletions(params); err != nil {
-			c.AbortWithError(http.StatusInternalServerError, err)
-			return
-		}
-	})
+	r.POST("/habits/:id/contributions", habitHandler.CreateHabitContribution)
+	r.PATCH("/habits/contributions/:id/completions", habitHandler.UpdateHabitContribution)
 
 	r.DELETE("/contributions/:id", func(c *gin.Context) {
 		contributionID, err := strconv.Atoi(c.Param("id"))

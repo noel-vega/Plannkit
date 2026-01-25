@@ -122,3 +122,38 @@ func (handler *Handler) DeleteHabit(c *gin.Context) {
 		return
 	}
 }
+
+func (handler *Handler) CreateHabitContribution(c *gin.Context) {
+	habitID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	params := CreateContributionParams{
+		HabitID: habitID,
+	}
+	c.Bind(&params)
+
+	if err := handler.ContribRepo.Create(params); err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+	}
+}
+
+func (handler *Handler) UpdateHabitContribution(c *gin.Context) {
+	contributionID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	params := UpdateCompletionsParams{
+		ID: contributionID,
+	}
+	c.Bind(&params)
+
+	if err := handler.ContribRepo.UpdateCompletions(params); err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+}
