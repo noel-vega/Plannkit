@@ -1,4 +1,5 @@
-package main
+// Package todos
+package todos
 
 import (
 	"database/sql"
@@ -23,7 +24,7 @@ type TodosRepo struct {
 	DB *sqlx.DB
 }
 
-func newTodosRepo(db *sqlx.DB) *TodosRepo {
+func NewTodosRepo(db *sqlx.DB) *TodosRepo {
 	return &TodosRepo{
 		DB: db,
 	}

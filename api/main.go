@@ -10,19 +10,20 @@ import (
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"github.com/noel-vega/habits/api/internal/habit"
+	"github.com/noel-vega/habits/api/internal/todos"
 )
 
 type PostgresRepository struct {
 	Habits        *habit.HabitRepo
 	Contributions *habit.ContributionsRepo
-	Todos         *TodosRepo
+	Todos         *todos.TodosRepo
 }
 
 func NewPostgresRepository(db *sqlx.DB) *PostgresRepository {
 	return &PostgresRepository{
 		Habits:        habit.NewHabitRepo(db),
 		Contributions: habit.NewContributionsRepo(db),
-		Todos:         newTodosRepo(db),
+		Todos:         todos.NewTodosRepo(db),
 	}
 }
 
@@ -73,27 +74,27 @@ func main() {
 	})
 
 	r.GET("/todos/board", func(c *gin.Context) {
-		todos, err := repo.Todos.List()
+		t, err := repo.Todos.List()
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
 
-		board := map[string][]Todo{}
+		board := map[string][]todos.Todo{}
 
-		for _, todo := range todos {
-			todos, exists := board[todo.Status]
+		for _, todo := range t {
+			statusTodos, exists := board[todo.Status]
 			if !exists {
-				board[todo.Status] = []Todo{todo}
+				board[todo.Status] = []todos.Todo{todo}
 			} else {
-				board[todo.Status] = append(todos, todo)
+				board[todo.Status] = append(statusTodos, todo)
 			}
 		}
 		c.JSON(http.StatusOK, board)
 	})
 
 	r.POST("/todos", func(c *gin.Context) {
-		var todo CreateTodoParams
+		var todo todos.CreateTodoParams
 		err := c.Bind(&todo)
 		if err != nil {
 			c.AbortWithError(http.StatusBadRequest, err)
@@ -113,7 +114,7 @@ func main() {
 			c.AbortWithError(http.StatusBadRequest, err)
 			return
 		}
-		params := UpdatePositionParams{
+		params := todos.UpdatePositionParams{
 			ID: id,
 		}
 		c.Bind(&params)
