@@ -41,6 +41,7 @@ func main() {
 	r := gin.Default()
 	r.Use(cors.Default())
 
+	// habit routes
 	r.GET("/habits", habitHandler.ListHabits)
 	r.POST("/habits", habitHandler.CreateHabit)
 	r.GET("/habits/:id", habitHandler.GetHabitByID)
@@ -49,12 +50,6 @@ func main() {
 	r.POST("/habits/:id/contributions", habitHandler.CreateHabitContribution)
 	r.DELETE("/habits/contributions/:id", habitHandler.DeleteHabitContribution)
 	r.PATCH("/habits/contributions/:id", habitHandler.UpdateHabitContribution)
-
-	// Start server on port 8080 (default)
-	// Server will listen on 0.0.0.0:8080 (localhost:8080 on Windows)
-	if err := r.Run(); err != nil {
-		log.Fatalf("failed to run server: %v", err)
-	}
 
 	r.GET("/auth/google/login", HandleLogin)
 	r.GET("/auth/google/callback", HandleCallback)
@@ -158,4 +153,10 @@ func main() {
 
 		c.JSON(http.StatusOK, todo)
 	})
+
+	// Start server on port 8080 (default)
+	// Server will listen on 0.0.0.0:8080 (localhost:8080 on Windows)
+	if err := r.Run(); err != nil {
+		log.Fatalf("failed to run server: %v", err)
+	}
 }
