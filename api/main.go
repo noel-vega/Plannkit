@@ -66,26 +66,7 @@ func main() {
 	})
 
 	r.GET("/todos", todosHandler.ListTodos)
-
-	r.GET("/todos/board", func(c *gin.Context) {
-		t, err := repo.Todos.List()
-		if err != nil {
-			c.AbortWithError(http.StatusInternalServerError, err)
-			return
-		}
-
-		board := map[string][]todos.Todo{}
-
-		for _, todo := range t {
-			statusTodos, exists := board[todo.Status]
-			if !exists {
-				board[todo.Status] = []todos.Todo{todo}
-			} else {
-				board[todo.Status] = append(statusTodos, todo)
-			}
-		}
-		c.JSON(http.StatusOK, board)
-	})
+	r.GET("/todos/board", todosHandler.GetTodosBoard)
 
 	r.POST("/todos", func(c *gin.Context) {
 		var todo todos.CreateTodoParams
