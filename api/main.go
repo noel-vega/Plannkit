@@ -44,20 +44,7 @@ func main() {
 
 	r.GET("/habits", habitHandler.ListHabits)
 	r.GET("/habits/:id", habitHandler.GetHabitByID)
-	r.PATCH("/habits/:id", func(c *gin.Context) {
-		id, err := strconv.Atoi(c.Param("id"))
-		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
-			return
-		}
-
-		params := habit.UpdateHabitParams{ID: id}
-		c.Bind(&params)
-		err = repo.Habits.Update(params)
-		if err != nil {
-			c.AbortWithError(http.StatusInternalServerError, err)
-		}
-	})
+	r.PATCH("/habits/:id", habitHandler.UpdateHabit)
 
 	r.POST("/habits", func(c *gin.Context) {
 		var data habit.CreateHabitParams

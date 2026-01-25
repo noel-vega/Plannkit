@@ -72,3 +72,18 @@ func (handler *Handler) ListHabits(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, habitsWithContributions)
 }
+
+func (handler *Handler) UpdateHabit(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	params := UpdateHabitParams{ID: id}
+	c.Bind(&params)
+	err = handler.HabitRepo.Update(params)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+	}
+}
