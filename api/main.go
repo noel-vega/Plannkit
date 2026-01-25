@@ -67,21 +67,7 @@ func main() {
 
 	r.GET("/todos", todosHandler.ListTodos)
 	r.GET("/todos/board", todosHandler.GetTodosBoard)
-
-	r.POST("/todos", func(c *gin.Context) {
-		var todo todos.CreateTodoParams
-		err := c.Bind(&todo)
-		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
-			return
-		}
-
-		err = repo.Todos.Create(todo)
-		if err != nil {
-			c.AbortWithError(http.StatusInternalServerError, err)
-			return
-		}
-	})
+	r.POST("/todos", todosHandler.CreateTodo)
 
 	r.PATCH("/todos/:id/position", func(c *gin.Context) {
 		id, err := strconv.Atoi(c.Param("id"))

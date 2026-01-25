@@ -45,3 +45,18 @@ func (handler *Handler) GetTodosBoard(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, board)
 }
+
+func (handler *Handler) CreateTodo(c *gin.Context) {
+	var todo CreateTodoParams
+	err := c.Bind(&todo)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	err = handler.TodosRepo.Create(todo)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+}
