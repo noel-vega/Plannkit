@@ -43,23 +43,11 @@ func main() {
 	r.Use(cors.Default())
 
 	r.GET("/habits", habitHandler.ListHabits)
-	r.GET("/habits/:id", habitHandler.GetHabitByID)
 	r.POST("/habits", habitHandler.CreateHabit)
+
+	r.GET("/habits/:id", habitHandler.GetHabitByID)
 	r.PATCH("/habits/:id", habitHandler.UpdateHabit)
-
-	r.DELETE("/habits/:habit_id", func(c *gin.Context) {
-		habitID, err := strconv.Atoi(c.Param("habit_id"))
-		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
-			return
-		}
-
-		err = repo.Habits.Delete(habitID)
-		if err != nil {
-			c.AbortWithError(http.StatusInternalServerError, err)
-			return
-		}
-	})
+	r.DELETE("/habits/:id", habitHandler.DeleteHabit)
 
 	r.POST("/habits/:habit_id/contributions", func(c *gin.Context) {
 		habitID, err := strconv.Atoi(c.Param("habit_id"))
