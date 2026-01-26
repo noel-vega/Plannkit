@@ -9,9 +9,9 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/noel-vega/habits/api/internal/auth"
 	"github.com/noel-vega/habits/api/internal/habit"
-	"github.com/noel-vega/habits/api/internal/middlewares"
 	"github.com/noel-vega/habits/api/internal/todos"
 	"github.com/noel-vega/habits/api/internal/users"
+	"github.com/noel-vega/habits/api/middlewares"
 )
 
 func main() {

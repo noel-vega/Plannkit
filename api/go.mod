@@ -7,6 +7,8 @@ require (
 	github.com/gin-gonic/gin v1.11.0
 )
 
+require github.com/golang-jwt/jwt/v5 v5.3.0 // indirect
+
 require (
 	cloud.google.com/go/auth v0.18.1 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
