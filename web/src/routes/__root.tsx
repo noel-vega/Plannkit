@@ -3,7 +3,9 @@ import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
 import type { QueryClient } from '@tanstack/react-query'
 
 const RootLayout = () => (
-  <Outlet />
+  <div className="h-dvh">
+    <Outlet />
+  </div>
 )
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
