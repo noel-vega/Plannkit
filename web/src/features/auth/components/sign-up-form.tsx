@@ -39,9 +39,9 @@ export function SignUpForm() {
     })(e)
   }
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6 @container/form">
       <FieldGroup>
-        <FieldSet className="flex flex-row">
+        <FieldSet className="flex @sm:flex-row flex-col">
           <Controller control={form.control} name="firstName"
             render={({ field, fieldState }) => {
               return (
@@ -137,7 +137,7 @@ export function SignUpForm() {
       </FieldGroup>
 
       <div>
-        <Button type="submit">Sign Up</Button>
+        <Button type="submit" className="w-full" disabled={!form.formState.isValid}>Sign Up</Button>
       </div>
     </form>
   )
