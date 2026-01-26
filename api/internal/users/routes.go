@@ -5,7 +5,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func AttachRoutes(r *gin.Engine, db *sqlx.DB) {
+func AttachRoutes(r *gin.RouterGroup, db *sqlx.DB) {
 	h := NewHandler(db)
 
 	r.GET("/users", h.ListUsers)

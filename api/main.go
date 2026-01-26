@@ -9,6 +9,7 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/noel-vega/habits/api/internal/auth"
 	"github.com/noel-vega/habits/api/internal/habit"
+	"github.com/noel-vega/habits/api/internal/middlewares"
 	"github.com/noel-vega/habits/api/internal/todos"
 	"github.com/noel-vega/habits/api/internal/users"
 )
@@ -24,11 +25,13 @@ func main() {
 	// Create a Gin router with default middleware (logger and recovery)
 	router := gin.Default()
 	router.Use(cors.Default())
-
 	auth.AttachRoutes(router, db)
-	users.AttachRoutes(router, db)
-	habit.AttachRoutes(router, db)
-	todos.AttachRoutes(router, db)
+
+	protected := router.Group("/")
+	protected.Use(middlewares.Guard)
+	users.AttachRoutes(protected, db)
+	habit.AttachRoutes(protected, db)
+	todos.AttachRoutes(protected, db)
 
 	router.GET("/auth/google/login", HandleLogin)
 	router.GET("/auth/google/callback", HandleCallback)
