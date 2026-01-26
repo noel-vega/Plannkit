@@ -27,7 +27,7 @@ func (handler *Handler) GetHabitByID(c *gin.Context) {
 		return
 	}
 
-	h, err := handler.HabitRepo.GetByID(id)
+	h, err := handler.HabitRepo.GetByHabitID(id)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -53,7 +53,7 @@ func (handler *Handler) GetHabitByID(c *gin.Context) {
 func (handler *Handler) ListHabits(c *gin.Context) {
 	// Return JSON response
 	habitsWithContributions := []HabitWithContributions{}
-	habits := handler.HabitRepo.List()
+	habits := handler.HabitRepo.ListHabits()
 	for _, h := range habits {
 		contributions, err := handler.ContribRepo.List(h.ID)
 		if err != nil {
@@ -82,7 +82,7 @@ func (handler *Handler) UpdateHabit(c *gin.Context) {
 
 	params := UpdateHabitParams{ID: id}
 	c.Bind(&params)
-	err = handler.HabitRepo.Update(params)
+	err = handler.HabitRepo.UpdateHabit(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 	}
@@ -92,7 +92,7 @@ func (handler *Handler) CreateHabit(c *gin.Context) {
 	var data CreateHabitParams
 	c.Bind(&data)
 
-	h, err := handler.HabitRepo.Create(data)
+	h, err := handler.HabitRepo.CreateHabit(data)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -116,7 +116,7 @@ func (handler *Handler) DeleteHabit(c *gin.Context) {
 		return
 	}
 
-	err = handler.HabitRepo.Delete(habitID)
+	err = handler.HabitRepo.DeleteHabit(habitID)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
