@@ -2,9 +2,11 @@ import { Button } from "@/components/ui/button"
 import { Field, FieldError, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useMutation } from "@tanstack/react-query"
 import type { FormEvent } from "react"
 import { Controller, useForm } from "react-hook-form"
 import z from "zod/v3"
+import { signUp } from "../api"
 
 const SignUpDataSchema = z.object({
   firstName: z.string().min(1, { message: "Required" }),
@@ -32,14 +34,23 @@ export function SignUpForm() {
     }
   })
 
+  const signUpMutation = useMutation({
+    mutationFn: signUp,
+  })
+
   const handleSubmit = (e: FormEvent) => {
-    console.log("FORM SUBMIT:")
     form.handleSubmit(data => {
-      console.log(data)
+      signUpMutation.mutate(data)
     })(e)
   }
   return (
     <form onSubmit={handleSubmit} className="space-y-6 @container/form">
+      {signUpMutation.error && (
+        <div className="p-4 bg-red-100/50 border border-destructive rounded-lg font-medium text-red-700">
+          * {signUpMutation.error.message}
+        </div>
+      )}
+
       <FieldGroup>
         <FieldSet className="flex @sm:flex-row flex-col">
           <Controller control={form.control} name="firstName"
