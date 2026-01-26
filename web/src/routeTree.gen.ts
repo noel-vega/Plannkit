@@ -16,6 +16,7 @@ import { Route as FinancesIndexRouteImport } from './routes/finances/index'
 import { Route as FilesIndexRouteImport } from './routes/files/index'
 import { Route as EmailIndexRouteImport } from './routes/email/index'
 import { Route as HabitsIdRouteImport } from './routes/habits/$id'
+import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -52,9 +53,15 @@ const HabitsIdRoute = HabitsIdRouteImport.update({
   path: '/habits/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthSignupRoute = AuthSignupRouteImport.update({
+  id: '/auth/signup',
+  path: '/auth/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth/signup': typeof AuthSignupRoute
   '/habits/$id': typeof HabitsIdRoute
   '/email': typeof EmailIndexRoute
   '/files': typeof FilesIndexRoute
@@ -64,6 +71,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth/signup': typeof AuthSignupRoute
   '/habits/$id': typeof HabitsIdRoute
   '/email': typeof EmailIndexRoute
   '/files': typeof FilesIndexRoute
@@ -74,6 +82,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth/signup': typeof AuthSignupRoute
   '/habits/$id': typeof HabitsIdRoute
   '/email/': typeof EmailIndexRoute
   '/files/': typeof FilesIndexRoute
@@ -85,6 +94,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth/signup'
     | '/habits/$id'
     | '/email'
     | '/files'
@@ -94,6 +104,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/auth/signup'
     | '/habits/$id'
     | '/email'
     | '/files'
@@ -103,6 +114,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/auth/signup'
     | '/habits/$id'
     | '/email/'
     | '/files/'
@@ -113,6 +125,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthSignupRoute: typeof AuthSignupRoute
   HabitsIdRoute: typeof HabitsIdRoute
   EmailIndexRoute: typeof EmailIndexRoute
   FilesIndexRoute: typeof FilesIndexRoute
@@ -172,11 +185,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HabitsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/signup': {
+      id: '/auth/signup'
+      path: '/auth/signup'
+      fullPath: '/auth/signup'
+      preLoaderRoute: typeof AuthSignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthSignupRoute: AuthSignupRoute,
   HabitsIdRoute: HabitsIdRoute,
   EmailIndexRoute: EmailIndexRoute,
   FilesIndexRoute: FilesIndexRoute,
