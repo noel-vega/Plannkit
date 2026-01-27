@@ -32,6 +32,11 @@ const SignInParamsSchema = z.object({
 })
 
 type SignInParams = z.infer<typeof SignInParamsSchema>
+
+const SignInResponseSchema = z.object({
+  token: z.string()
+})
+
 export async function signIn(params: SignInParams) {
   const response = await fetch("/api/auth/signin", {
     method: "POST",
@@ -43,4 +48,6 @@ export async function signIn(params: SignInParams) {
   if (!response.ok) {
     throw new Error("Failed to signup")
   }
+
+  return SignInResponseSchema.parse(await response.json())
 }
