@@ -21,11 +21,11 @@ func NewAuthService(db *sqlx.DB) *AuthService {
 
 func (s *AuthService) GenerateToken(userID int) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"userID": userID,
+		"user_id": userID,
 	})
 
 	// TODO: secret key
-	tokenStr, err := token.SignedString([]byte("sample"))
+	tokenStr, err := token.SignedString([]byte("secret"))
 	if err != nil {
 		return "", err
 	}
