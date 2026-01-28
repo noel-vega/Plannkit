@@ -34,7 +34,7 @@ const SignInParamsSchema = z.object({
 type SignInParams = z.infer<typeof SignInParamsSchema>
 
 const SignInResponseSchema = z.object({
-  token: z.string()
+  accessToken: z.string()
 })
 
 export async function signIn(params: SignInParams) {

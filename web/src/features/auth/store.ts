@@ -1,5 +1,5 @@
 import { create } from 'zustand'
 
 export const useAuth = create(() => ({
-  token: ""
+  accessToken: ""
 }))

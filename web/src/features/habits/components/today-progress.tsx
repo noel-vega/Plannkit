@@ -20,6 +20,7 @@ export function TodaysProgress(props: { habits: HabitWithContributions[] }) {
             <p className="font-semibold text-lg">{completedHabits} of {props.habits.length} habits completed</p>
           </div>
         </div>
+
         <CircularProgress progress={progress} size={65} strokeWidth={5} showPercentage />
       </CardContent>
     </Card>

@@ -17,6 +17,7 @@ import { cn } from '@/lib/utils'
 import type { Contribution, HabitWithContributions } from '@/features/habits/types'
 import { DeleteHabitDialog } from '@/features/habits/components/delete-habit-dialog'
 import { useDialog } from '@/hooks'
+import { Page } from '@/components/page'
 
 export const Route = createFileRoute('/app/habits/$id')({
   params: {
@@ -41,8 +42,8 @@ function RouteComponent() {
 
 
   return (
-    <>
-      <div className="p-8 max-w-5xl mx-auto w-full">
+    <Page title="Habits">
+      <div className="max-w-5xl">
         <Header habit={habit} />
         <p>{!habit.description ? "No Description" : habit.description}</p>
         <div className="py-4 mb-4 overflow-x-auto">
@@ -50,8 +51,7 @@ function RouteComponent() {
         </div>
         <HabitCalendar habit={habit} />
       </div>
-
-    </>
+    </Page>
   )
 }
 
@@ -66,7 +66,7 @@ function Header({ habit }: { habit: HabitWithContributions }) {
   return (
     <>
       <header className="flex gap-8 items-center mb-8">
-        <BackButton to="/habits" />
+        <BackButton to="/app/habits" />
         <h2 className="text-2xl font-semibold">{habit.name}</h2>
         <div className='space-x-2 ml-auto'>
 

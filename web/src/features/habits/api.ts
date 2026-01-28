@@ -4,11 +4,11 @@ import { queryClient } from "@/lib/react-query"
 import { useAuth } from "../auth/store"
 
 export async function getHabitById(params: { id: number }) {
-  const { token } = useAuth.getState()
+  const { accessToken } = useAuth.getState()
   const res = await fetch(`/api/habits/${params.id}`, {
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
+      "Authorization": `Bearer ${accessToken}`
     }
   })
   const data = await res.json()
@@ -27,11 +27,11 @@ export async function invalidateHabitById(id: number) {
 }
 
 export async function listHabits() {
-  const { token } = useAuth.getState()
+  const { accessToken } = useAuth.getState()
   const res = await fetch("/api/habits", {
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
+      "Authorization": `Bearer ${accessToken}`
     }
   })
   const data = await res.json()
@@ -50,14 +50,14 @@ export async function invalidateListHabits() {
 }
 
 export async function createHabit(params: CreateHabit) {
-  const { token } = useAuth.getState()
+  const { accessToken } = useAuth.getState()
   const res = await fetch("/api/habits", {
     method: "POST",
     body: JSON.stringify(params),
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
+      "Authorization": `Bearer ${accessToken}`
     }
   })
   const data = await res.json()
@@ -66,24 +66,24 @@ export async function createHabit(params: CreateHabit) {
 
 
 export async function updateHabit(params: Habit) {
-  const { token } = useAuth.getState()
+  const { accessToken } = useAuth.getState()
   const { id, ...rest } = params
   await fetch(`/api/habits/${id}`, {
     method: "PATCH",
     body: JSON.stringify(rest),
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
+      "Authorization": `Bearer ${accessToken}`
     }
   })
 }
 
 export async function deleteHabit(params: { id: number }) {
-  const { token } = useAuth.getState()
+  const { accessToken } = useAuth.getState()
   await fetch(`/api/habits/${params.id}`, {
     method: "DELETE",
     headers: {
-      "Authorization": `Bearer ${token}`
+      "Authorization": `Bearer ${accessToken}`
     }
   })
 
@@ -112,36 +112,36 @@ export function useDeleteHabit() {
 }
 
 export async function createContribution(params: { habitId: number, date: Date, completions: number }) {
-  const { token } = useAuth.getState()
+  const { accessToken } = useAuth.getState()
   await fetch(`/api/habits/${params.habitId}/contributions`, {
     method: "POST",
     body: JSON.stringify({ date: params.date.toISOString(), completions: params.completions }),
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
+      "Authorization": `Bearer ${accessToken}`
     }
   })
 }
 
 export async function deleteContribution(params: { id: number }) {
-  const { token } = useAuth.getState()
+  const { accessToken } = useAuth.getState()
   await fetch(`/api/contributions/${params.id}`, {
     method: "DELETE",
     headers: {
-      "Authorization": `Bearer ${token}`
+      "Authorization": `Bearer ${accessToken}`
     }
   })
 }
 
 export async function updateContributionCompletions(params: { contributionId: number, completions: number }) {
   const { contributionId, completions } = params
-  const { token } = useAuth.getState()
-  await fetch(`/api/habits/contributions/${contributionId}/completions`, {
+  const { accessToken } = useAuth.getState()
+  await fetch(`/api/habits/contributions/${contributionId}`, {
     method: "PATCH",
     body: JSON.stringify({ completions }),
     headers: {
       "content-type": "application/json",
-      "Authorization": `Bearer ${token}`
+      "Authorization": `Bearer ${accessToken}`
     }
   })
 }

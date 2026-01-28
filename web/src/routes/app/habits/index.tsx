@@ -56,6 +56,13 @@ function RouteComponent() {
         ) : (
           <>
             <TodaysProgress habits={habits.data} />
+            <div className="text-lg font-medium flex items-center">
+              <div className="h-px w-[18px] bg-border" />
+              <p className="px-2">
+                My Daily Habits
+              </p>
+              <div className="h-px w-full flex-1 bg-border" />
+            </div>
             <ul className="space-y-4">
               {habits.data.map(habit => <li key={habit.id}>
                 <Link key={habit.id} to="/app/habits/$id" params={{ id: habit.id }}>
