@@ -52,7 +52,18 @@ func (h *Handler) SignIn(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
+
+	c.SetCookie(
+		"refreshToken",     // name
+		token.RefreshToken, // value
+		60*60*24*7,         // maxAge (seconds) - e.g., 7 days
+		"/",                // path
+		"",                 // domain (empty = current domain)
+		false,              // secure (HTTPS only)
+		true,               // httpOnly
+	)
+
 	c.JSON(http.StatusOK, gin.H{
-		"token": token,
+		"accessToken": token.AccessToken,
 	})
 }

@@ -55,17 +55,35 @@ type SignInParams struct {
 	Password string `json:"password"`
 }
 
-func (s *AuthService) SignIn(params SignInParams) (string, error) {
+type SignInTokenPair struct {
+	AccessToken  string `json:"accessToken"`
+	RefreshToken string `json:"refreshToken"`
+}
+
+func (s *AuthService) SignIn(params SignInParams) (*SignInTokenPair, error) {
 	user, err := s.UserService.UserRepo.GetUserByEmailWithPassword(params.Email)
 	if err != nil {
 		// TODO: check for fatal errors
-		return "", ErrInvalidCredentials
+		return nil, ErrInvalidCredentials
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(params.Password))
 	if err != nil {
-		return "", ErrInvalidCredentials
+		return nil, ErrInvalidCredentials
+	}
+	accessToken, err := s.GenerateToken(user.ID)
+	if err != nil {
+		return nil, err
 	}
 
-	return s.GenerateToken(user.ID)
+	refreshToken, err := s.GenerateToken(user.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	tokens := &SignInTokenPair{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+	}
+	return tokens, nil
 }
