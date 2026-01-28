@@ -131,7 +131,7 @@ export function HabitCalendar(props: { habit: HabitWithContributions }) {
   return (
     <>
       <Calendar
-        className="rounded-lg border shadow-sm w-full [--cell-size:theme(spacing.16)]"
+        className="rounded-lg border shadow-sm w-full [--cell-size:--spacing(16)]"
         classNames={{
           weeks: "gap-2"
         }}
