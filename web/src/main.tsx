@@ -17,6 +17,14 @@ declare module '@tanstack/react-router' {
   }
 }
 
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
+  )
+}
+
 // Render the app
 const rootElement = document.getElementById('root')!
 if (!rootElement.innerHTML) {
@@ -24,11 +32,3 @@ if (!rootElement.innerHTML) {
   root.render(<App />)
 }
 
-function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
-
-  )
-}
