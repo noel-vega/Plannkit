@@ -18,8 +18,8 @@ import { Route as AppUserIndexRouteImport } from './routes/app/user/index'
 import { Route as AppTodosIndexRouteImport } from './routes/app/todos/index'
 import { Route as AppHabitsIndexRouteImport } from './routes/app/habits/index'
 import { Route as AppFinancesIndexRouteImport } from './routes/app/finances/index'
-import { Route as AppFilesIndexRouteImport } from './routes/app/files/index'
 import { Route as AppEmailIndexRouteImport } from './routes/app/email/index'
+import { Route as AppDocumentsIndexRouteImport } from './routes/app/documents/index'
 import { Route as AppHabitsIdRouteImport } from './routes/app/habits/$id'
 
 const AuthRouteRoute = AuthRouteRouteImport.update({
@@ -67,14 +67,14 @@ const AppFinancesIndexRoute = AppFinancesIndexRouteImport.update({
   path: '/finances/',
   getParentRoute: () => AppRouteRoute,
 } as any)
-const AppFilesIndexRoute = AppFilesIndexRouteImport.update({
-  id: '/files/',
-  path: '/files/',
-  getParentRoute: () => AppRouteRoute,
-} as any)
 const AppEmailIndexRoute = AppEmailIndexRouteImport.update({
   id: '/email/',
   path: '/email/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppDocumentsIndexRoute = AppDocumentsIndexRouteImport.update({
+  id: '/documents/',
+  path: '/documents/',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AppHabitsIdRoute = AppHabitsIdRouteImport.update({
@@ -90,8 +90,8 @@ export interface FileRoutesByFullPath {
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
   '/app/habits/$id': typeof AppHabitsIdRoute
+  '/app/documents': typeof AppDocumentsIndexRoute
   '/app/email': typeof AppEmailIndexRoute
-  '/app/files': typeof AppFilesIndexRoute
   '/app/finances': typeof AppFinancesIndexRoute
   '/app/habits': typeof AppHabitsIndexRoute
   '/app/todos': typeof AppTodosIndexRoute
@@ -104,8 +104,8 @@ export interface FileRoutesByTo {
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
   '/app/habits/$id': typeof AppHabitsIdRoute
+  '/app/documents': typeof AppDocumentsIndexRoute
   '/app/email': typeof AppEmailIndexRoute
-  '/app/files': typeof AppFilesIndexRoute
   '/app/finances': typeof AppFinancesIndexRoute
   '/app/habits': typeof AppHabitsIndexRoute
   '/app/todos': typeof AppTodosIndexRoute
@@ -119,8 +119,8 @@ export interface FileRoutesById {
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
   '/app/habits/$id': typeof AppHabitsIdRoute
+  '/app/documents/': typeof AppDocumentsIndexRoute
   '/app/email/': typeof AppEmailIndexRoute
-  '/app/files/': typeof AppFilesIndexRoute
   '/app/finances/': typeof AppFinancesIndexRoute
   '/app/habits/': typeof AppHabitsIndexRoute
   '/app/todos/': typeof AppTodosIndexRoute
@@ -135,8 +135,8 @@ export interface FileRouteTypes {
     | '/auth/signin'
     | '/auth/signup'
     | '/app/habits/$id'
+    | '/app/documents'
     | '/app/email'
-    | '/app/files'
     | '/app/finances'
     | '/app/habits'
     | '/app/todos'
@@ -149,8 +149,8 @@ export interface FileRouteTypes {
     | '/auth/signin'
     | '/auth/signup'
     | '/app/habits/$id'
+    | '/app/documents'
     | '/app/email'
-    | '/app/files'
     | '/app/finances'
     | '/app/habits'
     | '/app/todos'
@@ -163,8 +163,8 @@ export interface FileRouteTypes {
     | '/auth/signin'
     | '/auth/signup'
     | '/app/habits/$id'
+    | '/app/documents/'
     | '/app/email/'
-    | '/app/files/'
     | '/app/finances/'
     | '/app/habits/'
     | '/app/todos/'
@@ -242,18 +242,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppFinancesIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/app/files/': {
-      id: '/app/files/'
-      path: '/files'
-      fullPath: '/app/files'
-      preLoaderRoute: typeof AppFilesIndexRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
     '/app/email/': {
       id: '/app/email/'
       path: '/email'
       fullPath: '/app/email'
       preLoaderRoute: typeof AppEmailIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/app/documents/': {
+      id: '/app/documents/'
+      path: '/documents'
+      fullPath: '/app/documents'
+      preLoaderRoute: typeof AppDocumentsIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/app/habits/$id': {
@@ -268,8 +268,8 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteRouteChildren {
   AppHabitsIdRoute: typeof AppHabitsIdRoute
+  AppDocumentsIndexRoute: typeof AppDocumentsIndexRoute
   AppEmailIndexRoute: typeof AppEmailIndexRoute
-  AppFilesIndexRoute: typeof AppFilesIndexRoute
   AppFinancesIndexRoute: typeof AppFinancesIndexRoute
   AppHabitsIndexRoute: typeof AppHabitsIndexRoute
   AppTodosIndexRoute: typeof AppTodosIndexRoute
@@ -278,8 +278,8 @@ interface AppRouteRouteChildren {
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppHabitsIdRoute: AppHabitsIdRoute,
+  AppDocumentsIndexRoute: AppDocumentsIndexRoute,
   AppEmailIndexRoute: AppEmailIndexRoute,
-  AppFilesIndexRoute: AppFilesIndexRoute,
   AppFinancesIndexRoute: AppFinancesIndexRoute,
   AppHabitsIndexRoute: AppHabitsIndexRoute,
   AppTodosIndexRoute: AppTodosIndexRoute,

@@ -9,43 +9,10 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { Link } from "@tanstack/react-router"
-import { BanknoteIcon, FilesIcon, HomeIcon, ListIcon, MailIcon, SproutIcon } from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
 import { useTranslation } from "react-i18next"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { links } from "./links"
 
-const items = [
-  {
-    title: "Home",
-    url: "/",
-    icon: HomeIcon,
-  },
-  {
-    title: "Habits",
-    url: "/app/habits",
-    icon: SproutIcon,
-  },
-  {
-    title: "Todos",
-    url: "/app/todos",
-    icon: ListIcon,
-  },
-  {
-    title: "Finances",
-    url: "/app/finances",
-    icon: BanknoteIcon,
-  },
-  {
-    title: "Email",
-    url: "/app/email",
-    icon: MailIcon,
-  },
-
-  {
-    title: "Files",
-    url: "/app/files",
-    icon: FilesIcon,
-  },
-]
 export function AppSidebar() {
   const { t } = useTranslation()
   return (
@@ -54,7 +21,7 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
+              {links.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild className="">
                     <Link to={item.url} className="border border-transparent" activeProps={{
