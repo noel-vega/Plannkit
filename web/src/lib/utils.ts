@@ -2,6 +2,7 @@ import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { getDayOfYear, addDays } from 'date-fns';
 import type { HabitWithContributions } from "@/features/habits/types";
+import { useAuth } from "@/features/auth/store";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -25,4 +26,13 @@ export function getCompletedHabits(params: { day: Date, habits: HabitWithContrib
     return curr.completionsPerDay === completionsToday ? prev + 1 : prev
   }, 0)
   return { completed, isDone: completed === params.habits.length, progress: completed / params.habits.length * 100 }
+}
+
+
+export function getHeaders() {
+  const { accessToken } = useAuth.getState()
+  return {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${accessToken}`
+  }
 }
