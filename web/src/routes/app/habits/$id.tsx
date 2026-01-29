@@ -17,7 +17,7 @@ import { cn } from '@/lib/utils'
 import type { Contribution, HabitWithContributions } from '@/features/habits/types'
 import { DeleteHabitDialog } from '@/features/habits/components/delete-habit-dialog'
 import { useDialog } from '@/hooks'
-import { Page } from '@/components/page'
+import { Page } from '@/components/layout/page'
 
 export const Route = createFileRoute('/app/habits/$id')({
   params: {

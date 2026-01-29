@@ -1,4 +1,4 @@
-import { Page } from '@/components/page'
+import { Page } from '@/components/layout/page'
 import { Field, FieldLabel } from '@/components/ui/field'
 import { LanguageSelect } from '@/features/user/components/language-picker'
 import { createFileRoute } from '@tanstack/react-router'
@@ -10,11 +10,13 @@ export const Route = createFileRoute('/app/user/')({
 
 function RouteComponent() {
   const { t } = useTranslation()
-  return <Page title="Settings" >
-    <Field>
-      <FieldLabel>{t("Language")}</FieldLabel>
-      <LanguageSelect />
-    </Field>
-  </Page>
+  return (
+    <Page title="Settings" >
+      <Field>
+        <FieldLabel>{t("Language")}</FieldLabel>
+        <LanguageSelect />
+      </Field>
+    </Page>
+  )
 
 }

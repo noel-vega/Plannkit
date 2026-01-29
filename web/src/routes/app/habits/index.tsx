@@ -9,7 +9,7 @@ import { useDialog } from '@/hooks'
 import { format } from 'date-fns'
 import { TodaysProgress } from '@/features/habits/components/today-progress'
 import { WeekdayIndicator } from '@/features/habits/components/week-day-indicator'
-import { Page } from '@/components/page'
+import { Page } from '@/components/layout/page'
 import { useTranslation } from 'react-i18next'
 
 
