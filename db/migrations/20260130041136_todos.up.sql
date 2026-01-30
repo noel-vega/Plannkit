@@ -1,6 +1,6 @@
-
 CREATE TABLE IF NOT EXISTS todos (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(id),
     name VARCHAR(255) NOT NULL,
     status VARCHAR(20) NOT NULL DEFAULT 'todo',
     description TEXT,

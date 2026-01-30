@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS habits (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(id),
     name VARCHAR(255) NOT NULL,
     description TEXT,
     icon TEXT NOT NULL DEFAULT 'Activity',
@@ -14,3 +15,17 @@ CREATE TABLE IF NOT EXISTS habits (
 );
 
 CREATE INDEX idx_habits_created_at ON habits(created_at);
+
+CREATE TABLE IF NOT EXISTS contributions (
+    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    habit_id INT NOT NULL REFERENCES habits(id),
+    user_id INT NOT NULL REFERENCES users(id),
+    completions int NOT NULL DEFAULT 1,
+    date TIMESTAMP NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (habit_id) REFERENCES habits(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_contributions_habit_id ON contributions(habit_id);
+CREATE INDEX idx_contributions_date ON contributions(date);
+CREATE UNIQUE INDEX idx_contributions_habit_date ON contributions(habit_id, date);
