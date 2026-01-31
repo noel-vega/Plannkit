@@ -34,7 +34,7 @@ func (handler *Handler) GetHabitByID(c *gin.Context) {
 		return
 	}
 
-	contributions, err := handler.ContribRepo.List(h.ID)
+	contributions, err := handler.ContribRepo.List(h.ID, userID)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -56,7 +56,7 @@ func (handler *Handler) ListHabits(c *gin.Context) {
 	habitsWithContributions := []HabitWithContributions{}
 	habits := handler.HabitRepo.ListHabits(userID)
 	for _, h := range habits {
-		contributions, err := handler.ContribRepo.List(h.ID)
+		contributions, err := handler.ContribRepo.List(h.ID, userID)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
@@ -129,6 +129,7 @@ func (handler *Handler) DeleteHabit(c *gin.Context) {
 }
 
 func (handler *Handler) CreateHabitContribution(c *gin.Context) {
+	userID := c.MustGet("user_id").(int)
 	habitID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -137,6 +138,7 @@ func (handler *Handler) CreateHabitContribution(c *gin.Context) {
 
 	params := CreateContributionParams{
 		HabitID: habitID,
+		UserID:  userID,
 	}
 	c.Bind(&params)
 
@@ -146,6 +148,7 @@ func (handler *Handler) CreateHabitContribution(c *gin.Context) {
 }
 
 func (handler *Handler) UpdateHabitContribution(c *gin.Context) {
+	userID := c.MustGet("user_id").(int)
 	contributionID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -153,7 +156,8 @@ func (handler *Handler) UpdateHabitContribution(c *gin.Context) {
 	}
 
 	params := UpdateCompletionsParams{
-		ID: contributionID,
+		ID:     contributionID,
+		UserID: userID,
 	}
 	c.Bind(&params)
 
@@ -164,12 +168,13 @@ func (handler *Handler) UpdateHabitContribution(c *gin.Context) {
 }
 
 func (handler *Handler) DeleteHabitContribution(c *gin.Context) {
+	userID := c.MustGet("user_id").(int)
 	contributionID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	err = handler.ContribRepo.Delete(contributionID)
+	err = handler.ContribRepo.Delete(contributionID, userID)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
