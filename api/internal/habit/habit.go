@@ -7,6 +7,7 @@ import (
 
 type Habit struct {
 	ID                int       `json:"id" db:"id"`
+	UserID            int       `json:"userId" db:"user_id"`
 	Name              string    `json:"name" db:"name"`
 	Icon              string    `json:"icon" db:"icon"`
 	UnitOfMeasurement string    `json:"unitOfMeasurement" db:"unit_of_measurement"`
@@ -19,6 +20,7 @@ type Habit struct {
 
 type HabitWithContributions struct {
 	ID                int            `json:"id"`
+	UserID            int            `json:"userId" db:"user_id"`
 	Name              string         `json:"name"`
 	Icon              string         `json:"icon" db:"icon"`
 	UnitOfMeasurement string         `json:"unitOfMeasurement" db:"unit_of_measurement"`

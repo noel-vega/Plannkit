@@ -21,13 +21,14 @@ func NewHandler(db *sqlx.DB) *Handler {
 }
 
 func (handler *Handler) GetHabitByID(c *gin.Context) {
+	userID := c.MustGet("user_id").(int)
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	h, err := handler.HabitRepo.GetByHabitID(id)
+	h, err := handler.HabitRepo.GetByHabitID(id, userID)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -51,8 +52,9 @@ func (handler *Handler) GetHabitByID(c *gin.Context) {
 }
 
 func (handler *Handler) ListHabits(c *gin.Context) {
+	userID := c.MustGet("user_id").(int)
 	habitsWithContributions := []HabitWithContributions{}
-	habits := handler.HabitRepo.ListHabits()
+	habits := handler.HabitRepo.ListHabits(userID)
 	for _, h := range habits {
 		contributions, err := handler.ContribRepo.List(h.ID)
 		if err != nil {
@@ -88,7 +90,10 @@ func (handler *Handler) UpdateHabit(c *gin.Context) {
 }
 
 func (handler *Handler) CreateHabit(c *gin.Context) {
-	var data CreateHabitParams
+	userID := c.MustGet("user_id").(int)
+	data := CreateHabitParams{
+		UserID: userID,
+	}
 	c.Bind(&data)
 
 	h, err := handler.HabitRepo.CreateHabit(data)
@@ -109,13 +114,14 @@ func (handler *Handler) CreateHabit(c *gin.Context) {
 }
 
 func (handler *Handler) DeleteHabit(c *gin.Context) {
+	userID := c.MustGet("user_id").(int)
 	habitID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	err = handler.HabitRepo.DeleteHabit(habitID)
+	err = handler.HabitRepo.DeleteHabit(habitID, userID)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
