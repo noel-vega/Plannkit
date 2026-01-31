@@ -46,3 +46,12 @@ func (svc *UserService) GetUserByCredentials(email string, password string) (*Us
 	}
 	return user, nil
 }
+
+func (svc *UserService) GetUserByID(ID int) (*UserNoPassword, error) {
+	fmt.Println("GET USER BY ID", ID)
+	user, err := svc.UserRepo.GetUserByID(ID)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}

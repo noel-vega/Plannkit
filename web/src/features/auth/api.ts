@@ -1,6 +1,4 @@
 import z from "zod/v3";
-import { jwtDecode } from "jwt-decode"
-
 
 const SignUpParamsSchema = z.object({
   firstName: z.string(),
@@ -65,6 +63,30 @@ export async function refreshAccessToken() {
   if (response.ok) {
     const { accessToken } = RefreshTokenResponseSchema.parse(await response.json())
     return { success: true, accessToken } as const
+  }
+  return { success: false } as const
+}
+
+export const MeSchema = z.object({
+  id: z.number(),
+  firstName: z.string(),
+  lastName: z.string(),
+  email: z.string()
+})
+
+const MeResponseSchema = z.object({
+  accessToken: z.string(),
+  me: MeSchema
+})
+
+export async function me() {
+  const response = await fetch("/api/auth/me", {
+    credentials: "include"
+  })
+
+  if (response.ok) {
+    const data = MeResponseSchema.parse(await response.json())
+    return { success: true, data } as const
   }
   return { success: false } as const
 }

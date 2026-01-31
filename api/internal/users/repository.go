@@ -1,6 +1,10 @@
 package users
 
-import "github.com/jmoiron/sqlx"
+import (
+	"fmt"
+
+	"github.com/jmoiron/sqlx"
+)
 
 type UserRepo struct {
 	DB *sqlx.DB
@@ -10,6 +14,18 @@ func NewUserRepo(db *sqlx.DB) *UserRepo {
 	return &UserRepo{
 		DB: db,
 	}
+}
+
+func (r *UserRepo) GetUserByID(ID int) (*UserNoPassword, error) {
+	fmt.Printf("GET USER BY ID: %v\n", ID)
+	user := &UserNoPassword{}
+	query := `SELECT id, first_name, last_name, email, created_at, updated_at FROM users WHERE id = $1`
+	err := r.DB.Get(user, query, ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }
 
 func (r *UserRepo) GetUserByEmail(email string) (*UserNoPassword, error) {

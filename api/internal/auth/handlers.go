@@ -19,6 +19,7 @@ type Handler struct {
 func NewHandler(db *sqlx.DB) *Handler {
 	return &Handler{
 		AuthService: NewAuthService(db),
+		UserService: users.NewUserService(db),
 	}
 }
 
@@ -75,15 +76,48 @@ func (h *Handler) RefreshAccessToken(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid refresh token: " + err.Error()})
 		return
 	}
-	fmt.Println("RefreshAccessToken")
 
 	accessToken, err := h.AuthService.RefreshAccessToken(refreshTokenStr)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid refresh token: " + err.Error()})
 		return
 	}
-	fmt.Println("AccessToken Made")
+
 	c.JSON(http.StatusOK, gin.H{
+		"accessToken": accessToken,
+	})
+}
+
+func (h *Handler) Me(c *gin.Context) {
+	refreshTokenStr, err := c.Cookie("refresh_token")
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid refresh token: " + err.Error()})
+		return
+	}
+
+	refreshTokenClaims, err := h.AuthService.ValidateToken(refreshTokenStr)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid refresh token: " + err.Error()})
+		return
+	}
+
+	accessToken, err := h.AuthService.RefreshAccessToken(refreshTokenStr)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid refresh token: " + err.Error()})
+		return
+	}
+	fmt.Printf("REFRESH TOKEN: %v\n", refreshTokenClaims.UserID)
+
+	user, err := h.UserService.GetUserByID(refreshTokenClaims.UserID)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	fmt.Println(user)
+
+	c.JSON(http.StatusOK, gin.H{
+		"me":          user,
 		"accessToken": accessToken,
 	})
 }
