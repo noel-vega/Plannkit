@@ -6,6 +6,7 @@ import { Button } from "../ui/button"
 import { useMutation } from "@tanstack/react-query"
 import { signOut } from "@/features/auth/api"
 import { useNavigate } from "@tanstack/react-router"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog"
 
 export function Header() {
   const navigate = useNavigate()
@@ -19,7 +20,6 @@ export function Header() {
   const handleSignOut = () => {
     signOutMutation.mutate()
     navigate({ to: "/auth/signin" })
-
   }
 
   return (
@@ -27,9 +27,27 @@ export function Header() {
       <SidebarTrigger>Menu</SidebarTrigger>
       <p className="font-bold text-2xl">{t(title)}</p>
       <div className="ml-auto">
-        <Button onClick={handleSignOut} className="" size="icon-sm" variant="ghost">
-          <LogOutIcon size={10} />
-        </Button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button className="" size="icon-sm" variant="ghost">
+              <LogOutIcon size={10} />
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Sign Out</AlertDialogTitle>
+              <AlertDialogDescription>Are you sure you want to sign out of your account?</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction onClick={handleSignOut}>
+                Continue
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>)
 }

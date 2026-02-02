@@ -229,7 +229,7 @@ function RouteComponent() {
   }
 
   return (
-    <Page title="Todos" className="space-y-4">
+    <Page title="Tasks" className="space-y-4">
       <DndContext
         sensors={sensors}
         onDragEnd={handleDragEnd}
