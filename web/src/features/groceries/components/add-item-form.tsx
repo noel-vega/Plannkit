@@ -46,20 +46,6 @@ export function AddItemForm(props: { className?: string, onSubmit: (val: AddItem
         )}
       />
 
-      <Controller
-        name="quantity"
-        control={form.control}
-        render={({ field }) => (
-          <Field className="max-w-18">
-            <Input type="number"
-              {...field}
-              onChange={(e) => {
-                field.onChange(e.currentTarget.valueAsNumber)
-              }} />
-          </Field>
-        )}
-      />
-
       <Button variant="secondary" type="submit" onClick={() => {
         form.setFocus("name")
       }}>

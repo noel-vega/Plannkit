@@ -29,9 +29,14 @@ const resources = {
       "Proceed": "Proceed",
       "Cancel": "Cancel",
       "Your grocery list is empty. Add some items.": "Your grocery list is empty. Add some items.",
+      "pcs": "pcs",
       "Item": "Item",
       "Clear": "Clear",
       "Add some groceries to your list.": "Add some groceries to your list.",
+      "Are you want to clear items?": "Are you want to clear items?",
+      "This will clear all items from your list.": "This will clear all items from your list.",
+      "Are you want to delete this item?": "Are you want to delete this item?",
+      "This will delete this item from your list.": "This will delete this item from your list.",
     }
   },
   es: {
@@ -58,8 +63,13 @@ const resources = {
       "Proceed": "Proceder",
       "Cancel": "Cancelar",
       "Add some groceries to your list.": "Añade algunos productos de alimentación a tu lista.",
+      "pcs": "uds",
       "Item": "Artículo",
-      "Clear": "Claro"
+      "Clear": "Borrar",
+      "Are you want to clear items?": "¿Quieres borrar los artículos?",
+      "This will clear all items from your list.": "Esto eliminará todos los artículos de tu lista.",
+      "Are you want to delete this item?": "¿Quieres eliminar este artículo?",
+      "This will delete this item from your list.": "Esto eliminará este artículo de tu lista."
     }
   }
 };
