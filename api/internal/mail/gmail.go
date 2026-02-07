@@ -1,4 +1,5 @@
-package main
+// Package mail
+package mail
 
 import (
 	"crypto/rand"

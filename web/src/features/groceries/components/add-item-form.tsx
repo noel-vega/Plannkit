@@ -35,7 +35,7 @@ export function AddItemForm(props: { className?: string, onSubmit: (val: AddItem
   }
 
   return (
-    <form onSubmit={handleSubmit} className={cn("flex gap-2 items-end", props.className)}>
+    <form onSubmit={handleSubmit} className={cn("", props.className)}>
       <Controller
         name="name"
         control={form.control}

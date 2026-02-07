@@ -1,11 +1,12 @@
 import { Page } from '@/components/layout/page'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
 import { AddItemForm, type AddItemFormData } from '@/features/groceries/components/add-item-form'
 import { GroceryListitem } from '@/features/groceries/components/grocery-list-item'
 import type { GroceryListItem } from '@/features/groceries/types'
 import { createFileRoute } from '@tanstack/react-router'
-import { BookTextIcon } from 'lucide-react'
+import { BookTextIcon, PlusIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -49,16 +50,26 @@ function RouteComponent() {
     <Page title="Groceries">
       <div className="max-w-5xl h-full flex flex-col pb-2">
 
-        <h2 className="text-xl font-medium mb-4">{t("Shopping List")} ({items.length})</h2>
-        <div className="flex gap-2 items-end mb-4">
-          <AddItemForm className='flex-1' onSubmit={handleAddItem} />
-          {/* <Button variant="secondary"> */}
-          {/*   <BookTextIcon /> */}
-          {/*   {t("Catalog")} */}
-          {/* </Button> */}
+        <div className="flex gap-4">
+          <h2 className="text-xl font-medium mb-4">{t("Shopping List")} ({items.length})</h2>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="secondary" className="ml-auto">
+                <PlusIcon />
+                {t("Items")}
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <AddItemForm onSubmit={handleAddItem} />
+            </DialogContent>
+
+          </Dialog>
+
+          <Button variant="secondary">
+            <BookTextIcon />
+            {t("Catalog")}
+          </Button>
         </div>
-
-
 
         <div className="flex-1">
           {items.length === 0 ? (

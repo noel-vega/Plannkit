@@ -1,5 +1,5 @@
 // Package middlewares
-package middlewares
+package main
 
 import (
 	"errors"
@@ -13,7 +13,7 @@ import (
 	"github.com/noel-vega/habits/api/internal/auth"
 )
 
-func Guard(db *sqlx.DB) gin.HandlerFunc {
+func Authentication(db *sqlx.DB) gin.HandlerFunc {
 	authService := auth.NewAuthService(db)
 	return func(c *gin.Context) {
 		refreshTokenStr, err := c.Cookie("refresh_token")

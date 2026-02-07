@@ -1,5 +1,5 @@
-// Package habit
-package habit
+// Package habits
+package habits
 
 import (
 	"time"

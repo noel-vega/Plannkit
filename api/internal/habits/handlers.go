@@ -1,4 +1,4 @@
-package habit
+package habits
 
 import (
 	"net/http"
