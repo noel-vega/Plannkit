@@ -45,7 +45,7 @@ export async function signIn(params: SignInParams) {
     }
   })
   if (!response.ok) {
-    throw new Error("Failed to signup")
+    throw new Error("Failed to signin")
   }
 
   return SignInResponseSchema.parse(await response.json())
