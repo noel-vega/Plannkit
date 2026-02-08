@@ -8,10 +8,10 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - habits_data:/var/lib/postgresql/data
+      - plannkit_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U habits"]
-      interval: 5s
+      interval: 3s
       timeout: 5s
       retries: 5
   api: 
@@ -19,13 +19,12 @@ services:
       context: ./api
       dockerfile: Dockerfile
     environment:
-      POSTGRES_CONNECTION_STRING: postgresql://habits:habits@db:5432/habits?sslmode=disable
+      POSTGRES_CONNECTION_STRING: ${POSTGRES_CONNECTION_STRING} 
     ports:
       - "8080:8080"
     depends_on:
       db:
         condition: service_healthy
-    
 
 volumes:
-  habits_data:
+  plannkit_data:
