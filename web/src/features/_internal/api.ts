@@ -1,3 +1,4 @@
+import { pkFetch } from "@/lib/plannkit-api-client"
 import z from "zod/v3"
 
 export const FlagsSchema = z.object({
@@ -15,7 +16,7 @@ export const FlagsSchema = z.object({
 export type Flags = z.infer<typeof FlagsSchema>
 
 export async function getFlags() {
-  const response = await fetch("/api/flags")
+  const response = await pkFetch("/flags")
   const data = await response.json()
   return FlagsSchema.parse(data)
 }

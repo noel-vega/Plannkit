@@ -3,12 +3,12 @@ import { TodoSchema, TodoStatusSchema, type CreateTodo, type TodoStatus } from "
 import { queryClient } from "@/lib/react-query"
 import z from "zod/v3"
 import { getHeaders } from "@/lib/utils"
+import { pkFetch } from "@/lib/plannkit-api-client"
 
 const BoardSchema = z.record(TodoStatusSchema, TodoSchema.array())
 
 export async function getBoard() {
-  const headers = getHeaders()
-  const response = await fetch("/api/todos/board", { headers })
+  const response = await pkFetch("/todos/board")
   const json = await response.json()
   return BoardSchema.parse(json)
 }
@@ -25,15 +25,13 @@ export function invalidateGetBoardQuery() {
 }
 
 export async function getTodoById(id: number) {
-  const headers = getHeaders()
-  const res = await fetch(`/api/todos/${id}`, { headers })
-  const json = await res.json()
+  const response = await pkFetch(`/todos/${id}`)
+  const json = await response.json()
   return TodoSchema.parse(json)
 }
 
 export async function listTasks() {
-  const headers = getHeaders()
-  const res = await fetch("/api/todos", { headers })
+  const res = await pkFetch("/todos")
   const json = await res.json()
   return TodoSchema.array().parse(json)
 }
@@ -51,7 +49,7 @@ export async function invalidateListTodosQuery() {
 
 export async function createTodo(params: CreateTodo) {
   const headers = getHeaders()
-  await fetch("/api/todos", {
+  await fetch("/todos", {
     method: "POST",
     body: JSON.stringify(params),
     headers
@@ -60,7 +58,7 @@ export async function createTodo(params: CreateTodo) {
 
 export async function deleteTodo(params: { id: number }) {
   const headers = getHeaders()
-  await fetch(`/api/todos/${params.id}`, {
+  await fetch(`/todos/${params.id}`, {
     method: "DELETE",
     headers
   })
@@ -76,7 +74,7 @@ type MoveTodoParams = {
 export async function moveTodo(params: MoveTodoParams) {
   const headers = getHeaders()
   const { id, targetIndex, ...rest } = params
-  await fetch(`/api/todos/${id}/position`, {
+  await fetch(`/todos/${id}/position`, {
     method: "PATCH",
     body: JSON.stringify(rest), // Don't send targetIndex to server
     headers

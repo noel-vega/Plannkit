@@ -1,3 +1,4 @@
+import { pkFetch } from "@/lib/plannkit-api-client";
 import z from "zod/v3";
 
 
@@ -20,12 +21,9 @@ const SignUpParamsSchema = z.object({
 type SignUpParams = z.infer<typeof SignUpParamsSchema>
 
 export async function signUp(params: SignUpParams) {
-  const response = await fetch("/api/auth/signup", {
+  const response = await pkFetch("/auth/signup", {
     method: "POST",
     body: JSON.stringify(params),
-    headers: {
-      "Content-Type": "application/json"
-    }
   })
   if (!response.ok) {
     if (response.status === 409) {
@@ -48,12 +46,9 @@ const AuthenticationResponseSchema = z.object({
 })
 
 export async function signIn(params: SignInParams) {
-  const response = await fetch("/api/auth/signin", {
+  const response = await pkFetch("/auth/signin", {
     method: "POST",
     body: JSON.stringify(params),
-    headers: {
-      "Content-Type": "application/json"
-    }
   })
   if (!response.ok) {
     throw new Error("Failed to signin")
@@ -67,7 +62,7 @@ export const RefreshTokenResponseSchema = z.object({
 })
 
 export async function refreshAccessToken() {
-  const response = await fetch("/api/auth/refresh", {
+  const response = await fetch("/auth/refresh", {
     credentials: "include"
   })
 
@@ -79,9 +74,7 @@ export async function refreshAccessToken() {
 }
 
 export async function me() {
-  const response = await fetch("/api/auth/me", {
-    credentials: "include"
-  })
+  const response = await pkFetch("/auth/me")
 
   if (response.ok) {
     const data = AuthenticationResponseSchema.parse(await response.json())
@@ -91,7 +84,5 @@ export async function me() {
 }
 
 export async function signOut() {
-  await fetch("/api/auth/signout", {
-    credentials: "include"
-  })
+  await pkFetch("/auth/signout")
 }
