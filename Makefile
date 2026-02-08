@@ -25,7 +25,7 @@ install:
 	@echo "✓ Dependencies installed!"
 
 # Run everything in development
-dev: db-up
+dev:
 	@echo "Starting development servers..."
 	@make -j2 api web
 
