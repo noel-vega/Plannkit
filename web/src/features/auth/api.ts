@@ -1,5 +1,15 @@
 import z from "zod/v3";
 
+
+export const MeSchema = z.object({
+  id: z.number(),
+  firstName: z.string(),
+  lastName: z.string(),
+  email: z.string()
+})
+
+export type Me = z.infer<typeof MeSchema>
+
 const SignUpParamsSchema = z.object({
   firstName: z.string(),
   lastName: z.string(),
@@ -32,8 +42,9 @@ const SignInParamsSchema = z.object({
 
 type SignInParams = z.infer<typeof SignInParamsSchema>
 
-const SignInResponseSchema = z.object({
-  accessToken: z.string()
+const AuthenticationResponseSchema = z.object({
+  accessToken: z.string(),
+  me: MeSchema
 })
 
 export async function signIn(params: SignInParams) {
@@ -48,7 +59,7 @@ export async function signIn(params: SignInParams) {
     throw new Error("Failed to signin")
   }
 
-  return SignInResponseSchema.parse(await response.json())
+  return AuthenticationResponseSchema.parse(await response.json())
 }
 
 export const RefreshTokenResponseSchema = z.object({
@@ -67,27 +78,13 @@ export async function refreshAccessToken() {
   return { success: false } as const
 }
 
-export const MeSchema = z.object({
-  id: z.number(),
-  firstName: z.string(),
-  lastName: z.string(),
-  email: z.string()
-})
-
-export type Me = z.infer<typeof MeSchema>
-
-const MeResponseSchema = z.object({
-  accessToken: z.string(),
-  me: MeSchema
-})
-
 export async function me() {
   const response = await fetch("/api/auth/me", {
     credentials: "include"
   })
 
   if (response.ok) {
-    const data = MeResponseSchema.parse(await response.json())
+    const data = AuthenticationResponseSchema.parse(await response.json())
     return { success: true, data } as const
   }
   return { success: false } as const
