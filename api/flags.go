@@ -7,10 +7,14 @@ import (
 )
 
 var flags = map[string]bool{
-	"habits": true,
-	"mail":   false,
-	"todos":  false,
-	"users":  false,
+	"habits":    true,
+	"email":     false,
+	"todos":     false,
+	"users":     false,
+	"documents": false,
+	"groceries": false,
+	"finances":  false,
+	"dashboard": false,
 }
 
 func FlagsHandler(c *gin.Context) {
