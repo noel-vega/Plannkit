@@ -10,10 +10,18 @@ services:
     volumes:
       - plannkit_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U habits"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 3s
       timeout: 5s
       retries: 5
+  migrate:
+    image: migrate/migrate
+    volumes:
+      - ./db/migrations:/migrations
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["-path", "/migrations", "-database", "${POSTGRES_CONNECTION_STRING}", "up"]
   api: 
     build:
       context: ./api
@@ -23,8 +31,8 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      db:
-        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
 
 volumes:
   plannkit_data:
