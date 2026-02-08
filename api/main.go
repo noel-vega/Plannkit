@@ -2,15 +2,22 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
 func main() {
-	db, err := sqlx.Connect("postgres", "user=habits dbname=habits password=habits sslmode=disable")
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found, using environment variables")
+	}
+
+	postgresConnectionString := os.Getenv("POSTGRES_CONNECTION_STRING")
+	db, err := sqlx.Connect("postgres", postgresConnectionString)
 	if err != nil {
 		log.Fatalln(err)
 	}
