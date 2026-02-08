@@ -29,7 +29,6 @@ function RouteComponent() {
     queryKey: ["emails"],
     queryFn: getEmails
   })
-  console.log(data)
 
   const handleLogin = () => {
     window.location.href = "http://localhost:8080/auth/google/login"

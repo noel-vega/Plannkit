@@ -151,7 +151,6 @@ function RouteComponent() {
     setActiveTodo(null)
 
     if (!event.over) {
-      console.log("no over")
       return
     };
 
