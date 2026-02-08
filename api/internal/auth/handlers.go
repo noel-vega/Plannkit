@@ -49,36 +49,37 @@ func (h *Handler) SignUp(c *gin.Context) {
 func (h *Handler) SignIn(c *gin.Context) {
 	data := SignInParams{}
 	c.Bind(&data)
-	token, err := h.AuthService.SignIn(data)
+	token, user, err := h.AuthService.SignIn(data)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
 	c.SetCookie(
-		"refresh_token",    // name
-		token.RefreshToken, // value
-		60*60*24*7,         // maxAge (seconds) - e.g., 7 days
-		"/",                // path
-		"",                 // domain (empty = current domain)
-		false,              // secure (HTTPS only)
-		true,               // httpOnly
+		"refresh_token",
+		token.RefreshToken,
+		60*60*24*7,
+		"/",
+		"",
+		false,
+		true,
 	)
 
 	c.JSON(http.StatusOK, gin.H{
 		"accessToken": token.AccessToken,
+		"me":          user,
 	})
 }
 
 func (h *Handler) SignOut(c *gin.Context) {
 	c.SetCookie(
-		"refresh_token", // name
-		"",              // value
-		-1,              // maxAge (seconds) - e.g., 7 days
-		"/",             // path
-		"",              // domain (empty = current domain)
-		false,           // secure (HTTPS only)
-		true,            // httpOnly
+		"refresh_token",
+		"",
+		-1,
+		"/",
+		"",
+		false,
+		true,
 	)
 }
 

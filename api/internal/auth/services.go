@@ -80,32 +80,41 @@ type SignInTokenPair struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
-func (s *AuthService) SignIn(params SignInParams) (*SignInTokenPair, error) {
+func (s *AuthService) SignIn(params SignInParams) (*SignInTokenPair, *users.UserNoPassword, error) {
 	user, err := s.UserService.UserRepo.GetUserByEmailWithPassword(params.Email)
 	if err != nil {
 		// TODO: check for fatal errors
-		return nil, ErrInvalidCredentials
+		return nil, nil, ErrInvalidCredentials
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(params.Password))
 	if err != nil {
-		return nil, ErrInvalidCredentials
+		return nil, nil, ErrInvalidCredentials
 	}
 	accessToken, err := s.GenerateAccessToken(user.ID)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	refreshToken, err := s.GenerateToken(user.ID, 1*time.Hour)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	tokens := &SignInTokenPair{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 	}
-	return tokens, nil
+
+	userNoPassword := &users.UserNoPassword{
+		ID:        user.ID,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Email:     user.Email,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+	}
+	return tokens, userNoPassword, nil
 }
 
 type Claims struct {
