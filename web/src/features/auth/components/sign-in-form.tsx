@@ -30,8 +30,8 @@ export function SignInForm() {
 
   const signInMutation = useMutation({
     mutationFn: signIn,
-    onSuccess: ({ accessToken, me }) => {
-      useAuth.setState({ accessToken, me })
+    onSuccess: (data) => {
+      useAuth.setState(data)
       navigate({ to: "/app/habits" })
     }
   })

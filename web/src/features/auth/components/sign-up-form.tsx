@@ -7,6 +7,8 @@ import type { FormEvent } from "react"
 import { Controller, useForm } from "react-hook-form"
 import z from "zod/v3"
 import { signUp } from "../api"
+import { useAuth } from "../store"
+import { useNavigate } from "@tanstack/react-router"
 
 const SignUpDataSchema = z.object({
   firstName: z.string().min(1, { message: "Required" }),
@@ -23,6 +25,7 @@ type SignUpFormData = z.infer<typeof SignUpDataSchema>
 
 
 export function SignUpForm() {
+  const navigate = useNavigate()
   const form = useForm<SignUpFormData>({
     resolver: zodResolver(SignUpDataSchema),
     defaultValues: {
@@ -36,6 +39,11 @@ export function SignUpForm() {
 
   const signUpMutation = useMutation({
     mutationFn: signUp,
+    onSuccess: (data) => {
+      useAuth.setState(data)
+      navigate({ to: "/app/habits" })
+
+    }
   })
 
   const handleSubmit = (e: FormEvent) => {
