@@ -3,12 +3,17 @@ package auth
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 	"github.com/noel-vega/habits/api/internal/users"
+)
+
+const (
+	refreshTokenMaxAge             = 60 * 60 * 24 * 7
+	refreshTokenInvalidateTokenAge = -1
+	emptyRefreshToken              = ""
 )
 
 type Handler struct {
@@ -23,6 +28,18 @@ func NewHandler(db *sqlx.DB) *Handler {
 	}
 }
 
+func (h *Handler) SetCookieRefreshToken(c *gin.Context, refreshToken string, maxAge int) {
+	c.SetCookie(
+		"refresh_token",
+		refreshToken,
+		maxAge,
+		"/",
+		"",
+		false,
+		true,
+	)
+}
+
 func (h *Handler) SignUp(c *gin.Context) {
 	data := users.CreateUserParams{}
 	err := c.Bind(&data)
@@ -31,7 +48,7 @@ func (h *Handler) SignUp(c *gin.Context) {
 		return
 	}
 
-	token, err := h.AuthService.SignUp(data)
+	tokens, user, err := h.AuthService.SignUp(data)
 	if err != nil {
 		if errors.Is(err, users.ErrEmailExists) {
 			c.AbortWithError(http.StatusConflict, err)
@@ -41,46 +58,37 @@ func (h *Handler) SignUp(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"token": token,
-	})
+	h.SetCookieRefreshToken(c, tokens.RefreshToken, refreshTokenMaxAge)
+
+	authResponse := AuthResposne{
+		AccessToken: tokens.AccessToken,
+		Me:          user,
+	}
+
+	c.JSON(http.StatusOK, authResponse)
 }
 
 func (h *Handler) SignIn(c *gin.Context) {
 	data := SignInParams{}
 	c.Bind(&data)
-	token, user, err := h.AuthService.SignIn(data)
+	tokens, user, err := h.AuthService.SignIn(data)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
-	c.SetCookie(
-		"refresh_token",
-		token.RefreshToken,
-		60*60*24*7,
-		"/",
-		"",
-		false,
-		true,
-	)
+	h.SetCookieRefreshToken(c, tokens.RefreshToken, refreshTokenMaxAge)
 
-	c.JSON(http.StatusOK, gin.H{
-		"accessToken": token.AccessToken,
-		"me":          user,
-	})
+	authResponse := AuthResposne{
+		AccessToken: tokens.AccessToken,
+		Me:          user,
+	}
+
+	c.JSON(http.StatusOK, authResponse)
 }
 
 func (h *Handler) SignOut(c *gin.Context) {
-	c.SetCookie(
-		"refresh_token",
-		"",
-		-1,
-		"/",
-		"",
-		false,
-		true,
-	)
+	h.SetCookieRefreshToken(c, emptyRefreshToken, refreshTokenInvalidateTokenAge)
 }
 
 func (h *Handler) RefreshAccessToken(c *gin.Context) {
@@ -119,7 +127,6 @@ func (h *Handler) Me(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid refresh token: " + err.Error()})
 		return
 	}
-	fmt.Printf("REFRESH TOKEN: %v\n", refreshTokenClaims.UserID)
 
 	user, err := h.UserService.GetUserByID(refreshTokenClaims.UserID)
 	if err != nil {
@@ -127,10 +134,10 @@ func (h *Handler) Me(c *gin.Context) {
 		return
 	}
 
-	fmt.Println(user)
+	authResponse := AuthResposne{
+		AccessToken: accessToken,
+		Me:          user,
+	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"me":          user,
-		"accessToken": accessToken,
-	})
+	c.JSON(http.StatusOK, authResponse)
 }
