@@ -1,9 +1,8 @@
-import { createContribution, getHabitByIdQueryOptions, invalidateHabitById, invalidateListHabits, updateContributionCompletions } from '@/features/habits/api'
 import { BackButton } from '@/components/back-button'
 import { ContributionsGrid } from '@/features/habits/components/contributions-grid'
 import { EditHabitDialog } from '@/features/habits/components/edit-habit-form'
 import { Button } from '@/components/ui/button'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { createFileRoute, useRouteContext } from '@tanstack/react-router'
 import { getDayOfYear } from 'date-fns/getDayOfYear'
 import { CheckIcon, EditIcon, Trash2Icon } from 'lucide-react'
@@ -18,6 +17,7 @@ import type { Contribution, HabitWithContributions } from '@/features/habits/typ
 import { DeleteHabitDialog } from '@/features/habits/components/delete-habit-dialog'
 import { useDialog } from '@/hooks'
 import { Page } from '@/components/layout/page'
+import { getHabitByIdQueryOptions, useCreateContribution, useUpdateContribution } from '@/features/habits/hooks'
 
 export const Route = createFileRoute('/app/habits/$id')({
   params: {
@@ -33,13 +33,12 @@ export const Route = createFileRoute('/app/habits/$id')({
 function RouteComponent() {
   const routeParams = Route.useParams()
   const initialHabit = Route.useLoaderData()
-
-  const { data: habit } = useQuery({ ...getHabitByIdQueryOptions(routeParams), initialData: initialHabit })
-
-
+  const { data: habit } = useQuery({
+    ...getHabitByIdQueryOptions(routeParams),
+    initialData: initialHabit
+  })
 
   const contributions = new Map(habit.contributions.map(contrib => [getDayOfYear(contrib.date), contrib]));
-
 
   return (
     <Page title="Habits">
@@ -90,21 +89,8 @@ export function HabitCalendar(props: { habit: HabitWithContributions }) {
   const { habit } = props
   const [day, setDay] = useState<Date>(new Date())
 
-  const createContributionMutation = useMutation({
-    mutationFn: createContribution,
-    onSuccess: () => {
-      invalidateListHabits()
-      invalidateHabitById(props.habit.id)
-    }
-  })
-
-  const updateCompletionsMutation = useMutation({
-    mutationFn: updateContributionCompletions,
-    onSuccess: () => {
-      invalidateListHabits()
-      invalidateHabitById(props.habit.id)
-    }
-  })
+  const createContribution = useCreateContribution()
+  const updateContribution = useUpdateContribution()
 
   const handleContribution = async (params: { contribution: Contribution } | { contribution: undefined, date: Date }) => {
     if (habit.completionType === "custom") {
@@ -112,7 +98,7 @@ export function HabitCalendar(props: { habit: HabitWithContributions }) {
       return
     }
     if (!params.contribution) {
-      createContributionMutation.mutate({
+      createContribution.mutate({
         habitId: habit.id,
         date: params.date,
         completions: 1,
@@ -120,11 +106,9 @@ export function HabitCalendar(props: { habit: HabitWithContributions }) {
       return
     }
 
-    if (params.contribution.completions === habit.completionsPerDay) {
-      updateCompletionsMutation.mutate({ contributionId: params.contribution.id, completions: 0 })
-    } else {
-      updateCompletionsMutation.mutate({ contributionId: params.contribution.id, completions: params.contribution.completions + 1 })
-    }
+    const isDone = params.contribution.completions === habit.completionsPerDay
+    const completions = isDone ? 0 : params.contribution.completions + 1
+    updateContribution.mutate({ habitId: habit.id, contributionId: params.contribution.id, completions })
   }
   const contributions = new Map(props.habit.contributions.map(contrib => [getDayOfYear(contrib.date), contrib]));
   const [open, setOpen] = useState(false)

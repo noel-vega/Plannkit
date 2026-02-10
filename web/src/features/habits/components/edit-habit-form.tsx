@@ -1,7 +1,5 @@
-import { invalidateHabitById, updateHabit } from "@/features/habits/api"
 import { HabitSchema, type Habit } from "@/features/habits/types"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation } from "@tanstack/react-query"
 import { type FormEvent, type PropsWithChildren } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { Field, FieldContent, FieldDescription, FieldError, FieldLabel, FieldSet, FieldTitle } from "@/components/ui/field"
@@ -11,6 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from "@/components/ui/button"
 import { CompletionsPerDayInput } from "@/components/ui/completions-per-day-input"
 import type { DialogProps } from "@/types"
+import { useUpdateHabit } from "../hooks"
 
 type EditHabitFormProps =
   {
@@ -24,19 +23,12 @@ export function EditHabitForm(props: EditHabitFormProps) {
     defaultValues: props.habit
   })
 
-  const updateHabitMutation = useMutation({
-    mutationFn: updateHabit,
-  })
+  const updateHabit = useUpdateHabit()
 
   const handleSubmit = (e: FormEvent) => {
     form.handleSubmit(async data => {
-      updateHabitMutation.mutate(data, {
-        onSuccess: () => {
-          invalidateHabitById(data.id)
-          props.onSubmit()
-        }, onError: (e) => {
-          console.error("Could not create habit", e.message)
-        }
+      updateHabit.mutate(data, {
+        onSuccess: props.onSubmit,
       })
     })(e)
   }

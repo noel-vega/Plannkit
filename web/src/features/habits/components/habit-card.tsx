@@ -1,7 +1,5 @@
 import { useEffect, useState, type ChangeEvent, type MouseEvent } from "react";
 import type { Contribution, Habit, HabitWithContributions } from "@/features/habits/types";
-import { useMutation } from "@tanstack/react-query";
-import { createContribution, invalidateHabitById, invalidateListHabits, updateContributionCompletions } from "@/features/habits/api";
 import { CheckIcon, MinusIcon, PlusIcon } from "lucide-react";
 import { getDayOfYear } from "date-fns";
 import { Tooltip } from "react-tooltip";
@@ -19,6 +17,7 @@ import { Progress } from "@/components/ui/progress";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import type { DialogProps } from "@/types";
 import { DynamicIcon } from "@/components/ui/dynamic-icon"
+import { useCreateContribution, useUpdateContribution } from "../hooks";
 
 export function HabitCard(props: { habit: HabitWithContributions }) {
   const { habit } = props
@@ -65,21 +64,10 @@ function HabitContributionButton(props: { habit: Habit, contributions: Map<numbe
   const { habit, contributions } = props
   const todaysContribution = contributions.get(getDayOfYear(new Date()))
 
-  const createContributionMutation = useMutation({
-    mutationFn: createContribution,
-    onSuccess: invalidateListHabits
-  })
 
-  const updateCompletionsMutation = useMutation({
-    mutationFn: updateContributionCompletions,
-    onSuccess: () => {
-      invalidateListHabits()
-      if (habit.completionsPerDay === todaysContribution?.completions) {
-        contributionsDialog.close()
-
-      }
-    }
-  })
+  const createContribution = useCreateContribution()
+  // TODO: add on success to close dialog
+  const updateContribution = useUpdateContribution()
 
   const handleContribution = async (e: MouseEvent) => {
     e.preventDefault()
@@ -89,7 +77,7 @@ function HabitContributionButton(props: { habit: Habit, contributions: Map<numbe
       return
     }
     if (!todaysContribution) {
-      createContributionMutation.mutate({
+      createContribution.mutate({
         habitId: habit.id,
         date: new Date(),
         completions: 1,
@@ -97,13 +85,10 @@ function HabitContributionButton(props: { habit: Habit, contributions: Map<numbe
       return
     }
 
-    if (todaysContribution.completions === habit.completionsPerDay) {
-      updateCompletionsMutation.mutate({ contributionId: todaysContribution.id, completions: 0 })
-    } else {
-      updateCompletionsMutation.mutate({ contributionId: todaysContribution.id, completions: todaysContribution.completions + 1 })
-    }
+    const isDone = todaysContribution.completions === habit.completionsPerDay
+    const completions = isDone ? 0 : todaysContribution.completions + 1
+    updateContribution.mutate({ habitId: habit.id, contributionId: todaysContribution.id, completions })
   }
-
 
   const progress = !todaysContribution ? 0 : todaysContribution.completions / habit.completionsPerDay * 100
   const tooltipId = `completions-habit-${habit.id}`
@@ -138,21 +123,8 @@ export function CustomContributionCompletionsDialog(props: { date: Date; contrib
   const [completions, setCompletions] = useState(props.contribution?.completions ?? 0)
   const [incrementBy, setIncremetBy] = useState(1)
 
-  const createContributionMutation = useMutation({
-    mutationFn: createContribution,
-    onSuccess: () => {
-      invalidateListHabits()
-      invalidateHabitById(props.habit.id)
-    }
-  })
-
-  const updateCompletionsMutation = useMutation({
-    mutationFn: updateContributionCompletions,
-    onSuccess: () => {
-      invalidateListHabits()
-      invalidateHabitById(props.habit.id)
-    }
-  })
+  const createContribution = useCreateContribution()
+  const updateContribution = useUpdateContribution()
 
   useEffect(() => {
     setCompletions(props.contribution?.completions ?? 0)
@@ -160,10 +132,9 @@ export function CustomContributionCompletionsDialog(props: { date: Date; contrib
 
   const debounce = useDebouncedCallback((completions: number) => {
     if (!props.contribution) {
-      createContributionMutation.mutate({ habitId: props.habit.id, date: props.date, completions })
-
+      createContribution.mutate({ habitId: props.habit.id, date: props.date, completions })
     } else {
-      updateCompletionsMutation.mutate({ contributionId: props.contribution.id, completions })
+      updateContribution.mutate({ habitId: props.habit.id, contributionId: props.contribution.id, completions })
     }
   }, 250)
   const progress = !props.contribution ? 0 : props.contribution.completions / props.habit.completionsPerDay * 100

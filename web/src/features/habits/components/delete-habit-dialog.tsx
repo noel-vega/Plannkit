@@ -3,8 +3,8 @@ import type { PropsWithChildren } from "react"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { Spinner } from "@/components/ui/spinner"
 import { buttonVariants } from "@/components/ui/button"
-import { useDeleteHabit } from "@/features/habits/api"
 import type { DialogProps } from "@/types"
+import { useDeleteHabit } from "../hooks"
 
 type Props = {
   id: number
@@ -19,6 +19,7 @@ export function DeleteHabitDialog(props: Props) {
       onSuccess: () => navigate({ to: "/app/habits" })
     })
   }
+
   return (
     <AlertDialog open={props.open} onOpenChange={props.onOpenChange}>
       <AlertDialogContent>

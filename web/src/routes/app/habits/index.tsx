@@ -4,13 +4,13 @@ import { CreateHabitDialogDrawer } from '@/features/habits/components/create-hab
 import { Button } from '@/components/ui/button'
 import { PlusIcon } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
-import { getListHabitsQueryOptions } from '@/features/habits/api'
 import { useDialog } from '@/hooks'
 import { format } from 'date-fns'
 import { TodaysProgress } from '@/features/habits/components/today-progress'
 import { WeekdayIndicator } from '@/features/habits/components/week-day-indicator'
 import { Page } from '@/components/layout/page'
 import { useTranslation } from 'react-i18next'
+import { getListHabitsQueryOptions } from '@/features/habits/hooks'
 
 
 export const Route = createFileRoute('/app/habits/')({

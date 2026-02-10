@@ -1,10 +1,7 @@
-import { CreateHabitSchema } from "@/features/habits/types"
+import { CreateHabitParamsSchema } from "@/features/habits/types"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { type FormEvent } from "react"
 import { Controller, useForm } from "react-hook-form"
-import { useMutation } from "@tanstack/react-query"
-import { createHabit, getListHabitsQueryOptions } from "@/features/habits/api"
-import { queryClient } from "@/lib/react-query"
 import { Input } from "@/components/ui/input"
 import { Field, FieldContent, FieldDescription, FieldError, FieldLabel, FieldSet, FieldTitle } from "@/components/ui/field"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
@@ -17,6 +14,7 @@ import { useDialog, useMediaQuery } from "@/hooks"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { IconPicker, icons } from "@/components/ui/icon-picker"
 import { DynamicIcon } from "@/components/ui/dynamic-icon"
+import { useCreateHabit } from "../hooks"
 
 type CreateHabitFormProps =
   {
@@ -26,7 +24,7 @@ type CreateHabitFormProps =
 export function CreateHabitForm(props: CreateHabitFormProps) {
   const { open, onOpenChange } = useDialog()
   const form = useForm({
-    resolver: zodResolver(CreateHabitSchema),
+    resolver: zodResolver(CreateHabitParamsSchema),
     defaultValues: {
       name: "",
       icon: "Activity",
@@ -36,20 +34,13 @@ export function CreateHabitForm(props: CreateHabitFormProps) {
     }
   })
 
-  const createHabitMutation = useMutation({
-    mutationFn: createHabit,
-  })
+  const createHabit = useCreateHabit()
 
   const handleSubmit = (e: FormEvent) => {
     form.handleSubmit(async data => {
-      createHabitMutation.mutate(data, {
-        onSuccess: (newHabit) => {
-          const queryKey = getListHabitsQueryOptions().queryKey
-          queryClient.setQueryData(queryKey, (oldData) => {
-            return oldData ? [...oldData, newHabit] : oldData
-          })
-          props.onSubmit()
-        }, onError: (e) => {
+      createHabit.mutate(data, {
+        onSuccess: props.onSubmit,
+        onError: (e) => {
           console.error("Could not create habit", e.message)
         }
       })

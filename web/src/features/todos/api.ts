@@ -2,7 +2,6 @@ import { queryOptions } from "@tanstack/react-query"
 import { TodoSchema, TodoStatusSchema, type CreateTodo, type TodoStatus } from "./types"
 import { queryClient } from "@/lib/react-query"
 import z from "zod/v3"
-import { getHeaders } from "@/lib/utils"
 import { pkFetch } from "@/lib/plannkit-api-client"
 
 const BoardSchema = z.record(TodoStatusSchema, TodoSchema.array())
@@ -48,19 +47,15 @@ export async function invalidateListTodosQuery() {
 }
 
 export async function createTodo(params: CreateTodo) {
-  const headers = getHeaders()
-  await fetch("/todos", {
+  await pkFetch("/todos", {
     method: "POST",
     body: JSON.stringify(params),
-    headers
   })
 }
 
 export async function deleteTodo(params: { id: number }) {
-  const headers = getHeaders()
-  await fetch(`/todos/${params.id}`, {
+  await pkFetch(`/todos/${params.id}`, {
     method: "DELETE",
-    headers
   })
 }
 
@@ -72,12 +67,10 @@ type MoveTodoParams = {
   targetIndex?: number; // Optional - used for optimistic update only
 }
 export async function moveTodo(params: MoveTodoParams) {
-  const headers = getHeaders()
   const { id, targetIndex, ...rest } = params
-  await fetch(`/todos/${id}/position`, {
+  await pkFetch(`/todos/${id}/position`, {
     method: "PATCH",
     body: JSON.stringify(rest), // Don't send targetIndex to server
-    headers
   })
 
 }
