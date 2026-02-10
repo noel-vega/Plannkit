@@ -16,3 +16,23 @@ export type Todo = z.infer<typeof TodoSchema>
 export const CreateTodoSchema = TodoSchema.omit({ id: true, position: true })
 export type CreateTodo = z.infer<typeof CreateTodoSchema>
 
+
+export const DraggableTodoSchema = z.object({
+  type: z.literal("todo"),
+  todo: TodoSchema,
+  index: z.number()
+})
+
+export const DroppableLaneSchema = z.object({
+  type: z.literal("lane"),
+  status: TodoStatusSchema
+})
+
+export const DroppableTodoSchema = z.object({
+  type: z.literal("todo"),
+  todo: TodoSchema,
+  index: z.number(),
+  position: z.enum(["before", "after"])
+})
+
+export const OverSchema = z.discriminatedUnion("type", [DroppableTodoSchema, DroppableLaneSchema])

@@ -1,11 +1,8 @@
-import { Button } from '@/components/ui/button'
 import { getBoardQueryOptions, getListTodosQueryOptions, invalidateGetBoardQuery, moveTodo } from '@/features/todos/api'
-import { CreateTodoDialog } from '@/features/todos/components/create-todo-dialog'
 import { TodoCard } from '@/features/todos/components/todo-card'
-import { TodoSchema, TodoStatusSchema, type Todo, type TodoStatus } from '@/features/todos/types'
+import { DraggableTodoSchema, OverSchema, type Todo, type TodoStatus } from '@/features/todos/types'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { PlusIcon } from 'lucide-react'
 import {
   DndContext,
   PointerSensor,
@@ -14,17 +11,15 @@ import {
   type DragEndEvent,
   DragOverlay,
   type DragStartEvent,
-  useDroppable,
 } from '@dnd-kit/core';
 
 import { useState } from 'react'
-import { cn } from '@/lib/utils'
 
 import { useDialog } from '@/hooks'
 import { TodoInfoDialog } from '@/features/todos/components/todo-info-dialog'
-import z from 'zod/v3'
 import { generateKeyBetween } from 'fractional-indexing'
 import { Page } from '@/components/layout/page'
+import { BoardLane } from '@/features/todos/components/board-lane'
 
 export const Route = createFileRoute('/app/todos/')({
   loader: async ({ context: { queryClient } }) => {
@@ -126,25 +121,6 @@ function RouteComponent() {
     }),
   );
 
-  const DraggableTodoSchema = z.object({
-    type: z.literal("todo"),
-    todo: TodoSchema,
-    index: z.number()
-  })
-
-  const DroppableLaneSchema = z.object({
-    type: z.literal("lane"),
-    status: TodoStatusSchema
-  })
-
-  const DroppableTodoSchema = z.object({
-    type: z.literal("todo"),
-    todo: TodoSchema,
-    index: z.number(),
-    position: z.enum(["before", "after"])
-  })
-
-  const OverSchema = z.discriminatedUnion("type", [DroppableTodoSchema, DroppableLaneSchema])
 
   function handleDragEnd(event: DragEndEvent) {
     // Clear overlay immediately when drop happens
@@ -228,72 +204,26 @@ function RouteComponent() {
   }
 
   return (
-    <Page title="Tasks" className="space-y-4">
-      <DndContext
-        sensors={sensors}
-        onDragEnd={handleDragEnd}
-        onDragStart={handleDragStart}
-      >
-        <div className="flex gap-4">
-          <Lane activeTodo={activeTodo} onTodoClick={handleTodoClick} title="Todo" status={"todo"} todos={board["todo"] ?? []} showDropZone={activeTodo && activeTodo.status !== "todo" ? true : false} />
-          <Lane activeTodo={activeTodo} onTodoClick={handleTodoClick} title="In Progress" status={"in-progress"} todos={board["in-progress"] ?? []} showDropZone={activeTodo && activeTodo.status !== "in-progress" ? true : false} />
-          <Lane activeTodo={activeTodo} onTodoClick={handleTodoClick} title="Done" status={"done"} todos={board["done"] ?? []} showDropZone={activeTodo && activeTodo.status !== "done" ? true : false} />
-        </div>
-        {activeTodo && (
-          <DragOverlay>
-            <TodoCard activeTodo={activeTodo} index={0} todo={activeTodo} className="shadow-lg hover:cursor-grabbing" />
-          </DragOverlay>
-        )}
-      </DndContext>
-
-      <TodoInfoDialog todo={openTodo} onClose={() => setOpenTodo(null)} />
-    </Page>
-  )
-}
-
-type LaneProps = { title: string, status: TodoStatus, todos: Todo[], showDropZone?: boolean, onTodoClick: (todo: Todo) => void, activeTodo: Todo | null }
-
-function Lane(props: LaneProps) {
-  const createTodoDialog = useDialog()
-  const { setNodeRef } = useDroppable({ id: props.status, data: { type: "lane", status: props.status } });
-  const handleCreateBtnClick = () => createTodoDialog.onOpenChange(true)
-
-  return (
     <>
-      <div ref={setNodeRef} className={cn("w-72 border bg-gray-50 rounded")}>
-        <div className="p-4 uppercase text-xs flex gap-2 justify-between">
-          {props.title}
-          <p className="bg-neutral-200 py-1 px-2 rounded shrink-0 border">{props.todos.length}</p>
-        </div>
-
-        <>
-          <div className="px-1.5 pb-1.5 space-y-1">
-            <ul className="space-y-1">
-              {props.todos.map((todo, index) => {
-                return (
-                  <li key={todo.id}>
-                    <TodoCard
-                      activeTodo={props.activeTodo}
-                      index={index}
-                      todo={todo}
-                      onClick={() => props.onTodoClick(todo)}
-                    />
-                  </li>
-                );
-              })}
-            </ul>
-            <div>
-              <Button variant="ghost" className="w-full justify-start hover:bg-neutral-200" onClick={handleCreateBtnClick}>
-                <PlusIcon />
-                <span>Create</span>
-              </Button>
-            </div>
+      <Page title="Tasks" className="space-y-4">
+        <DndContext
+          sensors={sensors}
+          onDragEnd={handleDragEnd}
+          onDragStart={handleDragStart}
+        >
+          <div className="flex gap-4">
+            <BoardLane activeTodo={activeTodo} onTodoClick={handleTodoClick} title="Todo" status={"todo"} todos={board["todo"] ?? []} showDropZone={activeTodo && activeTodo.status !== "todo" ? true : false} />
+            <BoardLane activeTodo={activeTodo} onTodoClick={handleTodoClick} title="In Progress" status={"in-progress"} todos={board["in-progress"] ?? []} showDropZone={activeTodo && activeTodo.status !== "in-progress" ? true : false} />
+            <BoardLane activeTodo={activeTodo} onTodoClick={handleTodoClick} title="Done" status={"done"} todos={board["done"] ?? []} showDropZone={activeTodo && activeTodo.status !== "done" ? true : false} />
           </div>
-        </>
-      </div>
-      <CreateTodoDialog status={props.status} {...createTodoDialog} />
+          {activeTodo && (
+            <DragOverlay>
+              <TodoCard activeTodo={activeTodo} index={0} todo={activeTodo} className="shadow-lg hover:cursor-grabbing" />
+            </DragOverlay>
+          )}
+        </DndContext>
+      </Page>
+      <TodoInfoDialog todo={openTodo} onClose={() => setOpenTodo(null)} />
     </>
   )
 }
-
-
