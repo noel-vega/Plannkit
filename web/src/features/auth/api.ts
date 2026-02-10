@@ -31,6 +31,10 @@ export async function signUp(params: SignUpParams) {
     }
     throw new Error("Failed to signup")
   }
+
+  const data = await response.json()
+
+  return AuthenticationResponseSchema.parse(data)
 }
 
 const SignInParamsSchema = z.object({
