@@ -31,6 +31,7 @@ export const tasks = {
   },
   move: async (params: MoveTodoParams) => {
     const { id, targetIndex, ...rest } = params
+    console.log("MOVE TODO", params)
     await pkFetch(`/todos/${id}/position`, {
       method: "PATCH",
       body: JSON.stringify(rest), // Don't send targetIndex to server

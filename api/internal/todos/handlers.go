@@ -68,13 +68,15 @@ func (handler *Handler) CreateTodo(c *gin.Context) {
 }
 
 func (handler *Handler) UpdateTodoPosition(c *gin.Context) {
+	userID := c.MustGet("user_id").(int)
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	params := UpdatePositionParams{
-		ID: id,
+		ID:     id,
+		UserID: userID,
 	}
 	c.Bind(&params)
 
