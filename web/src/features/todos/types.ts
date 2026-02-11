@@ -44,3 +44,7 @@ export type MoveTodoParams = {
   beforePosition: string;
   targetIndex?: number; // Optional - used for optimistic update only
 }
+
+
+export const BoardSchema = z.record(TodoStatusSchema, TodoSchema.array())
+export type Board = z.infer<typeof BoardSchema>

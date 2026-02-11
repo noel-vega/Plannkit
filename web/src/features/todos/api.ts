@@ -1,9 +1,6 @@
-import { TodoSchema, TodoStatusSchema, type CreateTodoParams, type MoveTodoParams } from "./types"
-import z from "zod/v3"
+import { BoardSchema, TodoSchema, type CreateTodoParams, type MoveTodoParams } from "./types"
 import { pkFetch } from "@/lib/plannkit-api-client"
 import type { ByIdParams } from "../habits/types"
-
-const BoardSchema = z.record(TodoStatusSchema, TodoSchema.array())
 
 export const tasks = {
   create: async (params: CreateTodoParams) => {
@@ -40,4 +37,3 @@ export const tasks = {
     })
   }
 }
-
