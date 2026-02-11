@@ -36,7 +36,6 @@ export function Board(props: BoardProps) {
     const over = OverSchema.parse(event.over.data.current)
 
     if (over.type === "todo") {
-      console.log("SAME LANE MOVE")
       const activeIndex = active.index
       const overIndex = over.index
       const todos = board[over.todo.status]!
@@ -44,7 +43,6 @@ export function Board(props: BoardProps) {
 
       // If dropping on itself in the same position, do nothing
       if (active.todo.id === over.todo.id) {
-        console.log("DROPPED ON SELF")
         return
       }
 
