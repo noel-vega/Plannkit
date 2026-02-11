@@ -1,9 +1,9 @@
 import { useHeaderStore } from "@/hooks/use-header"
 import { useTranslation } from "react-i18next"
 import { SidebarTrigger } from "../ui/sidebar"
-import { LogOutIcon } from "lucide-react"
+import { LogOutIcon, SettingsIcon } from "lucide-react"
 import { Button } from "../ui/button"
-import { useNavigate } from "@tanstack/react-router"
+import { Link, useNavigate } from "@tanstack/react-router"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog"
 import { useSignOut } from "@/features/auth/hooks"
 
@@ -27,10 +27,15 @@ export function Header() {
       <SidebarTrigger>Menu</SidebarTrigger>
       <p className="font-bold text-2xl">{t(title)}</p>
       <div className="ml-auto">
+        <Button asChild variant="ghost" className="[&_svg:not([class*='size-'])]:size-5">
+          <Link to="/app/settings">
+            <SettingsIcon />
+          </Link>
+        </Button>
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button className="" size="icon-sm" variant="ghost">
-              <LogOutIcon size={10} />
+            <Button variant="ghost" className="[&_svg:not([class*='size-'])]:size-5">
+              <LogOutIcon />
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>

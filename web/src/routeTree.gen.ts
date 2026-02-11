@@ -16,6 +16,7 @@ import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AuthSigninRouteImport } from './routes/auth/signin'
 import { Route as AppUserIndexRouteImport } from './routes/app/user/index'
 import { Route as AppTodosIndexRouteImport } from './routes/app/todos/index'
+import { Route as AppSettingsIndexRouteImport } from './routes/app/settings/index'
 import { Route as AppHabitsIndexRouteImport } from './routes/app/habits/index'
 import { Route as AppGroceriesIndexRouteImport } from './routes/app/groceries/index'
 import { Route as AppFinancesIndexRouteImport } from './routes/app/finances/index'
@@ -57,6 +58,11 @@ const AppUserIndexRoute = AppUserIndexRouteImport.update({
 const AppTodosIndexRoute = AppTodosIndexRouteImport.update({
   id: '/todos/',
   path: '/todos/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppSettingsIndexRoute = AppSettingsIndexRouteImport.update({
+  id: '/settings/',
+  path: '/settings/',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AppHabitsIndexRoute = AppHabitsIndexRouteImport.update({
@@ -108,6 +114,7 @@ export interface FileRoutesByFullPath {
   '/app/finances': typeof AppFinancesIndexRoute
   '/app/groceries': typeof AppGroceriesIndexRoute
   '/app/habits': typeof AppHabitsIndexRoute
+  '/app/settings': typeof AppSettingsIndexRoute
   '/app/todos': typeof AppTodosIndexRoute
   '/app/user': typeof AppUserIndexRoute
 }
@@ -124,6 +131,7 @@ export interface FileRoutesByTo {
   '/app/finances': typeof AppFinancesIndexRoute
   '/app/groceries': typeof AppGroceriesIndexRoute
   '/app/habits': typeof AppHabitsIndexRoute
+  '/app/settings': typeof AppSettingsIndexRoute
   '/app/todos': typeof AppTodosIndexRoute
   '/app/user': typeof AppUserIndexRoute
 }
@@ -141,6 +149,7 @@ export interface FileRoutesById {
   '/app/finances/': typeof AppFinancesIndexRoute
   '/app/groceries/': typeof AppGroceriesIndexRoute
   '/app/habits/': typeof AppHabitsIndexRoute
+  '/app/settings/': typeof AppSettingsIndexRoute
   '/app/todos/': typeof AppTodosIndexRoute
   '/app/user/': typeof AppUserIndexRoute
 }
@@ -159,6 +168,7 @@ export interface FileRouteTypes {
     | '/app/finances'
     | '/app/groceries'
     | '/app/habits'
+    | '/app/settings'
     | '/app/todos'
     | '/app/user'
   fileRoutesByTo: FileRoutesByTo
@@ -175,6 +185,7 @@ export interface FileRouteTypes {
     | '/app/finances'
     | '/app/groceries'
     | '/app/habits'
+    | '/app/settings'
     | '/app/todos'
     | '/app/user'
   id:
@@ -191,6 +202,7 @@ export interface FileRouteTypes {
     | '/app/finances/'
     | '/app/groceries/'
     | '/app/habits/'
+    | '/app/settings/'
     | '/app/todos/'
     | '/app/user/'
   fileRoutesById: FileRoutesById
@@ -250,6 +262,13 @@ declare module '@tanstack/react-router' {
       path: '/todos'
       fullPath: '/app/todos'
       preLoaderRoute: typeof AppTodosIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/app/settings/': {
+      id: '/app/settings/'
+      path: '/settings'
+      fullPath: '/app/settings'
+      preLoaderRoute: typeof AppSettingsIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/app/habits/': {
@@ -312,6 +331,7 @@ interface AppRouteRouteChildren {
   AppFinancesIndexRoute: typeof AppFinancesIndexRoute
   AppGroceriesIndexRoute: typeof AppGroceriesIndexRoute
   AppHabitsIndexRoute: typeof AppHabitsIndexRoute
+  AppSettingsIndexRoute: typeof AppSettingsIndexRoute
   AppTodosIndexRoute: typeof AppTodosIndexRoute
   AppUserIndexRoute: typeof AppUserIndexRoute
 }
@@ -324,6 +344,7 @@ const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppFinancesIndexRoute: AppFinancesIndexRoute,
   AppGroceriesIndexRoute: AppGroceriesIndexRoute,
   AppHabitsIndexRoute: AppHabitsIndexRoute,
+  AppSettingsIndexRoute: AppSettingsIndexRoute,
   AppTodosIndexRoute: AppTodosIndexRoute,
   AppUserIndexRoute: AppUserIndexRoute,
 }
