@@ -13,8 +13,8 @@ export const TodoSchema = z.object({
 })
 export type Todo = z.infer<typeof TodoSchema>
 
-export const CreateTodoSchema = TodoSchema.omit({ id: true, position: true })
-export type CreateTodo = z.infer<typeof CreateTodoSchema>
+export const CreateTodoParamsSchema = TodoSchema.omit({ id: true, position: true })
+export type CreateTodoParams = z.infer<typeof CreateTodoParamsSchema>
 
 
 export const DraggableTodoSchema = z.object({
@@ -36,3 +36,11 @@ export const DroppableTodoSchema = z.object({
 })
 
 export const OverSchema = z.discriminatedUnion("type", [DroppableTodoSchema, DroppableLaneSchema])
+
+export type MoveTodoParams = {
+  id: number;
+  status: TodoStatus;
+  afterPosition: string;
+  beforePosition: string;
+  targetIndex?: number; // Optional - used for optimistic update only
+}

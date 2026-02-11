@@ -1,4 +1,3 @@
-import { getBoardQueryOptions, getListTodosQueryOptions, invalidateGetBoardQuery, moveTodo } from '@/features/todos/api'
 import { TodoCard } from '@/features/todos/components/todo-card'
 import { DraggableTodoSchema, OverSchema, type Todo, type TodoStatus } from '@/features/todos/types'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -20,6 +19,8 @@ import { TodoInfoDialog } from '@/features/todos/components/todo-info-dialog'
 import { generateKeyBetween } from 'fractional-indexing'
 import { Page } from '@/components/layout/page'
 import { BoardLane } from '@/features/todos/components/board-lane'
+import { getBoardQueryOptions, getListTodosQueryOptions, invalidateGetBoardQuery } from '@/features/todos/hooks';
+import { tasks } from '@/features/todos/api';
 
 export const Route = createFileRoute('/app/todos/')({
   loader: async ({ context: { queryClient } }) => {
@@ -39,7 +40,7 @@ function RouteComponent() {
   const queryClient = useQueryClient()
 
   const moveMutation = useMutation({
-    mutationFn: moveTodo,
+    mutationFn: tasks.move,
     onMutate: async (params) => {
       // Cancel outgoing refetches so they don't overwrite optimistic update
       await queryClient.cancelQueries({ queryKey: ['board'] })

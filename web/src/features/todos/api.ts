@@ -1,76 +1,43 @@
-import { queryOptions } from "@tanstack/react-query"
-import { TodoSchema, TodoStatusSchema, type CreateTodo, type TodoStatus } from "./types"
-import { queryClient } from "@/lib/react-query"
+import { TodoSchema, TodoStatusSchema, type CreateTodoParams, type MoveTodoParams } from "./types"
 import z from "zod/v3"
 import { pkFetch } from "@/lib/plannkit-api-client"
+import type { ByIdParams } from "../habits/types"
 
 const BoardSchema = z.record(TodoStatusSchema, TodoSchema.array())
 
-export async function getBoard() {
-  const response = await pkFetch("/todos/board")
-  const json = await response.json()
-  return BoardSchema.parse(json)
+export const tasks = {
+  create: async (params: CreateTodoParams) => {
+    await pkFetch("/todos", {
+      method: "POST",
+      body: JSON.stringify(params),
+    })
+  },
+  getBoard: async () => {
+    const response = await pkFetch("/todos/board")
+    const json = await response.json()
+    return BoardSchema.parse(json)
+  },
+  getById: async (id: number) => {
+    const response = await pkFetch(`/todos/${id}`)
+    const json = await response.json()
+    return TodoSchema.parse(json)
+  },
+  list: async () => {
+    const response = await pkFetch("/todos")
+    const json = await response.json()
+    return TodoSchema.array().parse(json)
+  },
+  delete: async (params: ByIdParams) => {
+    await pkFetch(`/todos/${params.id}`, {
+      method: "DELETE",
+    })
+  },
+  move: async (params: MoveTodoParams) => {
+    const { id, targetIndex, ...rest } = params
+    await pkFetch(`/todos/${id}/position`, {
+      method: "PATCH",
+      body: JSON.stringify(rest), // Don't send targetIndex to server
+    })
+  }
 }
 
-export function getBoardQueryOptions() {
-  return queryOptions({
-    queryKey: ['board'],
-    queryFn: getBoard
-  })
-}
-
-export function invalidateGetBoardQuery() {
-  return queryClient.invalidateQueries(getBoardQueryOptions())
-}
-
-export async function getTodoById(id: number) {
-  const response = await pkFetch(`/todos/${id}`)
-  const json = await response.json()
-  return TodoSchema.parse(json)
-}
-
-export async function listTasks() {
-  const res = await pkFetch("/todos")
-  const json = await res.json()
-  return TodoSchema.array().parse(json)
-}
-
-export function getListTodosQueryOptions() {
-  return queryOptions({
-    queryFn: listTasks,
-    queryKey: ["todos"]
-  })
-}
-
-export async function invalidateListTodosQuery() {
-  return queryClient.invalidateQueries(getListTodosQueryOptions())
-}
-
-export async function createTodo(params: CreateTodo) {
-  await pkFetch("/todos", {
-    method: "POST",
-    body: JSON.stringify(params),
-  })
-}
-
-export async function deleteTodo(params: { id: number }) {
-  await pkFetch(`/todos/${params.id}`, {
-    method: "DELETE",
-  })
-}
-
-type MoveTodoParams = {
-  id: number;
-  status: TodoStatus;
-  afterPosition: string;
-  beforePosition: string;
-  targetIndex?: number; // Optional - used for optimistic update only
-}
-export async function moveTodo(params: MoveTodoParams) {
-  const { id, targetIndex, ...rest } = params
-  await pkFetch(`/todos/${id}/position`, {
-    method: "PATCH",
-    body: JSON.stringify(rest), // Don't send targetIndex to server
-  })
-
-}

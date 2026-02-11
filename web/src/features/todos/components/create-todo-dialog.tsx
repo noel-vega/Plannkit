@@ -1,16 +1,17 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { type FormEvent, type PropsWithChildren } from "react"
 import { Controller, useForm } from "react-hook-form"
-import { CreateTodoSchema, type TodoStatus } from "../types"
+import { CreateTodoParamsSchema, type TodoStatus } from "../types"
 import { Field, FieldLabel, FieldDescription, FieldError, FieldSet } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { useMutation } from "@tanstack/react-query"
-import { createTodo, invalidateGetBoardQuery } from "@/features/todos/api"
 import { Spinner } from "@/components/ui/spinner"
 import type { DialogProps } from "@/types"
+import { tasks } from "../api"
+import { invalidateGetBoardQuery } from "../hooks"
 
 type Props = {
   status?: TodoStatus
@@ -18,7 +19,7 @@ type Props = {
 
 export function CreateTodoDialog({ status = "todo", ...props }: Props) {
   const createTodoMutation = useMutation({
-    mutationFn: createTodo,
+    mutationFn: tasks.create,
     onSuccess: async () => {
       await invalidateGetBoardQuery()
       props.onOpenChange(false)
@@ -33,7 +34,7 @@ export function CreateTodoDialog({ status = "todo", ...props }: Props) {
       description: "",
       status
     },
-    resolver: zodResolver(CreateTodoSchema)
+    resolver: zodResolver(CreateTodoParamsSchema)
   })
   const handleSubmit = (e: FormEvent) => {
     form.handleSubmit((data) => {

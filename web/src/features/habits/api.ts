@@ -36,7 +36,6 @@ export const habits = {
   }
 }
 
-
 export const contributions = {
   create: async (params: CreateContributionParams) => {
     await pkFetch(`/habits/${params.habitId}/contributions`, {
