@@ -106,7 +106,6 @@ export function Board(props: BoardProps) {
   }
 
   return (
-
     <>
       <DndContext
         sensors={sensors}
@@ -124,6 +123,8 @@ export function Board(props: BoardProps) {
           </DragOverlay>
         )}
       </DndContext>
+
+      {/* Board Dialogs */}
       <TodoInfoDialog todo={openTodo} onClose={() => setOpenTodo(null)} />
     </>
   )

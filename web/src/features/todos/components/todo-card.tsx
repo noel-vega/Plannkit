@@ -72,7 +72,7 @@ export function TodoCard(props: Props) {
       <Card
         ref={setDraggableRef} style={style} {...attributes} {...listeners}
         onClick={props.onClick}
-        className={cn("rounded hover:cursor-pointer hover:bg-neutral-100 hover:border shadow-none p-4 group", props.className)}>
+        className={cn("rounded hover:cursor-pointer hover:bg-neutral-100 hover:border hover:border-blue-500 shadow-none p-4 group", props.className)}>
         <CardHeader className="p-0">
           <CardTitle className="flex w-full font-normal">
             <p className="flex-1">{props.todo.name}</p>
