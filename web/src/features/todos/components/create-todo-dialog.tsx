@@ -7,26 +7,16 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { useMutation } from "@tanstack/react-query"
 import { Spinner } from "@/components/ui/spinner"
 import type { DialogProps } from "@/types"
-import { tasks } from "../api"
-import { invalidateGetBoardQuery } from "../hooks"
+import { useCreateTodo } from "../hooks"
 
 type Props = {
   status?: TodoStatus
 } & PropsWithChildren & DialogProps
 
 export function CreateTodoDialog({ status = "todo", ...props }: Props) {
-  const createTodoMutation = useMutation({
-    mutationFn: tasks.create,
-    onSuccess: async () => {
-      await invalidateGetBoardQuery()
-      props.onOpenChange(false)
-      form.reset()
-
-    }
-  })
+  const createTodo = useCreateTodo()
 
   const form = useForm({
     defaultValues: {
@@ -36,9 +26,15 @@ export function CreateTodoDialog({ status = "todo", ...props }: Props) {
     },
     resolver: zodResolver(CreateTodoParamsSchema)
   })
+
   const handleSubmit = (e: FormEvent) => {
     form.handleSubmit((data) => {
-      createTodoMutation.mutate(data)
+      createTodo.mutate(data, {
+        onSuccess: async () => {
+          props.onOpenChange(false)
+          form.reset()
+        }
+      })
     })(e)
   }
 
@@ -87,8 +83,8 @@ export function CreateTodoDialog({ status = "todo", ...props }: Props) {
             />
           </FieldSet>
           <DialogFooter>
-            <Button type="submit" disabled={createTodoMutation.isPending || form.formState.isSubmitting}>
-              {createTodoMutation.isPending && <Spinner />}
+            <Button type="submit" disabled={createTodo.isPending || form.formState.isSubmitting}>
+              {createTodo.isPending && <Spinner />}
               Submit
             </Button>
           </DialogFooter>

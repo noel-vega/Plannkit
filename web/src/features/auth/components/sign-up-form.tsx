@@ -2,13 +2,12 @@ import { Button } from "@/components/ui/button"
 import { Field, FieldError, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation } from "@tanstack/react-query"
 import type { FormEvent } from "react"
 import { Controller, useForm } from "react-hook-form"
 import z from "zod/v3"
-import { signUp } from "../api"
 import { useAuth } from "../store"
 import { useNavigate } from "@tanstack/react-router"
+import { useSignUp } from "../hooks"
 
 const SignUpDataSchema = z.object({
   firstName: z.string().min(1, { message: "Required" }),
@@ -37,25 +36,24 @@ export function SignUpForm() {
     }
   })
 
-  const signUpMutation = useMutation({
-    mutationFn: signUp,
-    onSuccess: (data) => {
-      useAuth.setState(data)
-      navigate({ to: "/app/habits" })
+  const signUp = useSignUp()
 
-    }
-  })
-
-  const handleSubmit = (e: FormEvent) => {
+  const handleSignUp = (e: FormEvent) => {
     form.handleSubmit(data => {
-      signUpMutation.mutate(data)
+      signUp.mutate(data, {
+        onSuccess: (data) => {
+          useAuth.setState(data)
+          navigate({ to: "/app/habits" })
+
+        }
+      })
     })(e)
   }
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 @container/form">
-      {signUpMutation.error && (
+    <form onSubmit={handleSignUp} className="space-y-6 @container/form">
+      {signUp.error && (
         <div className="p-4 bg-red-100/50 border border-destructive rounded-lg font-medium text-red-700">
-          * {signUpMutation.error.message}
+          * {signUp.error.message}
         </div>
       )}
 

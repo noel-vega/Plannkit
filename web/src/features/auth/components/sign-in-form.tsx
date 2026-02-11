@@ -2,13 +2,12 @@ import { Button } from "@/components/ui/button"
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation } from "@tanstack/react-query"
 import type { FormEvent } from "react"
 import { Controller, useForm } from "react-hook-form"
 import z from "zod/v3"
-import { signIn } from "../api"
 import { useAuth } from "../store"
 import { useNavigate } from "@tanstack/react-router"
+import { useSignIn } from "../hooks"
 
 const SignInDataSchema = z.object({
   email: z.string().min(1, { message: "Required" }),
@@ -28,25 +27,24 @@ export function SignInForm() {
     }
   })
 
-  const signInMutation = useMutation({
-    mutationFn: signIn,
-    onSuccess: (data) => {
-      useAuth.setState(data)
-      navigate({ to: "/app/habits" })
-    }
-  })
+  const signIn = useSignIn()
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSignIn = (e: FormEvent) => {
     form.handleSubmit(data => {
-      signInMutation.mutate(data)
+      signIn.mutate(data, {
+        onSuccess: (data) => {
+          useAuth.setState(data)
+          navigate({ to: "/app/habits" })
+        }
+      })
     })(e)
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 @container/form">
-      {signInMutation.error && (
+    <form onSubmit={handleSignIn} className="space-y-6 @container/form">
+      {signIn.error && (
         <div className="p-4 bg-red-100/50 border border-destructive rounded-lg font-medium text-red-700">
-          * {signInMutation.error.message}
+          * {signIn.error.message}
         </div>
       )}
 
@@ -90,7 +88,7 @@ export function SignInForm() {
       </FieldGroup>
 
       <div>
-        <Button type="submit" className="w-full" disabled={!form.formState.isValid || signInMutation.isPending}>Sign In</Button>
+        <Button type="submit" className="w-full" disabled={!form.formState.isValid || signIn.isPending}>Sign In</Button>
       </div>
     </form>
   )

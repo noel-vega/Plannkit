@@ -3,23 +3,23 @@ import { useTranslation } from "react-i18next"
 import { SidebarTrigger } from "../ui/sidebar"
 import { LogOutIcon } from "lucide-react"
 import { Button } from "../ui/button"
-import { useMutation } from "@tanstack/react-query"
-import { signOut } from "@/features/auth/api"
 import { useNavigate } from "@tanstack/react-router"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog"
+import { useSignOut } from "@/features/auth/hooks"
 
 export function Header() {
   const navigate = useNavigate()
   const { title } = useHeaderStore()
   const { t } = useTranslation()
 
-  const signOutMutation = useMutation({
-    mutationFn: signOut
-  })
+  const signOut = useSignOut()
 
   const handleSignOut = () => {
-    signOutMutation.mutate()
-    navigate({ to: "/auth/signin" })
+    signOut.mutate(undefined, {
+      onSuccess: () => {
+        navigate({ to: "/auth/signin" })
+      }
+    })
   }
 
   return (

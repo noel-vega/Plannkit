@@ -1,4 +1,4 @@
-import { queryOptions } from "@tanstack/react-query"
+import { queryOptions, useMutation } from "@tanstack/react-query"
 import { tasks } from "./api"
 import { queryClient } from "@/lib/react-query"
 
@@ -22,4 +22,13 @@ export function getListTodosQueryOptions() {
 
 export async function invalidateListTodosQuery() {
   return queryClient.invalidateQueries(getListTodosQueryOptions())
+}
+
+export function useCreateTodo() {
+  return useMutation({
+    mutationFn: tasks.create,
+    onSuccess: async () => {
+      await invalidateGetBoardQuery()
+    }
+  })
 }

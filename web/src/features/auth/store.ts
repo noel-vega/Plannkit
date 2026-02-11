@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { Me } from './api';
+import type { Me } from './types';
 
 type AuthStore = {
   accessToken: string;
