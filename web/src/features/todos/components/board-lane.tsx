@@ -23,8 +23,8 @@ export function BoardLane(props: BoardLaneProps) {
 
   return (
     <>
-      <div ref={setNodeRef} className={cn("w-72 border bg-gray-50 rounded")}>
-        <div className="p-4 uppercase text-xs flex gap-2 justify-between">
+      <div ref={setNodeRef} className={cn("flex-1 border bg-gray-50 rounded")}>
+        <div className="p-4 uppercase text-base flex gap-2 justify-between items-center">
           {props.title}
           <p className="bg-neutral-200 py-1 px-2 rounded shrink-0 border">{props.todos.length}</p>
         </div>
