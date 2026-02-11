@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { EllipsisIcon } from "lucide-react"
 import type { Todo } from "@/features/todos/types"
@@ -72,9 +72,9 @@ export function TodoCard(props: Props) {
       <Card
         ref={setDraggableRef} style={style} {...attributes} {...listeners}
         onClick={props.onClick}
-        className={cn("rounded hover:cursor-pointer hover:bg-neutral-100 hover:border hover:border-blue-500 shadow-none p-4 group", props.className)}>
+        className={cn("transition-none rounded hover:cursor-pointer hover:bg-secondary hover:border hover:shadow hover:border-muted-foreground shadow-none p-4 group", props.className)}>
         <CardHeader className="p-0">
-          <CardTitle className="flex w-full font-normal">
+          <CardTitle className="flex w-full font-normal items-center">
             <p className="flex-1">{props.todo.name}</p>
             {/*Quick Todo Card Options */}
             <div className="w-10">
@@ -88,11 +88,10 @@ export function TodoCard(props: Props) {
               </TodoCardOptionsDropdown>
             </div>
           </CardTitle>
-          <CardContent>
-            <p>ID:{props.todo.id} </p>
-            <p>Position: {props.todo.position}</p>
-          </CardContent>
         </CardHeader>
+
+        <CardContent>
+        </CardContent>
       </Card>
     </div>
   )
