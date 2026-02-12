@@ -29,7 +29,7 @@ func NewLocalStorage(basePath string) Service {
 func (l *localStorage) Put(folder, ext string, r io.Reader) (string, error) {
 	dir := filepath.Join(l.basePath, folder)
 
-	if err := os.MkdirAll(dir, 0755); err != nil {
+	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return "", err
 	}
 
@@ -48,9 +48,9 @@ func (l *localStorage) Put(folder, ext string, r io.Reader) (string, error) {
 }
 
 func (l *localStorage) Get(folder, fileName string) (io.ReadCloser, error) {
-	return os.Open(filepath.Join(folder, fileName))
+	return os.Open(filepath.Join(l.basePath, folder, fileName))
 }
 
 func (l *localStorage) Delete(folder, fileName string) error {
-	return os.Remove(filepath.Join(folder, fileName))
+	return os.Remove(filepath.Join(l.basePath, folder, fileName))
 }
