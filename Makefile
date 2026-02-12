@@ -27,7 +27,7 @@ install:
 # Run everything in development
 dev:
 	@echo "Starting development servers..."
-	@make -j2 api web
+	@make -j2 db-up api web
 
 # Run API server
 api:
@@ -42,7 +42,7 @@ web:
 # Start database
 db-up:
 	@echo "Starting database..."
-	docker compose up -d
+	docker compose up db -d
 
 # Stop database
 db-down:
