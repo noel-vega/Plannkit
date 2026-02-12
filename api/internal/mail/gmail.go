@@ -35,10 +35,8 @@ func InitGoogleOAuth() {
 }
 
 func HandleLogin(c *gin.Context) {
-	fmt.Println("Handle login")
 	state := generateRandomString(16)
 	url := oauthConfig.AuthCodeURL(state, oauth2.AccessTypeOffline, oauth2.ApprovalForce)
-	fmt.Printf("Redirect: %v\n", url)
 	c.Redirect(http.StatusTemporaryRedirect, url)
 }
 

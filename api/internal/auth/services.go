@@ -134,7 +134,6 @@ func (s *Service) ValidateToken(tokenStr string) (*Claims, error) {
 }
 
 func (s *Service) RefreshAccessToken(refreshToken string) (string, error) {
-	fmt.Println("Begin refresh")
 	claims, err := s.ValidateToken(refreshToken)
 	if err != nil {
 		return "", err

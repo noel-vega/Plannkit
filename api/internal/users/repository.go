@@ -1,8 +1,6 @@
 package users
 
 import (
-	"fmt"
-
 	"github.com/jmoiron/sqlx"
 )
 
@@ -17,7 +15,6 @@ func NewUserRepo(db *sqlx.DB) *UserRepo {
 }
 
 func (r *UserRepo) GetUserByID(ID int) (*UserNoPassword, error) {
-	fmt.Printf("GET USER BY ID: %v\n", ID)
 	user := &UserNoPassword{}
 	query := `SELECT id, first_name, last_name, email, created_at, updated_at FROM users WHERE id = $1`
 	err := r.DB.Get(user, query, ID)
