@@ -11,12 +11,14 @@ import (
 )
 
 type Service struct {
+	jwtSecret   string
 	userService *users.Service
 }
 
-func NewService(db *sqlx.DB, userService *users.Service) *Service {
+func NewService(db *sqlx.DB, jwtSecret string, userService *users.Service) *Service {
 	return &Service{
 		userService: userService,
+		jwtSecret:   jwtSecret,
 	}
 }
 
@@ -28,7 +30,7 @@ func (s *Service) GenerateToken(userID int, duration time.Duration) (string, err
 	})
 
 	// TODO: secret key
-	tokenStr, err := token.SignedString([]byte("secret"))
+	tokenStr, err := token.SignedString([]byte(s.jwtSecret))
 	if err != nil {
 		return "", err
 	}
@@ -118,7 +120,7 @@ func (s *Service) GenerateTokenPair(userID int) (*TokenPair, error) {
 
 func (s *Service) ValidateToken(tokenStr string) (*Claims, error) {
 	token, err := jwt.ParseWithClaims(tokenStr, &Claims{}, func(token *jwt.Token) (any, error) {
-		return []byte("secret"), nil
+		return []byte(s.jwtSecret), nil
 	})
 	if err != nil {
 		return nil, err

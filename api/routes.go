@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
@@ -22,8 +23,10 @@ func AddRoutes(router *gin.Engine, db *sqlx.DB, storage storage.Service) *gin.En
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
 
+	jwtSecret := os.Getenv("JWT_SECRET")
+
 	usersService := users.NewUserService(db, storage)
-	authService := auth.NewService(db, usersService)
+	authService := auth.NewService(db, jwtSecret, usersService)
 
 	authHandler := auth.NewHandler(authService)
 	habitsHandler := habits.NewHandler(db)
