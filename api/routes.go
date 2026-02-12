@@ -7,12 +7,11 @@ import (
 	"github.com/noel-vega/habits/api/internal/habits"
 	"github.com/noel-vega/habits/api/internal/mail"
 	"github.com/noel-vega/habits/api/internal/todos"
-	"github.com/noel-vega/habits/api/internal/users"
 )
 
 func AddRoutes(router *gin.Engine, db *sqlx.DB) *gin.Engine {
 	authHandler := auth.NewHandler(db)
-	userHandler := users.NewHandler(db)
+	// userHandler := users.NewHandler(db)
 	habitsHandler := habits.NewHandler(db)
 	todosHandler := todos.NewHandler(db)
 
@@ -27,8 +26,6 @@ func AddRoutes(router *gin.Engine, db *sqlx.DB) *gin.Engine {
 	router.GET("/flags", FlagsHandler)
 
 	protected.GET("/auth/refresh", authHandler.RefreshAccessToken)
-
-	protected.GET("/users", userHandler.ListUsers)
 
 	protected.GET("/habits", habitsHandler.ListHabits)
 	protected.POST("/habits", habitsHandler.CreateHabit)
