@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"net/http"
 	"os"
 
 	"github.com/gin-contrib/cors"
@@ -10,6 +9,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
+	"github.com/noel-vega/habits/api/internal/storage"
 )
 
 func main() {
@@ -33,15 +33,10 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	router.GET("/health", func(c *gin.Context) {
-		if err := db.Ping(); err != nil {
-			c.JSON(http.StatusServiceUnavailable, gin.H{"status": "unhealthy", "reason": "database unreachable"})
-			return
-		}
-		c.JSON(http.StatusOK, gin.H{"status": "ok"})
-	})
+	storageBasePath := os.Getenv("STORAGE_BASE_PATH")
+	storageService := storage.NewLocalStorage(storageBasePath)
 
-	AddRoutes(router, db)
+	AddRoutes(router, db, storageService)
 
 	if err := router.Run(); err != nil {
 		log.Fatalf("failed to run server: %v", err)

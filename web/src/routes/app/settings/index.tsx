@@ -1,6 +1,6 @@
 import { Page } from '@/components/layout/page'
 import { Field, FieldLabel } from '@/components/ui/field'
-import { LanguageSelect } from '@/features/user/components/language-picker'
+import { LanguageSelect } from '@/features/settings/components/language-picker'
 import { createFileRoute } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 

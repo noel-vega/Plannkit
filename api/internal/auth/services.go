@@ -10,17 +10,17 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type AuthService struct {
-	UserService users.UserService
+type Service struct {
+	userService *users.Service
 }
 
-func NewAuthService(db *sqlx.DB) *AuthService {
-	return &AuthService{
-		UserService: *users.NewUserService(db),
+func NewService(db *sqlx.DB, userService *users.Service) *Service {
+	return &Service{
+		userService: userService,
 	}
 }
 
-func (s *AuthService) GenerateToken(userID int, duration time.Duration) (string, error) {
+func (s *Service) GenerateToken(userID int, duration time.Duration) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": userID,
 		"exp":     time.Now().Add(duration).Unix(),
@@ -35,7 +35,7 @@ func (s *AuthService) GenerateToken(userID int, duration time.Duration) (string,
 	return tokenStr, nil
 }
 
-func (s *AuthService) GenerateAccessToken(userID int) (string, error) {
+func (s *Service) GenerateAccessToken(userID int) (string, error) {
 	token, err := s.GenerateToken(userID, 1*time.Minute)
 	if err != nil {
 		return "", err
@@ -43,7 +43,7 @@ func (s *AuthService) GenerateAccessToken(userID int) (string, error) {
 	return token, nil
 }
 
-func (s *AuthService) GenerateRefreshToken(userID int) (string, error) {
+func (s *Service) GenerateRefreshToken(userID int) (string, error) {
 	token, err := s.GenerateToken(userID, 1*time.Hour)
 	if err != nil {
 		return "", err
@@ -51,7 +51,7 @@ func (s *AuthService) GenerateRefreshToken(userID int) (string, error) {
 	return token, nil
 }
 
-func (s *AuthService) SignUp(params users.CreateUserParams) (*TokenPair, *users.UserNoPassword, error) {
+func (s *Service) SignUp(params users.CreateUserParams) (*TokenPair, *users.UserNoPassword, error) {
 	hashBytes, err := bcrypt.GenerateFromPassword([]byte(params.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, nil, err
@@ -59,7 +59,7 @@ func (s *AuthService) SignUp(params users.CreateUserParams) (*TokenPair, *users.
 	hashedPassword := string(hashBytes)
 	params.Password = hashedPassword
 
-	user, err := s.UserService.CreateUser(params)
+	user, err := s.userService.CreateUser(params)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -72,8 +72,8 @@ func (s *AuthService) SignUp(params users.CreateUserParams) (*TokenPair, *users.
 	return tokenPair, user, nil
 }
 
-func (s *AuthService) SignIn(params SignInParams) (*TokenPair, *users.UserNoPassword, error) {
-	user, err := s.UserService.UserRepo.GetUserByEmailWithPassword(params.Email)
+func (s *Service) SignIn(params SignInParams) (*TokenPair, *users.UserNoPassword, error) {
+	user, err := s.userService.GetUserByEmailWithPassword(params.Email)
 	if err != nil {
 		// TODO: check for fatal errors
 		return nil, nil, ErrInvalidCredentials
@@ -99,7 +99,7 @@ func (s *AuthService) SignIn(params SignInParams) (*TokenPair, *users.UserNoPass
 	return tokenPair, userNoPassword, nil
 }
 
-func (s *AuthService) GenerateTokenPair(userID int) (*TokenPair, error) {
+func (s *Service) GenerateTokenPair(userID int) (*TokenPair, error) {
 	accessToken, err := s.GenerateAccessToken(userID)
 	if err != nil {
 		return nil, err
@@ -116,7 +116,7 @@ func (s *AuthService) GenerateTokenPair(userID int) (*TokenPair, error) {
 	}, nil
 }
 
-func (s *AuthService) ValidateToken(tokenStr string) (*Claims, error) {
+func (s *Service) ValidateToken(tokenStr string) (*Claims, error) {
 	token, err := jwt.ParseWithClaims(tokenStr, &Claims{}, func(token *jwt.Token) (any, error) {
 		return []byte("secret"), nil
 	})
@@ -131,7 +131,7 @@ func (s *AuthService) ValidateToken(tokenStr string) (*Claims, error) {
 	return claims, nil
 }
 
-func (s *AuthService) RefreshAccessToken(refreshToken string) (string, error) {
+func (s *Service) RefreshAccessToken(refreshToken string) (string, error) {
 	fmt.Println("Begin refresh")
 	claims, err := s.ValidateToken(refreshToken)
 	if err != nil {

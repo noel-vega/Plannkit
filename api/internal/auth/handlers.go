@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jmoiron/sqlx"
 	"github.com/noel-vega/habits/api/internal/users"
 )
 
@@ -17,14 +16,12 @@ const (
 )
 
 type Handler struct {
-	UserService *users.UserService
-	AuthService *AuthService
+	AuthService *Service
 }
 
-func NewHandler(db *sqlx.DB) *Handler {
+func NewHandler(authService *Service) *Handler {
 	return &Handler{
-		AuthService: NewAuthService(db),
-		UserService: users.NewUserService(db),
+		AuthService: authService,
 	}
 }
 
@@ -128,7 +125,7 @@ func (h *Handler) Me(c *gin.Context) {
 		return
 	}
 
-	user, err := h.UserService.GetUserByID(refreshTokenClaims.UserID)
+	user, err := h.AuthService.userService.GetUserByID(refreshTokenClaims.UserID)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return

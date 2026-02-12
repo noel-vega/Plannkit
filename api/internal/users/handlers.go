@@ -2,16 +2,15 @@ package users
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/jmoiron/sqlx"
 )
 
 type Handler struct {
-	UserService *UserService
+	UserService *Service
 }
 
-func NewHandler(db *sqlx.DB) *Handler {
+func NewHandler(userService *Service) *Handler {
 	return &Handler{
-		NewUserService(db),
+		userService,
 	}
 }
 

@@ -1,22 +1,37 @@
 package main
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 	"github.com/noel-vega/habits/api/internal/auth"
 	"github.com/noel-vega/habits/api/internal/habits"
 	"github.com/noel-vega/habits/api/internal/mail"
+	"github.com/noel-vega/habits/api/internal/storage"
 	"github.com/noel-vega/habits/api/internal/todos"
+	"github.com/noel-vega/habits/api/internal/users"
 )
 
-func AddRoutes(router *gin.Engine, db *sqlx.DB) *gin.Engine {
-	authHandler := auth.NewHandler(db)
-	// userHandler := users.NewHandler(db)
+func AddRoutes(router *gin.Engine, db *sqlx.DB, storage storage.Service) *gin.Engine {
+	router.GET("/health", func(c *gin.Context) {
+		if err := db.Ping(); err != nil {
+			c.JSON(http.StatusServiceUnavailable, gin.H{"status": "unhealthy", "reason": "database unreachable"})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"status": "ok"})
+	})
+
+	usersService := users.NewUserService(db, storage)
+	authService := auth.NewService(db, usersService)
+
+	authHandler := auth.NewHandler(authService)
 	habitsHandler := habits.NewHandler(db)
 	todosHandler := todos.NewHandler(db)
+	usersHandler := users.NewHandler(usersService)
 
 	protected := router.Group("/")
-	protected.Use(Authentication(db))
+	protected.Use(Authentication(authService))
 
 	router.POST("/auth/signup", authHandler.SignUp)
 	router.POST("/auth/signin", authHandler.SignIn)
@@ -26,6 +41,8 @@ func AddRoutes(router *gin.Engine, db *sqlx.DB) *gin.Engine {
 	router.GET("/flags", FlagsHandler)
 
 	protected.GET("/auth/refresh", authHandler.RefreshAccessToken)
+
+	protected.PUT("/users/avatar", usersHandler.UpdateAvatar)
 
 	protected.GET("/habits", habitsHandler.ListHabits)
 	protected.POST("/habits", habitsHandler.CreateHabit)

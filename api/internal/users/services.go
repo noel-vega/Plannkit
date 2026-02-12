@@ -11,22 +11,20 @@ import (
 	"github.com/noel-vega/habits/api/internal/storage"
 )
 
-type UserService struct {
-	UserRepo       *UserRepo
-	StorageService storage.Service
+type Service struct {
+	userRepo       *UserRepo
+	storageService storage.Service
 }
 
-func NewUserService(db *sqlx.DB) *UserService {
-	return &UserService{
-		UserRepo:       NewUserRepo(db),
-		StorageService: storage.NewLocalStorage(""),
+func NewUserService(db *sqlx.DB, storageService storage.Service) *Service {
+	return &Service{
+		userRepo:       NewUserRepo(db),
+		storageService: storageService,
 	}
 }
 
-func (svc *UserService) CreateUser(params CreateUserParams) (*UserNoPassword, error) {
-	existingUser, err := svc.UserRepo.GetUserByEmail(params.Email)
-	fmt.Printf("USER: %v+\n", existingUser)
-
+func (svc *Service) CreateUser(params CreateUserParams) (*UserNoPassword, error) {
+	existingUser, err := svc.userRepo.GetUserByEmail(params.Email)
 	if err != nil {
 		if !errors.Is(err, sql.ErrNoRows) {
 			return nil, err
@@ -37,30 +35,29 @@ func (svc *UserService) CreateUser(params CreateUserParams) (*UserNoPassword, er
 		return nil, fmt.Errorf("%s:%w", params.Email, ErrEmailExists)
 	}
 
-	newUser, err := svc.UserRepo.CreateUser(params)
+	newUser, err := svc.userRepo.CreateUser(params)
 	if err != nil {
 		return nil, err
 	}
 	return newUser, nil
 }
 
-func (svc *UserService) GetUserByCredentials(email string, password string) (*User, error) {
-	user, err := svc.UserRepo.GetUserByEmailWithPassword(email)
+func (svc *Service) GetUserByEmailWithPassword(email string) (*User, error) {
+	user, err := svc.userRepo.GetUserByEmailWithPassword(email)
 	if err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-func (svc *UserService) GetUserByID(ID int) (*UserNoPassword, error) {
-	fmt.Println("GET USER BY ID", ID)
-	user, err := svc.UserRepo.GetUserByID(ID)
+func (svc *Service) GetUserByID(ID int) (*UserNoPassword, error) {
+	user, err := svc.userRepo.GetUserByID(ID)
 	if err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-func (svc *UserService) UploadAvatar(fileName string, file io.Reader) (string, error) {
-	return svc.StorageService.Put("avatars", filepath.Ext(fileName), file)
+func (svc *Service) UploadAvatar(fileName string, file io.Reader) (string, error) {
+	return svc.storageService.Put("avatars", filepath.Ext(fileName), file)
 }
