@@ -17,11 +17,13 @@ func Authentication(authService *auth.Service) gin.HandlerFunc {
 		refreshTokenStr, err := c.Cookie("refresh_token")
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid refresh token: " + err.Error()})
+			return
 		}
 
 		refreshTokenClaims, err := authService.ValidateToken(refreshTokenStr)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid refresh token: " + err.Error()})
+			return
 		}
 
 		accessTokenStr := strings.TrimPrefix(c.GetHeader("Authorization"), "Bearer ")
