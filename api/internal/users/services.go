@@ -4,17 +4,22 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"io"
+	"path/filepath"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/noel-vega/habits/api/internal/storage"
 )
 
 type UserService struct {
-	UserRepo *UserRepo
+	UserRepo       *UserRepo
+	StorageService storage.Service
 }
 
 func NewUserService(db *sqlx.DB) *UserService {
 	return &UserService{
-		UserRepo: NewUserRepo(db),
+		UserRepo:       NewUserRepo(db),
+		StorageService: storage.NewLocalStorage(""),
 	}
 }
 
@@ -54,4 +59,8 @@ func (svc *UserService) GetUserByID(ID int) (*UserNoPassword, error) {
 		return nil, err
 	}
 	return user, nil
+}
+
+func (svc *UserService) UploadAvatar(fileName string, file io.Reader) (string, error) {
+	return svc.StorageService.Put("avatars", filepath.Ext(fileName), file)
 }

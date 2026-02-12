@@ -6,14 +6,18 @@ import (
 )
 
 type Handler struct {
-	UserRepo *UserRepo
+	UserService *UserService
 }
 
 func NewHandler(db *sqlx.DB) *Handler {
 	return &Handler{
-		NewUserRepo(db),
+		NewUserService(db),
 	}
 }
 
-func (handler *Handler) ListUsers(c *gin.Context) {
+func (handler *Handler) UpdateAvatar(c *gin.Context) {
+	file, header, _ := c.Request.FormFile("avatar")
+	defer file.Close()
+
+	handler.UserService.UploadAvatar(header.Filename, file)
 }
