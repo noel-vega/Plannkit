@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
@@ -19,23 +18,6 @@ func NewAuthService(db *sqlx.DB) *AuthService {
 	return &AuthService{
 		UserService: *users.NewUserService(db),
 	}
-}
-
-type TokenPair struct {
-	AccessToken  string `json:"accessToken"`
-	RefreshToken string `json:"refresh_token"`
-}
-
-var ErrInvalidCredentials = errors.New("invalid email or password")
-
-type SignInParams struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-type Claims struct {
-	UserID int `json:"user_id"`
-	jwt.RegisteredClaims
 }
 
 func (s *AuthService) GenerateToken(userID int, duration time.Duration) (string, error) {
