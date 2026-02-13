@@ -33,7 +33,7 @@ func (l *localStorage) Put(folder, ext string, r io.Reader) (string, error) {
 		return "", err
 	}
 
-	fileName := fmt.Sprintf("%s.%s", uuid.NewString(), ext)
+	fileName := fmt.Sprintf("%s%s", uuid.NewString(), ext)
 
 	file, err := os.Create(filepath.Join(dir, fileName))
 	if err != nil {
