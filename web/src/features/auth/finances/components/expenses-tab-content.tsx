@@ -28,7 +28,3 @@ export function ExpensesTabContent() {
     </>
   )
 }
-
-
-// Define your row shape
-
