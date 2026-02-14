@@ -21,7 +21,7 @@ export function ExpensesTabContent() {
             </SelectGroup>
           </SelectContent>
         </Select>
-        <Button><PlusIcon /> Add Expense</Button>
+        <Button variant="secondary"><PlusIcon /> Add Expense</Button>
       </div>
 
       <ExpensesTable expenses={expenses} />
