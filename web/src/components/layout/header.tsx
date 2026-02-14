@@ -27,14 +27,14 @@ export function Header() {
       <SidebarTrigger>Menu</SidebarTrigger>
       <p className="font-bold text-2xl">{t(title)}</p>
       <div className="ml-auto">
-        <Button asChild variant="ghost" className="[&_svg:not([class*='size-'])]:size-5">
+        <Button asChild variant="ghost" className="[&_svg:not([class*='size-'])]:size-4.5">
           <Link to="/app/settings">
             <SettingsIcon />
           </Link>
         </Button>
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button variant="ghost" className="[&_svg:not([class*='size-'])]:size-5">
+            <Button variant="ghost" className="[&_svg:not([class*='size-'])]:size-4.5">
               <LogOutIcon />
             </Button>
           </AlertDialogTrigger>
