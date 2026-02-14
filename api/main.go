@@ -36,7 +36,7 @@ func main() {
 	}))
 
 	storageBasePath := os.Getenv("STORAGE_BASE_PATH")
-	router.Static("/avatars", storageBasePath)
+	router.Static("/public", storageBasePath)
 	storageService := storage.NewLocalStorage(storageBasePath)
 
 	AddRoutes(router, db, storageService)

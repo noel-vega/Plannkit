@@ -32,7 +32,7 @@ func (r *Repository) Create(params CreateUserParams) (*UserNoPassword, error) {
 
 func (r *Repository) GetByID(ID int) (*UserNoPassword, error) {
 	user := &UserNoPassword{}
-	query := `SELECT id, first_name, last_name, email, created_at, updated_at FROM users WHERE id = $1`
+	query := `SELECT id, first_name, last_name, email, created_at, updated_at, avatar FROM users WHERE id = $1`
 	err := r.DB.Get(user, query, ID)
 	if err != nil {
 		return nil, err

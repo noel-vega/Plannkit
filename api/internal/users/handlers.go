@@ -27,9 +27,13 @@ func (handler *Handler) UpdateAvatar(c *gin.Context) {
 	defer file.Close()
 
 	ext := filepath.Ext(header.Filename)
-	_, err = handler.UserService.UpdateAvatar(userID, ext, file)
+	filename, err := handler.UserService.UpdateAvatar(userID, ext, file)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"avatar": filename,
+	})
 }
