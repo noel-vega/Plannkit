@@ -26,6 +26,8 @@ func main() {
 	allowOrigin := os.Getenv("ALLOW_ORIGIN")
 
 	router := gin.Default()
+
+	// Serve the avatars directory under /avatars URL path
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{allowOrigin},
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
@@ -34,6 +36,7 @@ func main() {
 	}))
 
 	storageBasePath := os.Getenv("STORAGE_BASE_PATH")
+	router.Static("/avatars", storageBasePath)
 	storageService := storage.NewLocalStorage(storageBasePath)
 
 	AddRoutes(router, db, storageService)
