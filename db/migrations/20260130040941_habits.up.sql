@@ -28,8 +28,8 @@ CREATE TABLE IF NOT EXISTS habits_contributions (
 CREATE INDEX idx_habits_contributions_habit_id 
 ON habits_contributions(habit_id);
 
-CREATE INDEX idx_habits_contributions_date 
-ON habits_contributions(date);
+CREATE INDEX idx_habits_contributions_created_at
+ON habits_contributions(created_at);
 
 CREATE UNIQUE INDEX idx_habits_contributions_date 
 ON habits_contributions(habit_id, date);
