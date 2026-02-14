@@ -32,6 +32,7 @@ export function SignInForm() {
 
   const handleSignIn = (e: FormEvent) => {
     form.handleSubmit(data => {
+      form.reset(data)
       signIn.mutate(data, {
         onSuccess: (data) => {
           useAuth.setState(data)
@@ -44,7 +45,9 @@ export function SignInForm() {
   const isDisabled = !form.formState.isValid || form.formState.isSubmitting || signIn.isSuccess
   return (
     <form onSubmit={handleSignIn} className="space-y-6 @container/form">
-      <AuthErrorMessage message={signIn.error?.message} />
+      {!signIn.isPending && !form.formState.isDirty && (
+        <AuthErrorMessage message={signIn.error?.message} />
+      )}
       <FieldGroup>
         <Controller control={form.control} name="email"
           render={({ field, fieldState }) => {

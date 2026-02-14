@@ -1,9 +1,12 @@
+import { Item, ItemContent } from "@/components/ui/item"
 
 export function AuthErrorMessage({ message }: { message?: string }) {
   if (!message) return
   return (
-    <div className="p-4 bg-red-100/50 border border-destructive rounded-lg font-medium text-red-700">
-      * {message}
-    </div>
+    <Item variant="outline" className="border-red-500 text-red-500 bg-red-100/30">
+      <ItemContent>
+        * {message}
+      </ItemContent>
+    </Item>
   )
 }
