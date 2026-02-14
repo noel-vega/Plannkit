@@ -22,6 +22,9 @@ export const auth = {
       method: "POST",
       body: JSON.stringify(params),
     })
+    if (response.status === 401) {
+      throw new Error("Invalid credentials")
+    }
     if (!response.ok) {
       throw new Error("Failed to signin")
     }
