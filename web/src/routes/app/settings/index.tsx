@@ -1,3 +1,4 @@
+import { BackButton } from '@/components/back-button'
 import { Page } from '@/components/layout/page'
 import { Field, FieldLabel } from '@/components/ui/field'
 import { LanguageSelect } from '@/features/settings/components/language-picker'
@@ -13,6 +14,7 @@ function RouteComponent() {
   const { t } = useTranslation()
   return (
     <Page title="Settings" >
+      <BackButton />
       <Field>
         <FieldLabel>{t("Language")}</FieldLabel>
         <LanguageSelect />
