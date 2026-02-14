@@ -38,11 +38,10 @@ function RouteComponent() {
 async function updateAvatar(file: File) {
   const formData = new FormData()
   formData.append("avatar", file)
-  const response = await pkFetch("/users/avatar", {
+  await pkFetch("/users/avatar", {
     method: "PUT",
     body: formData
-
-  })
+  }, false)
 }
 
 function MeAvatar() {
