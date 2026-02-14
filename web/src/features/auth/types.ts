@@ -4,7 +4,8 @@ export const MeSchema = z.object({
   id: z.number(),
   firstName: z.string(),
   lastName: z.string(),
-  email: z.string()
+  email: z.string(),
+  avatar: z.string().nullable()
 })
 
 export type Me = z.infer<typeof MeSchema>

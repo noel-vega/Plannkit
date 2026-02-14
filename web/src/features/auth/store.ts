@@ -13,5 +13,6 @@ export const useAuth = create<AuthStore>(() => ({
     email: "",
     firstName: "",
     lastName: "",
+    avatar: null
   }
 }))
