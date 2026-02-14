@@ -40,6 +40,7 @@ export function SignInForm() {
     })(e)
   }
 
+  const isDisabled = !form.formState.isValid || form.formState.isSubmitting || signIn.isSuccess
   return (
     <form onSubmit={handleSignIn} className="space-y-6 @container/form">
       {signIn.error && (
@@ -87,9 +88,7 @@ export function SignInForm() {
         />
       </FieldGroup>
 
-      <div>
-        <Button type="submit" className="w-full" disabled={!form.formState.isValid || signIn.isPending}>Sign In</Button>
-      </div>
+      <Button className="w-full" disabled={isDisabled}>Sign In</Button>
     </form>
   )
 }
