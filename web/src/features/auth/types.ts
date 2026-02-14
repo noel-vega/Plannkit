@@ -35,3 +35,16 @@ export const AuthenticationResponseSchema = z.object({
 export const RefreshTokenResponseSchema = z.object({
   accessToken: z.string()
 })
+
+export const SignUpDataSchema = z.object({
+  firstName: z.string().min(1, { message: "Required" }),
+  lastName: z.string().min(1, { message: "Required" }),
+  email: z.string().min(1, { message: "Required" }),
+  password: z.string().min(6, { message: "Too short, 6 characters required" }),
+  confirmPassword: z.string()
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
+});
+
+export type SignUpFormData = z.infer<typeof SignUpDataSchema>

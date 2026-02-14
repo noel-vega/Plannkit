@@ -8,6 +8,7 @@ import z from "zod/v3"
 import { useAuth } from "../store"
 import { useNavigate } from "@tanstack/react-router"
 import { useSignIn } from "../hooks"
+import { AuthErrorMessage } from "./auth-error-message"
 
 const SignInDataSchema = z.object({
   email: z.string().min(1, { message: "Required" }),
@@ -43,12 +44,7 @@ export function SignInForm() {
   const isDisabled = !form.formState.isValid || form.formState.isSubmitting || signIn.isSuccess
   return (
     <form onSubmit={handleSignIn} className="space-y-6 @container/form">
-      {signIn.error && (
-        <div className="p-4 bg-red-100/50 border border-destructive rounded-lg font-medium text-red-700">
-          * {signIn.error.message}
-        </div>
-      )}
-
+      <AuthErrorMessage message={signIn.error?.message} />
       <FieldGroup>
         <Controller control={form.control} name="email"
           render={({ field, fieldState }) => {
@@ -92,3 +88,4 @@ export function SignInForm() {
     </form>
   )
 }
+
