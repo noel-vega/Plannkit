@@ -1,3 +1,3 @@
 
 DROP TABLE IF EXISTS habits;
-DROP TABLE IF EXISTS contributions;
+DROP TABLE IF EXISTS habits_contributions;
