@@ -47,7 +47,7 @@ type UpdateCompletionsParams struct {
 
 func (r *ContributionsRepo) List(habitID int, userID int) ([]Contribution, error) {
 	contributions := []Contribution{}
-	err := r.db.Select(&contributions, "SELECT * FROM contributions WHERE habit_id=$1 AND user_id = $2", habitID, userID)
+	err := r.db.Select(&contributions, "SELECT * FROM habits_contributions WHERE habit_id=$1 AND user_id = $2", habitID, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func (r *ContributionsRepo) List(habitID int, userID int) ([]Contribution, error
 }
 
 func (r *ContributionsRepo) Create(params CreateContributionParams) error {
-	query := "INSERT INTO contributions (habit_id, completions, date, user_id) VALUES (:habit_id, :completions, :date, :user_id)"
+	query := "INSERT INTO habits_contributions (habit_id, completions, date, user_id) VALUES (:habit_id, :completions, :date, :user_id)"
 	_, err := r.db.NamedExec(query, params)
 	if err != nil {
 		return err
@@ -65,7 +65,7 @@ func (r *ContributionsRepo) Create(params CreateContributionParams) error {
 
 func (r *ContributionsRepo) UpdateCompletions(params UpdateCompletionsParams) error {
 	query := `
-		UPDATE contributions
+		UPDATE habits_contributions
 	  SET completions = $1 
 		WHERE id = $2 AND user_id = $3;
 	`
@@ -78,7 +78,7 @@ func (r *ContributionsRepo) UpdateCompletions(params UpdateCompletionsParams) er
 }
 
 func (r *ContributionsRepo) Delete(id int, userID int) error {
-	_, err := r.db.Exec("DELETE FROM contributions WHERE id=$1 AND user_id = $2", id, userID)
+	_, err := r.db.Exec("DELETE FROM habits_contributions WHERE id=$1 AND user_id = $2", id, userID)
 	if err != nil {
 		return err
 	}
