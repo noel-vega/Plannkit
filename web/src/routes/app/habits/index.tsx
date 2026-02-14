@@ -29,7 +29,7 @@ function RouteComponent() {
   const createHabitDialog = useDialog()
   return (
     <Page title="Habits">
-      <div className="max-w-5xl space-y-6 @container">
+      <div className="max-w-6xl space-y-6 @container">
         <header className="flex items-center gap-4 pb-2">
           <p className="hidden @md:block text-2xl mr-auto font-medium">
             {format(new Date(), 'EEEE, MMMM d')}

@@ -18,7 +18,7 @@ function RouteComponent() {
   const board = useQuery({ ...getBoardQueryOptions(), initialData: loaderData.board })
   return (
     <Page title="Tasks" className="space-y-4">
-      <div className="max-w-5xl w-full">
+      <div className="max-w-6xl w-full">
         <Board board={board.data} />
       </div>
     </Page>
