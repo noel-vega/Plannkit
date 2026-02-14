@@ -5,26 +5,25 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"path/filepath"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/noel-vega/habits/api/internal/storage"
 )
 
 type Service struct {
-	userRepo       *UserRepo
+	userRepo       *Repository
 	storageService storage.Service
 }
 
 func NewUserService(db *sqlx.DB, storageService storage.Service) *Service {
 	return &Service{
-		userRepo:       NewUserRepo(db),
+		userRepo:       NewRepository(db),
 		storageService: storageService,
 	}
 }
 
 func (svc *Service) CreateUser(params CreateUserParams) (*UserNoPassword, error) {
-	existingUser, err := svc.userRepo.GetUserByEmail(params.Email)
+	existingUser, err := svc.userRepo.GetByEmail(params.Email)
 	if err != nil {
 		if !errors.Is(err, sql.ErrNoRows) {
 			return nil, err
@@ -35,7 +34,7 @@ func (svc *Service) CreateUser(params CreateUserParams) (*UserNoPassword, error)
 		return nil, fmt.Errorf("%s:%w", params.Email, ErrEmailExists)
 	}
 
-	newUser, err := svc.userRepo.CreateUser(params)
+	newUser, err := svc.userRepo.Create(params)
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +42,7 @@ func (svc *Service) CreateUser(params CreateUserParams) (*UserNoPassword, error)
 }
 
 func (svc *Service) GetUserByEmailWithPassword(email string) (*User, error) {
-	user, err := svc.userRepo.GetUserByEmailWithPassword(email)
+	user, err := svc.userRepo.GetByEmailWithPassword(email)
 	if err != nil {
 		return nil, err
 	}
@@ -51,13 +50,23 @@ func (svc *Service) GetUserByEmailWithPassword(email string) (*User, error) {
 }
 
 func (svc *Service) GetUserByID(ID int) (*UserNoPassword, error) {
-	user, err := svc.userRepo.GetUserByID(ID)
+	user, err := svc.userRepo.GetByID(ID)
 	if err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-func (svc *Service) UploadAvatar(fileName string, file io.Reader) (string, error) {
-	return svc.storageService.Put("avatars", filepath.Ext(fileName), file)
+func (svc *Service) UpdateAvatar(userID int, ext string, file io.Reader) (string, error) {
+	fileName, err := svc.storageService.Put("avatars", ext, file)
+	if err != nil {
+		return "", err
+	}
+
+	err = svc.userRepo.UpdateAvatar(userID, fileName)
+	if err != nil {
+		return "", err
+	}
+
+	return fileName, nil
 }

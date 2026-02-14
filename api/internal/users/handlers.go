@@ -2,6 +2,7 @@ package users
 
 import (
 	"net/http"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,6 +18,7 @@ func NewHandler(userService *Service) *Handler {
 }
 
 func (handler *Handler) UpdateAvatar(c *gin.Context) {
+	userID := c.MustGet("user_id").(int)
 	file, header, err := c.Request.FormFile("avatar")
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
@@ -24,7 +26,8 @@ func (handler *Handler) UpdateAvatar(c *gin.Context) {
 	}
 	defer file.Close()
 
-	_, err = handler.UserService.UploadAvatar(header.Filename, file)
+	ext := filepath.Ext(header.Filename)
+	_, err = handler.UserService.UpdateAvatar(userID, ext, file)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
