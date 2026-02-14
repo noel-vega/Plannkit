@@ -70,11 +70,11 @@ export function AppSidebar() {
             <SidebarMenuButton
               asChild
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground border border-border/80 hover:border-border"
             >
               <Link to="/app/user">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src="" alt="@shadcn" />
+                <Avatar className="h-8 w-8 border-border border">
+                  <AvatarImage src={`http://localhost:8080/public/avatars/${me.avatar}`} alt="@shadcn" />
                   <AvatarFallback className="border">{me.firstName[0]} {me.lastName[0]}</AvatarFallback>
                 </Avatar>
                 <span>{me.firstName} {me.lastName}</span>
