@@ -1,13 +1,12 @@
 import { Page } from '@/components/layout/page'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
-import { Dialog } from '@/components/ui/dialog'
 import { useAuth } from '@/features/auth/store'
-import { useDialog } from '@/hooks'
 import { pkFetch } from '@/lib/plannkit-api-client'
 import { useMutation } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { useRef, type ChangeEvent } from 'react'
+import { type ChangeEvent } from 'react'
+import z from 'zod/v3'
 
 export const Route = createFileRoute('/app/user/')({
   component: RouteComponent,
@@ -38,22 +37,27 @@ function RouteComponent() {
 async function updateAvatar(file: File) {
   const formData = new FormData()
   formData.append("avatar", file)
-  await pkFetch("/users/avatar", {
+  const response = await pkFetch("/users/avatar", {
     method: "PUT",
     body: formData
   }, false)
+
+  return z.object({ avatar: z.string() }).parse(await response.json())
 }
 
 function MeAvatar() {
   const { me } = useAuth()
 
   const updateAvatarMtn = useMutation({
-    mutationFn: updateAvatar
+    mutationFn: updateAvatar,
+    onSuccess: ({ avatar }) => {
+      const me = useAuth.getState().me
+      useAuth.setState({ me: { ...me, avatar } })
+    }
   })
 
   const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.currentTarget.files?.[0]
-    console.log(file)
     if (!file) return
     updateAvatarMtn.mutate(file)
   }
@@ -61,9 +65,9 @@ function MeAvatar() {
   return (
     <>
       <label className="rounded-full cursor-pointer" htmlFor="avatar">
-        <Avatar className="size-40">
-          <AvatarImage src="" alt="@shadcn" />
-          <AvatarFallback className="border-6 border-white">{me.firstName[0]} {me.lastName[0]}</AvatarFallback>
+        <Avatar className="size-40 border-2 border-white/50 shadow ">
+          <AvatarImage src={`http://localhost:8080/public/avatars/${me.avatar}`} alt="@shadcn" />
+          <AvatarFallback className="border-2 border-white">{me.firstName[0]} {me.lastName[0]}</AvatarFallback>
         </Avatar>
       </label>
       <input
