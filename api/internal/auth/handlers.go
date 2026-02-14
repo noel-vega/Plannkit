@@ -69,6 +69,11 @@ func (h *Handler) SignIn(c *gin.Context) {
 	data := SignInParams{}
 	c.Bind(&data)
 	tokens, user, err := h.AuthService.SignIn(data)
+
+	if errors.Is(err, ErrInvalidCredentials) {
+		c.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
