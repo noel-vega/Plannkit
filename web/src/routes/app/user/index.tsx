@@ -2,6 +2,7 @@ import { Page } from '@/components/layout/page'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { useAuth } from '@/features/auth/store'
+import { AvatarSchema } from '@/features/auth/types'
 import { pkFetch } from '@/lib/plannkit-api-client'
 import { useMutation } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
@@ -42,7 +43,7 @@ async function updateAvatar(file: File) {
     body: formData
   }, false)
 
-  return z.object({ avatar: z.string() }).parse(await response.json())
+  return z.object({ avatar: AvatarSchema }).parse(await response.json())
 }
 
 function MeAvatar() {
@@ -51,9 +52,9 @@ function MeAvatar() {
   const updateAvatarMtn = useMutation({
     mutationFn: updateAvatar,
     onSuccess: ({ avatar }) => {
-      const me = useAuth.getState().me
-      useAuth.setState({ me: { ...me, avatar } })
+      useAuth.setState({ me: { ...useAuth.getState().me, avatar } })
     }
+
   })
 
   const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
@@ -66,7 +67,9 @@ function MeAvatar() {
     <>
       <label className="rounded-full cursor-pointer" htmlFor="avatar">
         <Avatar className="size-40 border-2 border-white/50 shadow ">
-          <AvatarImage src={`http://localhost:8080/public/avatars/${me.avatar}`} alt="@shadcn" />
+          {me.avatar && (
+            <AvatarImage src={me.avatar} alt="@shadcn" />
+          )}
           <AvatarFallback className="border-2 border-white">{me.firstName[0]} {me.lastName[0]}</AvatarFallback>
         </Avatar>
       </label>

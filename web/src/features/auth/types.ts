@@ -1,11 +1,16 @@
 import z from "zod/v3"
 
+
+export const AvatarSchema = z.string().nullable().transform(filename => {
+  return filename ? `http://localhost:8080/public/avatars/${filename}` : null
+})
+
 export const MeSchema = z.object({
   id: z.number(),
   firstName: z.string(),
   lastName: z.string(),
   email: z.string(),
-  avatar: z.string().nullable()
+  avatar: AvatarSchema
 })
 
 export type Me = z.infer<typeof MeSchema>
@@ -31,7 +36,6 @@ export const AuthenticationResponseSchema = z.object({
   accessToken: z.string(),
   me: MeSchema
 })
-
 export const RefreshTokenResponseSchema = z.object({
   accessToken: z.string()
 })
