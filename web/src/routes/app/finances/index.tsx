@@ -1,5 +1,6 @@
 import { Page } from '@/components/layout/page'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ExpensesTabContent } from '@/features/auth/finances/components/expenses-tab-content'
 import { OverviewTabContent } from '@/features/auth/finances/components/overview-tab-content'
@@ -26,12 +27,8 @@ function RouteComponent() {
     <Page title="Finances">
       <div className="max-w-6xl">
         <Tabs defaultValue="overview">
-          <div className="flex justify-between">
-            <TabsList variant="line" className='-ml-5 -mt-1'>
-              <TabsTrigger value="overview" className="p-4">Overview</TabsTrigger>
-              <TabsTrigger value="expenses" className=" p-4">Expenses</TabsTrigger>
-            </TabsList>
-            <div className="max-w-lg w-full">
+          <div className="flex gap-2">
+            <div className="max-w-[18rem] w-full">
               <Select defaultValue={spaces.data[0].id.toString()} >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select a category" />
@@ -45,13 +42,18 @@ function RouteComponent() {
                 </SelectContent>
               </Select>
             </div>
+            <TabsList className=''>
+              <TabsTrigger value="overview" className="">Overview</TabsTrigger>
+              <TabsTrigger value="expenses" className=" ">Expenses</TabsTrigger>
+            </TabsList>
           </div>
+          <Separator className="my-2" />
 
-          <TabsContent value="overview" className='py-8'>
+          <TabsContent value="overview" className='pb-4'>
             <OverviewTabContent />
           </TabsContent>
 
-          <TabsContent value="expenses" className="py-8">
+          <TabsContent value="expenses" className="pb-4">
             <ExpensesTabContent />
           </TabsContent>
         </Tabs>
