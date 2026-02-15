@@ -12,7 +12,6 @@ export async function pkFetch(path: string, options?: RequestInit, json: boolean
     headers.set("Content-Type", "application/json")
   }
 
-  console.log("HEADERS", headers)
   return await fetch(url, {
     ...options,
     credentials: "include",
