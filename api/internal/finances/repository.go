@@ -36,9 +36,35 @@ func (r *Repository) CreateSpace(params CreateSpaceParams) (*Space, error) {
 	}
 	return data, nil
 }
-func (r *Repository) ListSpaces()      {}
-func (r *Repository) DeleteSpaceByID() {}
-func (r *Repository) GetSpaceByID()    {}
+
+func (r *Repository) ListSpaces(userID int) ([]Space, error) {
+	data := []Space{}
+	query := `SELECT * FROM finance_spaces WHERE user_id = $1`
+	err := r.db.Select(data, query, userID)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+func (r *Repository) DeleteSpaceByID(userID, spaceID int) error {
+	query := `DELETE FROM finance_spaces WHERE user_id = $1 AND id = $2`
+	_, err := r.db.Exec(query, userID, spaceID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *Repository) GetSpaceByID(userID, spaceID int) (*Space, error) {
+	data := &Space{}
+	query := `SELECT * FROM finance_spaces WHERE user_id = $1 AND id = $2`
+	err := r.db.Get(data, query, userID, spaceID)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
 
 func (r *Repository) CreateIncomeSource()     {}
 func (r *Repository) ListIncomeSources()      {}

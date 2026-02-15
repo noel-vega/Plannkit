@@ -9,7 +9,9 @@ func NewHandler() *Handler {
 }
 
 func (h *Handler) CreateFinanceSpace(c *gin.Context) {}
-func (h *Handler) ListFinanceSpaces(c *gin.Context)  {}
+
+func (h *Handler) ListFinanceSpaces(c *gin.Context) {
+}
 
 func (h *Handler) CreateGoal(c *gin.Context) {}
 func (h *Handler) ListGoals(c *gin.Context)  {}
