@@ -55,7 +55,11 @@ func (r *ContributionsRepo) List(habitID int, userID int) ([]Contribution, error
 }
 
 func (r *ContributionsRepo) Create(params CreateContributionParams) error {
-	query := "INSERT INTO habits_contributions (habit_id, completions, date, user_id) VALUES (:habit_id, :completions, :date, :user_id)"
+	query := `
+		INSERT INTO 
+		habits_contributions (habit_id, completions, date, user_id) 
+		VALUES (:habit_id, :completions, :date, :user_id)
+	`
 	_, err := r.db.NamedExec(query, params)
 	if err != nil {
 		return err

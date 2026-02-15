@@ -54,7 +54,11 @@ func (handler *Handler) GetHabitByID(c *gin.Context) {
 func (handler *Handler) ListHabits(c *gin.Context) {
 	userID := c.MustGet("user_id").(int)
 	habitsWithContributions := []HabitWithContributions{}
-	habits := handler.HabitRepo.ListHabits(userID)
+	habits, err := handler.HabitRepo.ListHabits(userID)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
 	for _, h := range habits {
 		contributions, err := handler.ContribRepo.List(h.ID, userID)
 		if err != nil {

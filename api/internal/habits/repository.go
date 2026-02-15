@@ -42,10 +42,13 @@ func (r *HabitRepo) GetByHabitID(id int, userID int) (*Habit, error) {
 	return &habit, nil
 }
 
-func (r *HabitRepo) ListHabits(userID int) []Habit {
+func (r *HabitRepo) ListHabits(userID int) ([]Habit, error) {
 	habits := []Habit{}
-	r.db.Select(&habits, "SELECT * FROM habits WHERE user_id = $1", userID)
-	return habits
+	err := r.db.Select(&habits, "SELECT * FROM habits WHERE user_id = $1", userID)
+	if err != nil {
+		return nil, err
+	}
+	return habits, nil
 }
 
 func (r *HabitRepo) CreateHabit(params CreateHabitParams) (*Habit, error) {
