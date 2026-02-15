@@ -1,6 +1,10 @@
 package finances
 
-import "github.com/jmoiron/sqlx"
+import (
+	"fmt"
+
+	"github.com/jmoiron/sqlx"
+)
 
 type Repository struct {
 	db *sqlx.DB
@@ -18,6 +22,7 @@ type CreateSpaceParams struct {
 }
 
 func (r *Repository) CreateSpace(params CreateSpaceParams) (*Space, error) {
+	fmt.Printf("[REPO]: CREATE SPACE: %v\n", params)
 	data := &Space{}
 	query := `
 	INSERT INTO 
@@ -30,7 +35,11 @@ func (r *Repository) CreateSpace(params CreateSpaceParams) (*Space, error) {
 		return nil, err
 	}
 
-	err = r.db.Get(&data, query, args...)
+	query = r.db.Rebind(query)
+	fmt.Printf("[REPO]: CREATE SPACE: %v\n", query)
+	fmt.Printf("[REPO]: CREATE SPACE: %v\n", args...)
+
+	err = r.db.Get(data, query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +49,7 @@ func (r *Repository) CreateSpace(params CreateSpaceParams) (*Space, error) {
 func (r *Repository) ListSpaces(userID int) ([]Space, error) {
 	data := []Space{}
 	query := `SELECT * FROM finance_spaces WHERE user_id = $1`
-	err := r.db.Select(data, query, userID)
+	err := r.db.Select(&data, query, userID)
 	if err != nil {
 		return nil, err
 	}

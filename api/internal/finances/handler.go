@@ -5,16 +5,15 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jmoiron/sqlx"
 )
 
 type Handler struct {
 	service *Service
 }
 
-func NewHandler(db *sqlx.DB) *Handler {
+func NewHandler(service *Service) *Handler {
 	return &Handler{
-		service: NewService(db),
+		service: service,
 	}
 }
 

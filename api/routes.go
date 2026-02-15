@@ -15,7 +15,7 @@ import (
 	"github.com/noel-vega/habits/api/internal/users"
 )
 
-func AddRoutes(router *gin.Engine, db *sqlx.DB, storage storage.Service) *gin.Engine {
+func AddRoutes(router *gin.Engine, db *sqlx.DB, storageService storage.Service) *gin.Engine {
 	router.GET("/health", func(c *gin.Context) {
 		if err := db.Ping(); err != nil {
 			c.JSON(http.StatusServiceUnavailable, gin.H{"status": "unhealthy", "reason": "database unreachable"})
@@ -26,14 +26,15 @@ func AddRoutes(router *gin.Engine, db *sqlx.DB, storage storage.Service) *gin.En
 
 	jwtSecret := os.Getenv("JWT_SECRET")
 
-	usersService := users.NewUserService(db, storage)
+	financesService := finances.NewService(db)
+	usersService := users.NewUserService(db, storageService, financesService)
 	authService := auth.NewService(db, jwtSecret, usersService)
 
 	authHandler := auth.NewHandler(authService)
 	habitsHandler := habits.NewHandler(db)
 	todosHandler := todos.NewHandler(db)
 	usersHandler := users.NewHandler(usersService)
-	financesHandler := finances.NewHandler(db)
+	financesHandler := finances.NewHandler(financesService)
 
 	protected := router.Group("/")
 	protected.Use(Authentication(authService))
@@ -48,7 +49,7 @@ func AddRoutes(router *gin.Engine, db *sqlx.DB, storage storage.Service) *gin.En
 
 	protected.PUT("/users/avatar", usersHandler.UpdateAvatar)
 
-	protected.GET("/finance/spaces", financesHandler.ListSpaces)
+	protected.GET("/finances/spaces", financesHandler.ListSpaces)
 
 	protected.GET("/habits", habitsHandler.ListHabits)
 	protected.POST("/habits", habitsHandler.CreateHabit)

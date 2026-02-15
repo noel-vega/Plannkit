@@ -7,18 +7,21 @@ import (
 	"io"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/noel-vega/habits/api/internal/finances"
 	"github.com/noel-vega/habits/api/internal/storage"
 )
 
 type Service struct {
-	userRepo       *Repository
-	storageService storage.Service
+	userRepo        *Repository
+	financesService *finances.Service
+	storageService  storage.Service
 }
 
-func NewUserService(db *sqlx.DB, storageService storage.Service) *Service {
+func NewUserService(db *sqlx.DB, storageService storage.Service, finfinancesService *finances.Service) *Service {
 	return &Service{
-		userRepo:       NewRepository(db),
-		storageService: storageService,
+		userRepo:        NewRepository(db),
+		storageService:  storageService,
+		financesService: finfinancesService,
 	}
 }
 
@@ -38,6 +41,15 @@ func (svc *Service) CreateUser(params CreateUserParams) (*UserNoPassword, error)
 	if err != nil {
 		return nil, err
 	}
+
+	_, err = svc.financesService.CreateSpace(finances.CreateSpaceParams{
+		UserID: newUser.ID,
+		Name:   "My Finances",
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	return newUser, nil
 }
 
