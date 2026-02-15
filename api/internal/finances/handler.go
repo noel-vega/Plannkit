@@ -1,16 +1,36 @@
 package finances
 
-import "github.com/gin-gonic/gin"
+import (
+	"fmt"
+	"net/http"
 
-type Handler struct{}
+	"github.com/gin-gonic/gin"
+	"github.com/jmoiron/sqlx"
+)
 
-func NewHandler() *Handler {
-	return &Handler{}
+type Handler struct {
+	service *Service
 }
 
-func (h *Handler) CreateFinanceSpace(c *gin.Context) {}
+func NewHandler(db *sqlx.DB) *Handler {
+	return &Handler{
+		service: NewService(db),
+	}
+}
 
-func (h *Handler) ListFinanceSpaces(c *gin.Context) {
+func (h *Handler) CreateSpace(c *gin.Context) {
+	fmt.Println("HOLA CREATE SPACE")
+}
+
+func (h *Handler) ListSpaces(c *gin.Context) {
+	userID := c.MustGet("user_id").(int)
+	spaces, err := h.service.ListSpaces(userID)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, spaces)
 }
 
 func (h *Handler) CreateGoal(c *gin.Context) {}

@@ -1,6 +1,7 @@
-import { queryOptions, useMutation } from "@tanstack/react-query"
+import { queryOptions, useMutation, useQuery } from "@tanstack/react-query"
 import { queryClient } from "@/lib/react-query"
 import { contributions, habits } from "./api"
+import type { HabitWithContributions } from "./types"
 
 export function getHabitByIdQueryOptions(params: { id: number }) {
   return queryOptions({
@@ -86,4 +87,8 @@ export function useUpdateContribution() {
       invalidateHabitById(habitId)
     }
   })
+}
+
+export function useListHabits({ initialData }: { initialData: HabitWithContributions[] }) {
+  return useQuery({ ...getListHabitsQueryOptions(), initialData })
 }

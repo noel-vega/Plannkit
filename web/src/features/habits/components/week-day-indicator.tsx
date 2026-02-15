@@ -4,11 +4,10 @@ import { CheckIcon, TriangleIcon } from "lucide-react"
 import type { HabitWithContributions } from "../types"
 
 
-export function WeekdayIndicator(props: { habits: HabitWithContributions[], day: Date, around: number }) {
+export function WeekdayIndicatorInternal(props: { habits: HabitWithContributions[], day: Date, around: number, className?: string }) {
   const days = getDaysAround(props.day, props.around)
   return (
-
-    <ul className="flex gap-3 relative">
+    <ul className={cn("flex gap-3 relative", props.className)}>
       {days.map((day, i) => {
         const { isDone } = getCompletedHabits({ day, habits: props.habits })
         return (
@@ -33,5 +32,21 @@ export function WeekdayIndicator(props: { habits: HabitWithContributions[], day:
         )
       })}
     </ul>
+  )
+}
+
+export function WeekDayIndicator({ habits }: { habits: HabitWithContributions[] }) {
+  return (
+    <div className="@container">
+      <div className="@xl:hidden">
+        <WeekdayIndicatorInternal habits={habits} day={new Date()} around={1} />
+      </div>
+      <div className="hidden @xl:block @4xl:hidden">
+        <WeekdayIndicatorInternal habits={habits} day={new Date()} around={2} />
+      </div>
+      <div className="hidden @4xl:block">
+        <WeekdayIndicatorInternal habits={habits} day={new Date()} around={3} />
+      </div>
+    </div>
   )
 }

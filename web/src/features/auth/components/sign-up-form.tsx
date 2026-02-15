@@ -41,8 +41,9 @@ export function SignUpForm() {
   return (
     <form onSubmit={handleSignUp} className="space-y-6 @container/form">
       <AuthErrorMessage message={signUp.error?.message} />
+
       <FieldGroup>
-        <FieldSet className="flex @sm:flex-row flex-col">
+        <FieldSet className="flex flex-row gap-2">
           <Controller control={form.control} name="firstName"
             render={({ field, fieldState }) =>
               <Field data-invalid={fieldState.invalid}>

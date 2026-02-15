@@ -10,14 +10,14 @@ export function TodaysProgress(props: { habits: HabitWithContributions[] }) {
     return curr.completionsPerDay === completionsToday ? prev + 1 : prev
   }, 0)
 
-  const progress = completedHabits / props.habits.length * 100
+  const progress = props.habits.length === 0 ? 0 : completedHabits / props.habits.length * 100
   return (
     <Card className="bg-blue-100/50 border-blue-200">
       <CardContent className="flex justify-between items-center" >
         <div className="flex gap-6">
           <div className="">
             <p>Today's Progress</p>
-            <p className="font-semibold text-lg">{completedHabits} of {props.habits.length} habits completed</p>
+            <p className="font-semibold text-lg">{completedHabits} of {props.habits.length} completed</p>
           </div>
         </div>
 

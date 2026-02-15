@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 	"github.com/noel-vega/habits/api/internal/auth"
+	"github.com/noel-vega/habits/api/internal/finances"
 	"github.com/noel-vega/habits/api/internal/habits"
 	"github.com/noel-vega/habits/api/internal/mail"
 	"github.com/noel-vega/habits/api/internal/storage"
@@ -32,20 +33,22 @@ func AddRoutes(router *gin.Engine, db *sqlx.DB, storage storage.Service) *gin.En
 	habitsHandler := habits.NewHandler(db)
 	todosHandler := todos.NewHandler(db)
 	usersHandler := users.NewHandler(usersService)
+	financesHandler := finances.NewHandler(db)
 
 	protected := router.Group("/")
 	protected.Use(Authentication(authService))
+
+	router.GET("/flags", FlagsHandler)
 
 	router.POST("/auth/signup", authHandler.SignUp)
 	router.POST("/auth/signin", authHandler.SignIn)
 	router.GET("/auth/signout", authHandler.SignOut)
 	router.GET("/auth/me", authHandler.Me)
-
-	router.GET("/flags", FlagsHandler)
-
 	protected.GET("/auth/refresh", authHandler.RefreshAccessToken)
 
 	protected.PUT("/users/avatar", usersHandler.UpdateAvatar)
+
+	protected.GET("/finance/spaces", financesHandler.ListSpaces)
 
 	protected.GET("/habits", habitsHandler.ListHabits)
 	protected.POST("/habits", habitsHandler.CreateHabit)
