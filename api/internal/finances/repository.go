@@ -12,7 +12,30 @@ func NewRepository(db *sqlx.DB) *Repository {
 	}
 }
 
-func (r *Repository) CreateSpace()     {}
+type CreateSpaceParams struct {
+	UserID int    `json:"userId" db:"user_id"`
+	Name   string `json:"name" db:"name"`
+}
+
+func (r *Repository) CreateSpace(params CreateSpaceParams) (*Space, error) {
+	data := &Space{}
+	query := `
+	INSERT INTO 
+	finance_spaces (user_id, name)
+	VALUES (:user_id, :name)
+	RETURNING *
+	`
+	query, args, err := sqlx.Named(query, params)
+	if err != nil {
+		return nil, err
+	}
+
+	err = r.db.Get(&data, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
 func (r *Repository) ListSpaces()      {}
 func (r *Repository) DeleteSpaceByID() {}
 func (r *Repository) GetSpaceByID()    {}
