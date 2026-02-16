@@ -10,8 +10,8 @@ import { Page } from '@/components/layout/page'
 import { useTranslation } from 'react-i18next'
 import { getListHabitsQueryOptions, useListHabits } from '@/features/habits/hooks'
 import { WeekDayIndicator } from '@/features/habits/components/week-day-indicator'
-import type { PropsWithChildren } from 'react'
 import type { HabitWithContributions } from '@/features/habits/types'
+import { Container } from '@/components/layout/container'
 
 export const Route = createFileRoute('/app/habits/')({
   loader: async ({ context: { queryClient } }) => {
@@ -27,7 +27,7 @@ function RouteComponent() {
   const habits = useListHabits({ initialData: loaderData.habits })
   return (
     <Page title="Habits">
-      <Container>
+      <Container className="max-w-6xl space-y-6 @container">
         <Header />
         <WeekDayIndicator habits={habits.data} />
         <TodaysProgress habits={habits.data} />
@@ -55,14 +55,6 @@ function HabitsList({ habits }: { habits: HabitWithContributions[] }) {
         </li>)}
       </ul>
     </>
-  )
-}
-
-function Container(props: PropsWithChildren) {
-  return (
-    <div className="max-w-6xl space-y-6">
-      {props.children}
-    </div>
   )
 }
 

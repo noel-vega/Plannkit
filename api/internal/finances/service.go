@@ -13,7 +13,15 @@ func NewService(db *sqlx.DB) *Service {
 }
 
 func (s *Service) CreateSpace(params CreateSpaceParams) (*Space, error) {
-	return s.repository.CreateSpace(params)
+	space, err := s.repository.CreateSpace(params)
+	if err != nil {
+		return nil, err
+	}
+	err = s.repository.CreateSpaceMembership(params.UserID, space.ID)
+	if err != nil {
+		return nil, err
+	}
+	return space, nil
 }
 
 func (s *Service) ListSpaces(userID int) ([]Space, error) {
@@ -26,4 +34,8 @@ func (s *Service) DeleteSpace(userID, spaceID int) error {
 
 func (s *Service) GetSpace(userID, spaceID int) (*Space, error) {
 	return s.repository.GetSpaceByID(userID, spaceID)
+}
+
+func (s *Service) ListExpenses(userID, spaceID int) ([]Expense, error) {
+	return s.repository.ListExpenses(userID, spaceID)
 }

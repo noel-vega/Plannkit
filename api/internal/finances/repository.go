@@ -22,7 +22,6 @@ type CreateSpaceParams struct {
 }
 
 func (r *Repository) CreateSpace(params CreateSpaceParams) (*Space, error) {
-	fmt.Printf("[REPO]: CREATE SPACE: %v\n", params)
 	data := &Space{}
 	query := `
 	INSERT INTO 
@@ -36,8 +35,6 @@ func (r *Repository) CreateSpace(params CreateSpaceParams) (*Space, error) {
 	}
 
 	query = r.db.Rebind(query)
-	fmt.Printf("[REPO]: CREATE SPACE: %v\n", query)
-	fmt.Printf("[REPO]: CREATE SPACE: %v\n", args...)
 
 	err = r.db.Get(data, query, args...)
 	if err != nil {
@@ -46,14 +43,51 @@ func (r *Repository) CreateSpace(params CreateSpaceParams) (*Space, error) {
 	return data, nil
 }
 
-func (r *Repository) ListSpaces(userID int) ([]Space, error) {
-	data := []Space{}
-	query := `SELECT * FROM finance_spaces WHERE user_id = $1`
+func (r *Repository) CreateSpaceMembership(userID, spaceID int) error {
+	query := `
+		INSERT INTO 
+		finance_spaces_members (user_id, finance_space_id)
+	  VALUES ($1, $2)
+	`
+	_, err := r.db.Exec(query, userID, spaceID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *Repository) ListSpaceMemberships(userID int) ([]SpaceMember, error) {
+	data := []SpaceMember{}
+	query := `
+		SELECT * FROM finance_spaces_members WHERE user_id = $1
+	`
 	err := r.db.Select(&data, query, userID)
 	if err != nil {
 		return nil, err
 	}
 	return data, nil
+}
+
+func (r *Repository) ListSpaces(userID int) ([]Space, error) {
+	memberships, err := r.ListSpaceMemberships(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Printf("UserID '%v' has %v memberships", userID, len(memberships))
+
+	spaces := []Space{}
+	for _, membership := range memberships {
+		fmt.Printf("Membbership | %+v", membership)
+		space := Space{}
+		query := `SELECT * FROM finance_spaces WHERE user_id = $1 AND id = $2`
+		err := r.db.Get(&space, query, userID, membership.SpaceID)
+		if err != nil {
+			return nil, err
+		}
+		spaces = append(spaces, space)
+	}
+	return spaces, nil
 }
 
 func (r *Repository) DeleteSpaceByID(userID, spaceID int) error {
@@ -85,7 +119,23 @@ func (r *Repository) ListGoals()      {}
 func (r *Repository) DeleteGoalByID() {}
 func (r *Repository) GetGoalByID()    {}
 
-func (r *Repository) CreateExpense()     {}
-func (r *Repository) ListExpenses()      {}
+func (r *Repository) CreateExpense() {}
+
+func (r *Repository) ListExpenses(userID, spaceID int) ([]Expense, error) {
+	data := []Expense{}
+	query := `
+	SELECT * 
+	FROM finance_spaces_expenses
+	WHERE user_id = $1 AND finance_space_id = $2`
+
+	err := r.db.Select(&data, query, userID, spaceID)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}
+
 func (r *Repository) DeleteExpenseByID() {}
-func (r *Repository) GetExpenseByID()    {}
+
+func (r *Repository) GetExpenseByID() {}

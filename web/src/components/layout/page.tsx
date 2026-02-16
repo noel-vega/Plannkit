@@ -6,6 +6,7 @@ type PageProps = {
   title?: string
   className?: string
 } & PropsWithChildren
+
 export function Page(props: PageProps) {
   useEffect(() => {
     useHeaderStore.setState({ title: props.title })

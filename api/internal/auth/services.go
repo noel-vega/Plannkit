@@ -74,11 +74,11 @@ func (s *Service) SignUp(params users.CreateUserParams) (*TokenPair, *users.User
 	return tokenPair, user, nil
 }
 
-func (s *Service) SignIn(params SignInParams) (*TokenPair, *users.UserNoPassword, error) {
+func (s *Service) SignIn(params *SignInParams) (*TokenPair, *users.UserNoPassword, error) {
+	fmt.Printf("[SERVICE SIGNIN]: %v", params)
 	user, err := s.userService.GetUserByEmailWithPassword(params.Email)
 	if err != nil {
-		// TODO: check for fatal errors
-		return nil, nil, ErrInvalidCredentials
+		return nil, nil, err
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(params.Password))

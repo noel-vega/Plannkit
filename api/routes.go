@@ -50,6 +50,7 @@ func AddRoutes(router *gin.Engine, db *sqlx.DB, storageService storage.Service) 
 	protected.PUT("/users/avatar", usersHandler.UpdateAvatar)
 
 	protected.GET("/finances/spaces", financesHandler.ListSpaces)
+	protected.GET("/finances/spaces/:id/expenses", financesHandler.ListExpenses)
 
 	protected.GET("/habits", habitsHandler.ListHabits)
 	protected.POST("/habits", habitsHandler.CreateHabit)

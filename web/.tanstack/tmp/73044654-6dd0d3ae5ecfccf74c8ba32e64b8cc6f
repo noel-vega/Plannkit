@@ -20,12 +20,12 @@ import { Route as AppTodosIndexRouteImport } from './routes/app/todos/index'
 import { Route as AppSettingsIndexRouteImport } from './routes/app/settings/index'
 import { Route as AppHabitsIndexRouteImport } from './routes/app/habits/index'
 import { Route as AppGroceriesIndexRouteImport } from './routes/app/groceries/index'
+import { Route as AppFinancesIndexRouteImport } from './routes/app/finances/index'
 import { Route as AppEmailIndexRouteImport } from './routes/app/email/index'
 import { Route as AppDocumentsIndexRouteImport } from './routes/app/documents/index'
 import { Route as AppDashboardIndexRouteImport } from './routes/app/dashboard/index'
 import { Route as AppHabitsIdRouteImport } from './routes/app/habits/$id'
-import { Route as AppFinancesSpaceIdOverviewRouteImport } from './routes/app/finances/$spaceId/overview'
-import { Route as AppFinancesSpaceIdExpensesRouteImport } from './routes/app/finances/$spaceId/expenses'
+import { Route as AppFinancesExpensesRouteImport } from './routes/app/finances/expenses'
 
 const AuthRouteRoute = AuthRouteRouteImport.update({
   id: '/auth',
@@ -82,6 +82,11 @@ const AppGroceriesIndexRoute = AppGroceriesIndexRouteImport.update({
   path: '/groceries/',
   getParentRoute: () => AppRouteRoute,
 } as any)
+const AppFinancesIndexRoute = AppFinancesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppFinancesRouteRoute,
+} as any)
 const AppEmailIndexRoute = AppEmailIndexRouteImport.update({
   id: '/email/',
   path: '/email/',
@@ -102,18 +107,11 @@ const AppHabitsIdRoute = AppHabitsIdRouteImport.update({
   path: '/habits/$id',
   getParentRoute: () => AppRouteRoute,
 } as any)
-const AppFinancesSpaceIdOverviewRoute =
-  AppFinancesSpaceIdOverviewRouteImport.update({
-    id: '/$spaceId/overview',
-    path: '/$spaceId/overview',
-    getParentRoute: () => AppFinancesRouteRoute,
-  } as any)
-const AppFinancesSpaceIdExpensesRoute =
-  AppFinancesSpaceIdExpensesRouteImport.update({
-    id: '/$spaceId/expenses',
-    path: '/$spaceId/expenses',
-    getParentRoute: () => AppFinancesRouteRoute,
-  } as any)
+const AppFinancesExpensesRoute = AppFinancesExpensesRouteImport.update({
+  id: '/expenses',
+  path: '/expenses',
+  getParentRoute: () => AppFinancesRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -122,36 +120,35 @@ export interface FileRoutesByFullPath {
   '/app/finances': typeof AppFinancesRouteRouteWithChildren
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
+  '/app/finances/expenses': typeof AppFinancesExpensesRoute
   '/app/habits/$id': typeof AppHabitsIdRoute
   '/app/dashboard': typeof AppDashboardIndexRoute
   '/app/documents': typeof AppDocumentsIndexRoute
   '/app/email': typeof AppEmailIndexRoute
+  '/app/finances/': typeof AppFinancesIndexRoute
   '/app/groceries': typeof AppGroceriesIndexRoute
   '/app/habits': typeof AppHabitsIndexRoute
   '/app/settings': typeof AppSettingsIndexRoute
   '/app/todos': typeof AppTodosIndexRoute
   '/app/user': typeof AppUserIndexRoute
-  '/app/finances/$spaceId/expenses': typeof AppFinancesSpaceIdExpensesRoute
-  '/app/finances/$spaceId/overview': typeof AppFinancesSpaceIdOverviewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/app': typeof AppRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
-  '/app/finances': typeof AppFinancesRouteRouteWithChildren
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
+  '/app/finances/expenses': typeof AppFinancesExpensesRoute
   '/app/habits/$id': typeof AppHabitsIdRoute
   '/app/dashboard': typeof AppDashboardIndexRoute
   '/app/documents': typeof AppDocumentsIndexRoute
   '/app/email': typeof AppEmailIndexRoute
+  '/app/finances': typeof AppFinancesIndexRoute
   '/app/groceries': typeof AppGroceriesIndexRoute
   '/app/habits': typeof AppHabitsIndexRoute
   '/app/settings': typeof AppSettingsIndexRoute
   '/app/todos': typeof AppTodosIndexRoute
   '/app/user': typeof AppUserIndexRoute
-  '/app/finances/$spaceId/expenses': typeof AppFinancesSpaceIdExpensesRoute
-  '/app/finances/$spaceId/overview': typeof AppFinancesSpaceIdOverviewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -161,17 +158,17 @@ export interface FileRoutesById {
   '/app/finances': typeof AppFinancesRouteRouteWithChildren
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
+  '/app/finances/expenses': typeof AppFinancesExpensesRoute
   '/app/habits/$id': typeof AppHabitsIdRoute
   '/app/dashboard/': typeof AppDashboardIndexRoute
   '/app/documents/': typeof AppDocumentsIndexRoute
   '/app/email/': typeof AppEmailIndexRoute
+  '/app/finances/': typeof AppFinancesIndexRoute
   '/app/groceries/': typeof AppGroceriesIndexRoute
   '/app/habits/': typeof AppHabitsIndexRoute
   '/app/settings/': typeof AppSettingsIndexRoute
   '/app/todos/': typeof AppTodosIndexRoute
   '/app/user/': typeof AppUserIndexRoute
-  '/app/finances/$spaceId/expenses': typeof AppFinancesSpaceIdExpensesRoute
-  '/app/finances/$spaceId/overview': typeof AppFinancesSpaceIdOverviewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -182,36 +179,35 @@ export interface FileRouteTypes {
     | '/app/finances'
     | '/auth/signin'
     | '/auth/signup'
+    | '/app/finances/expenses'
     | '/app/habits/$id'
     | '/app/dashboard'
     | '/app/documents'
     | '/app/email'
+    | '/app/finances/'
     | '/app/groceries'
     | '/app/habits'
     | '/app/settings'
     | '/app/todos'
     | '/app/user'
-    | '/app/finances/$spaceId/expenses'
-    | '/app/finances/$spaceId/overview'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/app'
     | '/auth'
-    | '/app/finances'
     | '/auth/signin'
     | '/auth/signup'
+    | '/app/finances/expenses'
     | '/app/habits/$id'
     | '/app/dashboard'
     | '/app/documents'
     | '/app/email'
+    | '/app/finances'
     | '/app/groceries'
     | '/app/habits'
     | '/app/settings'
     | '/app/todos'
     | '/app/user'
-    | '/app/finances/$spaceId/expenses'
-    | '/app/finances/$spaceId/overview'
   id:
     | '__root__'
     | '/'
@@ -220,17 +216,17 @@ export interface FileRouteTypes {
     | '/app/finances'
     | '/auth/signin'
     | '/auth/signup'
+    | '/app/finances/expenses'
     | '/app/habits/$id'
     | '/app/dashboard/'
     | '/app/documents/'
     | '/app/email/'
+    | '/app/finances/'
     | '/app/groceries/'
     | '/app/habits/'
     | '/app/settings/'
     | '/app/todos/'
     | '/app/user/'
-    | '/app/finances/$spaceId/expenses'
-    | '/app/finances/$spaceId/overview'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -318,6 +314,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppGroceriesIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
+    '/app/finances/': {
+      id: '/app/finances/'
+      path: '/'
+      fullPath: '/app/finances/'
+      preLoaderRoute: typeof AppFinancesIndexRouteImport
+      parentRoute: typeof AppFinancesRouteRoute
+    }
     '/app/email/': {
       id: '/app/email/'
       path: '/email'
@@ -346,31 +349,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppHabitsIdRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/app/finances/$spaceId/overview': {
-      id: '/app/finances/$spaceId/overview'
-      path: '/$spaceId/overview'
-      fullPath: '/app/finances/$spaceId/overview'
-      preLoaderRoute: typeof AppFinancesSpaceIdOverviewRouteImport
-      parentRoute: typeof AppFinancesRouteRoute
-    }
-    '/app/finances/$spaceId/expenses': {
-      id: '/app/finances/$spaceId/expenses'
-      path: '/$spaceId/expenses'
-      fullPath: '/app/finances/$spaceId/expenses'
-      preLoaderRoute: typeof AppFinancesSpaceIdExpensesRouteImport
+    '/app/finances/expenses': {
+      id: '/app/finances/expenses'
+      path: '/expenses'
+      fullPath: '/app/finances/expenses'
+      preLoaderRoute: typeof AppFinancesExpensesRouteImport
       parentRoute: typeof AppFinancesRouteRoute
     }
   }
 }
 
 interface AppFinancesRouteRouteChildren {
-  AppFinancesSpaceIdExpensesRoute: typeof AppFinancesSpaceIdExpensesRoute
-  AppFinancesSpaceIdOverviewRoute: typeof AppFinancesSpaceIdOverviewRoute
+  AppFinancesExpensesRoute: typeof AppFinancesExpensesRoute
+  AppFinancesIndexRoute: typeof AppFinancesIndexRoute
 }
 
 const AppFinancesRouteRouteChildren: AppFinancesRouteRouteChildren = {
-  AppFinancesSpaceIdExpensesRoute: AppFinancesSpaceIdExpensesRoute,
-  AppFinancesSpaceIdOverviewRoute: AppFinancesSpaceIdOverviewRoute,
+  AppFinancesExpensesRoute: AppFinancesExpensesRoute,
+  AppFinancesIndexRoute: AppFinancesIndexRoute,
 }
 
 const AppFinancesRouteRouteWithChildren =

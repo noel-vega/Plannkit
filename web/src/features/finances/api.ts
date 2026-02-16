@@ -1,20 +1,26 @@
 import { pkFetch } from "@/lib/plannkit-api-client"
-import z from "zod/v3"
+import type { ByIdParams } from "../habits/types"
+import { ExpenseSchema, FinanceSpaceSchema, type CreateFinanceSpaceParams } from "./types"
 
-export const FinanceSpaceSchema = z.object({
-  id: z.number(),
-  userId: z.number(),
-  name: z.string(),
-  createdAt: z.coerce.date(),
-  updatedAt: z.coerce.date()
-})
 
-export type FinanceSpace = z.infer<typeof FinanceSpaceSchema>
 
 export const finances = {
+  createSpace: async (params: CreateFinanceSpaceParams) => {
+    const response = await pkFetch("/finances/spaces", {
+      method: "POST",
+      body: JSON.stringify(params)
+    })
+    const data = await response.json()
+    return FinanceSpaceSchema.parse(data)
+  },
   listSpaces: async () => {
     const response = await pkFetch("/finances/spaces")
     const data = await response.json()
     return FinanceSpaceSchema.array().parse(data)
+  },
+  listExpenses: async (params: ByIdParams) => {
+    const response = await pkFetch(`/finances/spaces/${params.id}/expenses`)
+    const data = await response.json()
+    return ExpenseSchema.array().parse(data)
   }
 }

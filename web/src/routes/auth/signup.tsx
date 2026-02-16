@@ -1,7 +1,7 @@
+import { Container } from '@/components/layout/container'
 import { Button } from '@/components/ui/button'
 import { SignUpForm } from '@/features/auth/components/sign-up-form'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import type { PropsWithChildren } from 'react'
 
 export const Route = createFileRoute('/auth/signup')({
   component: RouteComponent,
@@ -9,7 +9,7 @@ export const Route = createFileRoute('/auth/signup')({
 
 function RouteComponent() {
   return (
-    <Container>
+    <Container className="max-w-lg w-full space-y-4">
       <Header />
       <SignUpForm />
       <SignInCallout />
@@ -17,13 +17,6 @@ function RouteComponent() {
   )
 }
 
-function Container({ children }: PropsWithChildren) {
-  return (
-    <div className="max-w-lg w-full space-y-4">
-      {children}
-    </div>
-  )
-}
 
 function Header() {
   return (

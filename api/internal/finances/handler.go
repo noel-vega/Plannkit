@@ -1,8 +1,8 @@
 package finances
 
 import (
-	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,7 +18,6 @@ func NewHandler(service *Service) *Handler {
 }
 
 func (h *Handler) CreateSpace(c *gin.Context) {
-	fmt.Println("HOLA CREATE SPACE")
 }
 
 func (h *Handler) ListSpaces(c *gin.Context) {
@@ -36,4 +35,21 @@ func (h *Handler) CreateGoal(c *gin.Context) {}
 func (h *Handler) ListGoals(c *gin.Context)  {}
 
 func (h *Handler) CreateExpense(c *gin.Context) {}
-func (h *Handler) ListExpenses(c *gin.Context)  {}
+
+func (h *Handler) ListExpenses(c *gin.Context) {
+	userID := c.MustGet("user_id").(int)
+
+	spaceID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	expenses, err := h.service.ListExpenses(userID, spaceID)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, expenses)
+}

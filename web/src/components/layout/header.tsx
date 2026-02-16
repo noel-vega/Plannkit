@@ -7,6 +7,7 @@ import { Link, useNavigate } from "@tanstack/react-router"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog"
 import { useSignOut } from "@/features/auth/hooks"
 
+
 export function Header() {
   const navigate = useNavigate()
   const { title } = useHeaderStore()
@@ -26,7 +27,9 @@ export function Header() {
     <div className="h-16 border-b flex items-center px-4 gap-4">
       <SidebarTrigger>Menu</SidebarTrigger>
       <p className="font-bold text-2xl">{t(title)}</p>
-      <div className="ml-auto">
+      <div id="app-layout-header-portal" className="flex-1">
+      </div>
+      <div>
         <Button asChild variant="ghost" className="[&_svg:not([class*='size-'])]:size-4.5">
           <Link to="/app/settings">
             <SettingsIcon />
@@ -56,3 +59,5 @@ export function Header() {
       </div>
     </div>)
 }
+
+

@@ -3,6 +3,7 @@ package auth
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -66,9 +67,10 @@ func (h *Handler) SignUp(c *gin.Context) {
 }
 
 func (h *Handler) SignIn(c *gin.Context) {
-	data := SignInParams{}
-	c.Bind(&data)
+	data := &SignInParams{}
+	c.Bind(data)
 	tokens, user, err := h.AuthService.SignIn(data)
+	fmt.Printf("%+v", data)
 
 	if errors.Is(err, ErrInvalidCredentials) {
 		c.AbortWithStatus(http.StatusUnauthorized)
