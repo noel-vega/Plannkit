@@ -48,6 +48,22 @@ func (h *Handler) ListSpaces(c *gin.Context) {
 	c.JSON(http.StatusOK, spaces)
 }
 
+func (h *Handler) DeleteSpace(c *gin.Context) {
+	userID := c.MustGet("user_id").(int)
+	spaceIDParam := c.Param("spaceID")
+	spaceID, err := strconv.Atoi(spaceIDParam)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	err = h.service.DeleteSpace(userID, spaceID)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+}
+
 func (h *Handler) CreateGoal(c *gin.Context) {}
 func (h *Handler) ListGoals(c *gin.Context)  {}
 
