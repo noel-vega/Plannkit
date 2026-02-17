@@ -6,7 +6,14 @@ import type { FinanceSpace } from "../types";
 import { CreateFinanceSpaceDialog } from "./create-finance-space-dialog";
 import { useDialog } from "@/hooks";
 
-export function FinanceSpaceSwitcher({ value, spaces, onValueChange }: { value: FinanceSpace, spaces: FinanceSpace[], onValueChange: (val: FinanceSpace) => void }) {
+type Props = {
+  value: FinanceSpace,
+  spaces: FinanceSpace[],
+  onSpaceSelect: (space: FinanceSpace) => void,
+  onCreate: (space: FinanceSpace) => void
+}
+
+export function FinanceSpaceSwitcher(props: Props) {
   const createSpaceDialog = useDialog()
   return (
     <Popover>
@@ -17,7 +24,7 @@ export function FinanceSpaceSwitcher({ value, spaces, onValueChange }: { value: 
         >
           <WalletIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
           <span className="truncate max-w-[180px]">
-            {value?.name ?? "Select space"}
+            {props.value.name ?? "Select space"}
           </span>
           <ChevronsUpDownIcon className=" h-3.5 w-3.5 shrink-0 text-muted-foreground ml-auto" />
         </Button>
@@ -28,8 +35,10 @@ export function FinanceSpaceSwitcher({ value, spaces, onValueChange }: { value: 
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup heading="Spaces">
-              {spaces.map(space => (
-                <CommandItem><WalletIcon />{space.name}</CommandItem>
+              {props.spaces.map(space => (
+                <CommandItem key={space.id} onSelect={() => props.onSpaceSelect(space)}>
+                  <WalletIcon />{space.name}
+                </CommandItem>
               ))}
               <CommandItem onSelect={createSpaceDialog.handleOpenDialog}><PlusIcon />Create Space</CommandItem>
             </CommandGroup>
@@ -42,7 +51,7 @@ export function FinanceSpaceSwitcher({ value, spaces, onValueChange }: { value: 
           </CommandList>
         </Command>
       </PopoverContent>
-      <CreateFinanceSpaceDialog {...createSpaceDialog} />
+      <CreateFinanceSpaceDialog {...createSpaceDialog} onSubmit={props.onCreate} />
     </Popover>
   )
 }

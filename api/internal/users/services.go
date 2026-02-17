@@ -42,7 +42,7 @@ func (svc *Service) CreateUser(params CreateUserParams) (*UserNoPassword, error)
 		return nil, err
 	}
 
-	_, err = svc.financesService.CreateSpace(finances.CreateSpaceParams{
+	_, err = svc.financesService.CreateSpace(&finances.CreateSpaceParams{
 		UserID: newUser.ID,
 		Name:   "My Finances",
 	})

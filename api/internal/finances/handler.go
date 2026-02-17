@@ -18,6 +18,23 @@ func NewHandler(service *Service) *Handler {
 }
 
 func (h *Handler) CreateSpace(c *gin.Context) {
+	data := &CreateSpaceParams{
+		UserID: c.MustGet("user_id").(int),
+	}
+
+	err := c.Bind(data)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	space, err := h.service.CreateSpace(data)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, space)
 }
 
 func (h *Handler) ListSpaces(c *gin.Context) {

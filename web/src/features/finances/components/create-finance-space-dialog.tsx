@@ -5,10 +5,16 @@ import { Input } from "@/components/ui/input";
 import type { DialogProps } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { CreateFinanceSpaceSchema } from "../types";
+import { CreateFinanceSpaceSchema, type FinanceSpace } from "../types";
 import { type FormEvent } from "react";
+import { useCreateFinanceSpace } from "../hooks";
 
-export function CreateFinanceSpaceDialog(props: DialogProps) {
+type Props = {
+  onSubmit: (space: FinanceSpace) => void
+
+} & DialogProps
+
+export function CreateFinanceSpaceDialog(props: Props) {
   const form = useForm({
     resolver: zodResolver(CreateFinanceSpaceSchema),
     defaultValues: {
@@ -16,9 +22,19 @@ export function CreateFinanceSpaceDialog(props: DialogProps) {
     }
   })
 
+  const createSpace = useCreateFinanceSpace()
+
   const handleSubmit = (e: FormEvent) => {
     form.handleSubmit((data) => {
       console.log(data)
+      createSpace.mutate(data, {
+        onSuccess: (data) => {
+          console.log("NEW SPACE: ", data)
+          props.onSubmit(data)
+          props.onOpenChange(false)
+          form.reset()
+        }
+      })
     })(e)
   }
 
@@ -26,7 +42,7 @@ export function CreateFinanceSpaceDialog(props: DialogProps) {
 
   const handleOpenChange = (open: boolean) => {
     if (!open) {
-      form.reset({ name: "" })
+      form.reset()
     }
     props.onOpenChange(open)
   }

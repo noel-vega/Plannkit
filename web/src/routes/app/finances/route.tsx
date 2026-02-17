@@ -1,6 +1,6 @@
 import { Page } from '@/components/layout/page'
 import { FinanceSpaceSwitcher } from '@/features/finances/components/finance-space-switcher'
-import { getUseListFinanceSpacesOptions } from '@/features/finances/hooks'
+import { getUseListFinanceSpacesOptions, useListFinanceSpaces } from '@/features/finances/hooks'
 import type { FinanceSpace } from '@/features/finances/types'
 import { queryClient } from '@/lib/react-query'
 import { createFileRoute, Outlet, redirect, useNavigate } from '@tanstack/react-router'
@@ -24,14 +24,24 @@ export const Route = createFileRoute('/app/finances')({
 
 function RouteComponent() {
   const navigate = useNavigate()
-  const { spaces, currentSpace } = Route.useRouteContext()
+  const rtCtx = Route.useRouteContext()
+  const spaces = useListFinanceSpaces({ initialData: rtCtx.spaces })
   const handleSwitchSpace = (space: FinanceSpace) => {
+    navigate({ to: "/app/finances/$spaceId/overview", params: { spaceId: space.id } })
+  }
+
+  const handleCreate = (space: FinanceSpace) => {
     navigate({ to: "/app/finances/$spaceId/overview", params: { spaceId: space.id } })
   }
   return (
     <Page title="Finances">
       <div className="mb-4">
-        <FinanceSpaceSwitcher value={currentSpace} spaces={spaces} onValueChange={handleSwitchSpace} />
+        <FinanceSpaceSwitcher
+          value={rtCtx.currentSpace}
+          spaces={spaces.data}
+          onSpaceSelect={handleSwitchSpace}
+          onCreate={handleCreate}
+        />
       </div>
       <Outlet />
     </Page>

@@ -8,7 +8,7 @@ export const Route = createFileRoute('/auth/signin')({
 
 function RouteComponent() {
   return (
-    <div className="max-w-lg w-full space-y-4">
+    <div className="max-w-lg w-full space-y-8">
       <div className="space-y-2">
         <h1 className="text-2xl font-semibold">Welcome Back</h1>
         <p className="text-muted-foreground">Sign in to continue staying organized</p>

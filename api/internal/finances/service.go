@@ -12,7 +12,7 @@ func NewService(db *sqlx.DB) *Service {
 	}
 }
 
-func (s *Service) CreateSpace(params CreateSpaceParams) (*Space, error) {
+func (s *Service) CreateSpace(params *CreateSpaceParams) (*Space, error) {
 	space, err := s.repository.CreateSpace(params)
 	if err != nil {
 		return nil, err

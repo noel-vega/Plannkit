@@ -21,7 +21,7 @@ type CreateSpaceParams struct {
 	Name   string `json:"name" db:"name"`
 }
 
-func (r *Repository) CreateSpace(params CreateSpaceParams) (*Space, error) {
+func (r *Repository) CreateSpace(params *CreateSpaceParams) (*Space, error) {
 	data := &Space{}
 	query := `
 	INSERT INTO 
