@@ -51,7 +51,7 @@ func AddRoutes(router *gin.Engine, db *sqlx.DB, storageService storage.Service) 
 
 	protected.GET("/finances/spaces", financesHandler.ListSpaces)
 	protected.POST("/finances/spaces", financesHandler.CreateSpace)
-	protected.GET("/finances/spaces/:id", financesHandler.DeleteSpace)
+	protected.DELETE("/finances/spaces/:id", financesHandler.DeleteSpace)
 	protected.GET("/finances/spaces/:id/expenses", financesHandler.ListExpenses)
 
 	protected.GET("/habits", habitsHandler.ListHabits)

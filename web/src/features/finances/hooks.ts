@@ -7,7 +7,7 @@ import { queryClient } from "@/lib/react-query";
 export function getUseListFinanceSpacesOptions() {
   return queryOptions({
     queryKey: ["finance-spaces-list"],
-    queryFn: finances.listSpaces
+    queryFn: finances.spaces.list
   })
 }
 
@@ -32,9 +32,17 @@ export function useListFinanceExpenses({ spaceId, initialData }: { spaceId: numb
 
 export function useCreateFinanceSpace() {
   return useMutation({
-    mutationFn: finances.createSpace,
+    mutationFn: finances.spaces.create,
     onSuccess: () => {
-      console.log("SUCCESS")
+      invalidateUseListFinanceSpaces()
+    }
+  })
+}
+
+export function useDeleteFinanceSpace() {
+  return useMutation({
+    mutationFn: finances.spaces.delete,
+    onSuccess: () => {
       invalidateUseListFinanceSpaces()
     }
   })

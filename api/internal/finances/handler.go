@@ -50,7 +50,7 @@ func (h *Handler) ListSpaces(c *gin.Context) {
 
 func (h *Handler) DeleteSpace(c *gin.Context) {
 	userID := c.MustGet("user_id").(int)
-	spaceIDParam := c.Param("spaceID")
+	spaceIDParam := c.Param("id")
 	spaceID, err := strconv.Atoi(spaceIDParam)
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
