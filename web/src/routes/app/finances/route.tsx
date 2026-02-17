@@ -33,14 +33,19 @@ function RouteComponent() {
   const handleCreate = (space: FinanceSpace) => {
     navigate({ to: "/app/finances/$spaceId/overview", params: { spaceId: space.id } })
   }
+
+  const handleSettings = (space: FinanceSpace) => {
+    navigate({ to: "/app/finances/$spaceId/settings", params: { spaceId: space.id } })
+  }
   return (
     <Page title="Finances">
       <div className="mb-4">
         <FinanceSpaceSwitcher
-          value={rtCtx.currentSpace}
+          currentSpace={rtCtx.currentSpace}
           spaces={spaces.data}
           onSpaceSelect={handleSwitchSpace}
           onCreate={handleCreate}
+          onSettings={handleSettings}
         />
       </div>
       <Outlet />
