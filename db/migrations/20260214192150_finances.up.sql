@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS finance_spaces_expenses (
     name VARCHAR(255) NOT NULL,
     amount INT NOT NULL,
     category TEXT NULL,
+    description TEXT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
