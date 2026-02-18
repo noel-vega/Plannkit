@@ -70,6 +70,7 @@ export function CreateExpenseForm(props: CreateExpenseFormProps) {
                 <FieldLabel htmlFor={field.name}>Amount</FieldLabel>
                 <Input
                   type="number"
+                  min={1}
                   {...field}
                   id={field.name}
                   aria-invalid={fieldState.invalid}
