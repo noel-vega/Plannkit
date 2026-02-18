@@ -67,7 +67,24 @@ func (h *Handler) DeleteSpace(c *gin.Context) {
 func (h *Handler) CreateGoal(c *gin.Context) {}
 func (h *Handler) ListGoals(c *gin.Context)  {}
 
-func (h *Handler) CreateExpense(c *gin.Context) {}
+func (h *Handler) CreateExpense(c *gin.Context) {
+	userID := c.MustGet("user_id").(int)
+	data := &CreateExpenseParams{
+		UserID: userID,
+	}
+	err := c.Bind(data)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+	expense, err := h.service.CreateExpense(data)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, expense)
+}
 
 func (h *Handler) ListExpenses(c *gin.Context) {
 	userID := c.MustGet("user_id").(int)

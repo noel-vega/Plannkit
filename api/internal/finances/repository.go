@@ -119,7 +119,29 @@ func (r *Repository) ListGoals()      {}
 func (r *Repository) DeleteGoalByID() {}
 func (r *Repository) GetGoalByID()    {}
 
-func (r *Repository) CreateExpense() {}
+func (r *Repository) CreateExpense(params *CreateExpenseParams) (*Expense, error) {
+	data := &Expense{}
+	query := `
+		INSERT INTO 
+	  finance_spaces_expenses (finance_space_id, user_id, name, amount, category, description)
+	VALUES (:finance_space_id, :user_id, :name, :amount, :category, :description)
+	  RETURNING *
+	`
+
+	query, args, err := sqlx.Named(query, params)
+	if err != nil {
+		return nil, err
+	}
+
+	query = r.db.Rebind(query)
+
+	err = r.db.Get(data, query, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}
 
 func (r *Repository) ListExpenses(userID, spaceID int) ([]Expense, error) {
 	data := []Expense{}

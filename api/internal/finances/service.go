@@ -39,3 +39,7 @@ func (s *Service) GetSpace(userID, spaceID int) (*Space, error) {
 func (s *Service) ListExpenses(userID, spaceID int) ([]Expense, error) {
 	return s.repository.ListExpenses(userID, spaceID)
 }
+
+func (s *Service) CreateExpense(params *CreateExpenseParams) (*Expense, error) {
+	return s.repository.CreateExpense(params)
+}

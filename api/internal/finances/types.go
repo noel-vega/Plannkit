@@ -20,14 +20,24 @@ type SpaceMember struct {
 }
 
 type Expense struct {
-	ID        int       `json:"id" db:"id"`
-	SpaceID   int       `json:"spaceID" db:"finance_space_id"`
-	UserID    int       `json:"userId" db:"user_id"`
-	Name      string    `json:"name" db:"name"`
-	Amount    int       `json:"amount" db:"amount"`
-	Category  *string   `json:"category" db:"category"`
-	CreatedAt time.Time `json:"createdAt" db:"created_at"`
-	UpdatedAt time.Time `json:"updatedAt" db:"updated_at"`
+	ID          int       `json:"id" db:"id"`
+	SpaceID     int       `json:"spaceId" db:"finance_space_id"`
+	UserID      int       `json:"userId" db:"user_id"`
+	Name        string    `json:"name" db:"name"`
+	Amount      int       `json:"amount" db:"amount"`
+	Category    *string   `json:"category" db:"category"`
+	Description *string   `json:"description" db:"description"`
+	CreatedAt   time.Time `json:"createdAt" db:"created_at"`
+	UpdatedAt   time.Time `json:"updatedAt" db:"updated_at"`
+}
+
+type CreateExpenseParams struct {
+	SpaceID     int     `json:"spaceId" db:"finance_space_id"`
+	UserID      int     `json:"userId" db:"user_id"`
+	Name        string  `json:"name" db:"name"`
+	Amount      int     `json:"amount" db:"amount"`
+	Category    *string `json:"category" db:"category"`
+	Description *string `json:"description" db:"description"`
 }
 
 type Goal struct{}
