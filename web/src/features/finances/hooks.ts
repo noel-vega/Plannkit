@@ -1,9 +1,10 @@
 import { queryOptions, useMutation, useQuery } from "@tanstack/react-query";
 import { finances } from "./api";
 import type { Expense, FinanceSpace } from "./types";
-import type { ByIdParams } from "../habits/types";
 import { queryClient } from "@/lib/react-query";
 
+
+// Finance Spaces
 export function getUseListFinanceSpacesOptions() {
   return queryOptions({
     queryKey: ["finance-spaces-list"],
@@ -19,16 +20,6 @@ export function useListFinanceSpaces({ initialData }: { initialData: FinanceSpac
   return useQuery({ ...getUseListFinanceSpacesOptions(), initialData })
 }
 
-export function getUseListFinanceExpensesOptions(params: ByIdParams) {
-  return queryOptions({
-    queryKey: ["finance-space-expenses"],
-    queryFn: () => finances.listExpenses(params)
-  })
-}
-
-export function useListFinanceExpenses({ spaceId, initialData }: { spaceId: number, initialData?: Expense[] }) {
-  return useQuery({ ...getUseListFinanceExpensesOptions({ id: spaceId }), initialData })
-}
 
 export function useCreateFinanceSpace() {
   return useMutation({
@@ -44,6 +35,40 @@ export function useDeleteFinanceSpace() {
     mutationFn: finances.spaces.delete,
     onSuccess: () => {
       invalidateUseListFinanceSpaces()
+    }
+  })
+}
+
+// Finance Space Expenses
+export function useCreateFinanceExpense() {
+  return useMutation({
+    mutationFn: finances.expenses.create,
+    onSuccess: ({ id }) => {
+      invalidateUseListFinanceExpenses({ spaceId: id })
+    }
+  })
+}
+
+export function getUseListFinanceExpensesOptions(params: { spaceId: number }) {
+  return queryOptions({
+    queryKey: ["finance-space-expenses"],
+    queryFn: () => finances.expenses.list(params)
+  })
+}
+
+export async function invalidateUseListFinanceExpenses(params: { spaceId: number }) {
+  return queryClient.invalidateQueries(getUseListFinanceExpensesOptions(params))
+}
+
+export function useListFinanceExpenses({ spaceId, initialData }: { spaceId: number, initialData?: Expense[] }) {
+  return useQuery({ ...getUseListFinanceExpensesOptions({ spaceId }), initialData })
+}
+
+export function useUpdateFinanceExpense() {
+  return useMutation({
+    mutationFn: finances.expenses.update,
+    onSuccess: ({ id }) => {
+      invalidateUseListFinanceExpenses({ spaceId: id })
     }
   })
 }

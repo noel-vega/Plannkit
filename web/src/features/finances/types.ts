@@ -18,10 +18,22 @@ export type CreateFinanceSpaceParams = z.infer<typeof CreateFinanceSpaceSchema>
 
 export const ExpenseSchema = z.object({
   id: z.number(),
+  spaceId: z.number(),
   name: z.string(),
-  category: z.string().nullable(),
   amount: z.number(),
+  category: z.string().nullable(),
+  description: z.string().nullable(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date()
 })
 export type Expense = z.infer<typeof ExpenseSchema>
+
+export const CreateExpenseParamsSchema = z.object({
+  spaceId: z.number(),
+  name: z.string().min(1, { message: "Required" }),
+  amount: z.coerce.number().positive({ message: "Minimum $1" }),
+  category: z.string().nullable(),
+  description: z.string().nullable(),
+})
+export type CreateExpenseParams = z.infer<typeof CreateExpenseParamsSchema>
+

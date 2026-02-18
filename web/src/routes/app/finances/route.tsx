@@ -13,7 +13,7 @@ export const Route = createFileRoute('/app/finances')({
   beforeLoad: async ({ params }) => {
     const spaces = await queryClient.ensureQueryData(getUseListFinanceSpacesOptions())
     if (params.spaceId === undefined) {
-      throw redirect({ to: "/app/finances/$spaceId/overview", params: { spaceId: spaces[0].id } })
+      throw redirect({ to: "/app/finances/$spaceId", params: { spaceId: spaces[0].id } })
     }
     const currentSpace = spaces.find(x => x.id === Number(params.spaceId))
     if (!currentSpace) throw Error("Space not found")
@@ -26,20 +26,23 @@ function RouteComponent() {
   const navigate = useNavigate()
   const rtCtx = Route.useRouteContext()
   const spaces = useListFinanceSpaces({ initialData: rtCtx.spaces })
+
+
   const handleSwitchSpace = (space: FinanceSpace) => {
-    navigate({ to: "/app/finances/$spaceId/overview", params: { spaceId: space.id } })
+    navigate({ to: "/app/finances/$spaceId", params: { spaceId: space.id } })
   }
 
   const handleCreate = (space: FinanceSpace) => {
-    navigate({ to: "/app/finances/$spaceId/overview", params: { spaceId: space.id } })
+    navigate({ to: "/app/finances/$spaceId", params: { spaceId: space.id } })
   }
 
   const handleSettings = (space: FinanceSpace) => {
     navigate({ to: "/app/finances/$spaceId/settings", params: { spaceId: space.id } })
   }
+
   return (
     <Page title="Finances">
-      <div className="mb-4">
+      <div className="mb-4 grid grid-cols-1 @7xl:grid-cols-3 gap-4">
         <FinanceSpaceSwitcher
           currentSpace={rtCtx.currentSpace}
           spaces={spaces.data}
