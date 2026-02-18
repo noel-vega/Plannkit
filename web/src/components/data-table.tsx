@@ -4,6 +4,7 @@ import {
   type ColumnDef,
   flexRender,
   getCoreRowModel,
+  type Row,
   useReactTable,
 } from "@tanstack/react-table"
 
@@ -19,11 +20,13 @@ import {
 interface DataTableProps<TData> {
   columns: ColumnDef<TData, any>[]
   data: TData[]
+  onRowClick: (row: Row<TData>) => void
 }
 
 export function DataTable<TData>({
   columns,
   data,
+  onRowClick
 }: DataTableProps<TData>) {
   const table = useReactTable({
     data,
@@ -56,6 +59,7 @@ export function DataTable<TData>({
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
+                onClick={() => onRowClick(row)}
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
               >
