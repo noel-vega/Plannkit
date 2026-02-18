@@ -96,7 +96,6 @@ export function UpdateExpenseForm(props: CreateExpenseFormProps) {
           />
         </Field>
 
-
         <Controller
           name="description"
           control={form.control}
@@ -112,8 +111,8 @@ export function UpdateExpenseForm(props: CreateExpenseFormProps) {
         <Field orientation="horizontal">
           <Button type="button" variant="outline" disabled={!form.formState.isDirty} onClick={handleReset}>Reset</Button>
           <Button type="submit" disabled={isDisabled}>Update</Button>
+          <Button type="button" variant="destructive" className="ml-auto">Delete</Button>
         </Field>
-
       </Field>
     </form>
   )
