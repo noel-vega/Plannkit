@@ -4,8 +4,9 @@ import { formatCurrency } from "@/lib/format";
 import { createColumnHelper, type Row } from "@tanstack/react-table";
 import { format } from "date-fns";
 import type { Expense } from "../types";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { useState } from "react";
+import { UpdateExpenseDialog } from "./update-expense-form";
+import { useDialog } from "@/hooks";
 
 const columnHelper = createColumnHelper<Expense>()
 
@@ -27,22 +28,20 @@ const columns = [
 ]
 
 export function ExpensesTable({ expenses }: { spaceId: number; expenses: Expense[] }) {
+  const dialog = useDialog()
   const [expense, setExpense] = useState<Expense | null>(null)
 
   const handleRowClick = (row: Row<Expense>) => {
     setExpense(row.original)
+    dialog.onOpenChange(true)
 
   }
   return (
     <>
       <DataTable onRowClick={handleRowClick} data={expenses} columns={columns} />
-      <Sheet open={!!expense} onOpenChange={open => {
-        if (!open) setExpense(null)
-      }}>
-        <SheetContent className="w-full">
-          {JSON.stringify(expense)}
-        </SheetContent>
-      </Sheet>
+      {expense && (
+        <UpdateExpenseDialog expense={expense} {...dialog} />
+      )}
     </>
   )
 }

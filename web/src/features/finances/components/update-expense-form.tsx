@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { FormEvent, PropsWithChildren } from "react";
+import type { FormEvent } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { ExpenseSchema, type Expense } from "../types";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useUpdateFinanceExpense } from "../hooks";
+import type { DialogProps } from "vaul";
 
 type CreateExpenseFormProps = {
   expense: Expense
@@ -34,7 +35,7 @@ export function UpdateExpenseForm(props: CreateExpenseFormProps) {
     form.setFocus("name")
   }
 
-  const isDisabled = !form.formState.isValid || updateExpense.isPending
+  const isDisabled = !form.formState.isValid || !form.formState.isDirty || updateExpense.isPending
   return (
     <form onSubmit={handleSubmit}>
       <Field>
@@ -64,6 +65,7 @@ export function UpdateExpenseForm(props: CreateExpenseFormProps) {
                 <FieldLabel htmlFor={field.name}>Amount</FieldLabel>
                 <Input
                   type="number"
+                  min={1}
                   {...field}
                   id={field.name}
                   aria-invalid={fieldState.invalid}
@@ -108,8 +110,8 @@ export function UpdateExpenseForm(props: CreateExpenseFormProps) {
         />
 
         <Field orientation="horizontal">
-          <Button type="button" variant="outline" onClick={handleReset}>Reset</Button>
-          <Button type="submit" disabled={isDisabled}>Submit</Button>
+          <Button type="button" variant="outline" disabled={!form.formState.isDirty} onClick={handleReset}>Reset</Button>
+          <Button type="submit" disabled={isDisabled}>Update</Button>
         </Field>
 
       </Field>
@@ -119,11 +121,12 @@ export function UpdateExpenseForm(props: CreateExpenseFormProps) {
 
 type Props = {
   expense: Expense
-} & PropsWithChildren
+} & DialogProps
 
-export function CreateExpenseDialog(props: Props) {
+export function UpdateExpenseDialog({ expense, ...props }: Props) {
+
   return (
-    <Dialog>
+    <Dialog {...props}>
       <DialogTrigger asChild>
         {props.children}
       </DialogTrigger>
@@ -131,7 +134,7 @@ export function CreateExpenseDialog(props: Props) {
         <DialogHeader>
           <DialogTitle>Update Expense</DialogTitle>
         </DialogHeader>
-        <UpdateExpenseForm expense={props.expense} />
+        <UpdateExpenseForm expense={expense} />
       </DialogContent>
     </Dialog>
   )
