@@ -50,7 +50,7 @@ func (h *Handler) ListSpaces(c *gin.Context) {
 
 func (h *Handler) DeleteSpace(c *gin.Context) {
 	userID := c.MustGet("user_id").(int)
-	spaceIDParam := c.Param("id")
+	spaceIDParam := c.Param("spaceID")
 	spaceID, err := strconv.Atoi(spaceIDParam)
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -69,10 +69,18 @@ func (h *Handler) ListGoals(c *gin.Context)  {}
 
 func (h *Handler) CreateExpense(c *gin.Context) {
 	userID := c.MustGet("user_id").(int)
-	data := &CreateExpenseParams{
-		UserID: userID,
+	spaceID, err := strconv.Atoi(c.Param("spaceID"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
 	}
-	err := c.Bind(data)
+
+	data := &CreateExpenseParams{
+		UserID:  userID,
+		SpaceID: spaceID,
+	}
+
+	err = c.Bind(data)
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
@@ -88,8 +96,7 @@ func (h *Handler) CreateExpense(c *gin.Context) {
 
 func (h *Handler) ListExpenses(c *gin.Context) {
 	userID := c.MustGet("user_id").(int)
-
-	spaceID, err := strconv.Atoi(c.Param("id"))
+	spaceID, err := strconv.Atoi(c.Param("spaceID"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
@@ -102,4 +109,30 @@ func (h *Handler) ListExpenses(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, expenses)
+}
+
+func (h *Handler) DeleteExpense(c *gin.Context) {
+	userID := c.MustGet("user_id").(int)
+	spaceID, err := strconv.Atoi(c.Param("spaceID"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	expenseID, err := strconv.Atoi(c.Param("expenseID"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	params := &DeleteExpenseParams{
+		ID:      expenseID,
+		SpaceID: spaceID,
+		UserID:  userID,
+	}
+	err = h.service.DeleteExpense(params)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
 }

@@ -36,10 +36,14 @@ func (s *Service) GetSpace(userID, spaceID int) (*Space, error) {
 	return s.repository.GetSpaceByID(userID, spaceID)
 }
 
+func (s *Service) CreateExpense(params *CreateExpenseParams) (*Expense, error) {
+	return s.repository.CreateExpense(params)
+}
+
 func (s *Service) ListExpenses(userID, spaceID int) ([]Expense, error) {
 	return s.repository.ListExpenses(userID, spaceID)
 }
 
-func (s *Service) CreateExpense(params *CreateExpenseParams) (*Expense, error) {
-	return s.repository.CreateExpense(params)
+func (s *Service) DeleteExpense(params *DeleteExpenseParams) error {
+	return s.repository.DeleteExpense(params)
 }

@@ -41,3 +41,9 @@ type CreateExpenseParams struct {
 }
 
 type Goal struct{}
+
+type DeleteExpenseParams struct {
+	ID      int `json:"id" db:"id"`
+	SpaceID int `json:"spaceId" db:"finance_space_id"`
+	UserID  int `json:"userId" db:"user_id"`
+}

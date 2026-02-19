@@ -158,6 +158,16 @@ func (r *Repository) ListExpenses(userID, spaceID int) ([]Expense, error) {
 	return data, nil
 }
 
-func (r *Repository) DeleteExpenseByID() {}
+func (r *Repository) DeleteExpense(params *DeleteExpenseParams) error {
+	query := `
+    DELETE FROM finance_spaces_expenses
+	  WHERE user_id = :user_id AND finance_space_id = :finance_space_id AND id = :id
+	`
+	_, err := r.db.NamedExec(query, params)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 func (r *Repository) GetExpenseByID() {}
