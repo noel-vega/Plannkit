@@ -72,3 +72,12 @@ export function useUpdateFinanceExpense() {
     }
   })
 }
+
+export function useDeleteFinanceExpense() {
+  return useMutation({
+    mutationFn: finances.expenses.delete,
+    onSuccess: (_, { spaceId }) => {
+      invalidateUseListFinanceExpenses({ spaceId })
+    }
+  })
+}

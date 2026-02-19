@@ -47,6 +47,11 @@ export const finances = {
       })
       const data = await response.json()
       return ExpenseSchema.parse(data)
+    },
+    delete: async (params: { spaceId: number; expenseId: number }) => {
+      return await pkFetch(`/finances/spaces/${params.spaceId}/expenses/${params.expenseId}`, {
+        method: "DELETE",
+      })
     }
   }
 }

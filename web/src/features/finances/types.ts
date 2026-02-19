@@ -20,7 +20,7 @@ export const ExpenseSchema = z.object({
   id: z.number(),
   spaceId: z.number(),
   name: z.string(),
-  amount: z.number(),
+  amount: z.coerce.number(),
   category: z.string().nullable(),
   description: z.string().nullable(),
   createdAt: z.coerce.date(),

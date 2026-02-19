@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { FormEvent } from "react";
+import type { FormEvent, PropsWithChildren } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { ExpenseSchema, type Expense } from "../types";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
@@ -8,15 +8,18 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { useUpdateFinanceExpense } from "../hooks";
-import type { DialogProps } from "vaul";
+import { useDeleteFinanceExpense, useUpdateFinanceExpense } from "../hooks";
+import type { DialogProps } from "@/types";
 
 type CreateExpenseFormProps = {
   expense: Expense
+  onDelete: () => void
 }
 
 export function UpdateExpenseForm(props: CreateExpenseFormProps) {
   const updateExpense = useUpdateFinanceExpense()
+  const deleteExpense = useDeleteFinanceExpense()
+
   const form = useForm({
     resolver: zodResolver(ExpenseSchema),
     defaultValues: props.expense
@@ -33,6 +36,12 @@ export function UpdateExpenseForm(props: CreateExpenseFormProps) {
   const handleReset = () => {
     form.reset()
     form.setFocus("name")
+  }
+
+  const handleDelete = () => {
+    const { id: expenseId, spaceId } = props.expense
+    deleteExpense.mutate({ spaceId, expenseId })
+    props.onDelete()
   }
 
   const isDisabled = !form.formState.isValid || !form.formState.isDirty || updateExpense.isPending
@@ -111,7 +120,7 @@ export function UpdateExpenseForm(props: CreateExpenseFormProps) {
         <Field orientation="horizontal">
           <Button type="button" variant="outline" disabled={!form.formState.isDirty} onClick={handleReset}>Reset</Button>
           <Button type="submit" disabled={isDisabled}>Update</Button>
-          <Button type="button" variant="destructive" className="ml-auto">Delete</Button>
+          <Button type="button" variant="destructive" disabled={deleteExpense.isPending} className="ml-auto" onClick={handleDelete}>Delete</Button>
         </Field>
       </Field>
     </form>
@@ -120,10 +129,13 @@ export function UpdateExpenseForm(props: CreateExpenseFormProps) {
 
 type Props = {
   expense: Expense
-} & DialogProps
+} & DialogProps & PropsWithChildren
 
 export function UpdateExpenseDialog({ expense, ...props }: Props) {
 
+  const handleDelete = () => {
+    props.onOpenChange(false)
+  }
   return (
     <Dialog {...props}>
       <DialogTrigger asChild>
@@ -133,7 +145,7 @@ export function UpdateExpenseDialog({ expense, ...props }: Props) {
         <DialogHeader>
           <DialogTitle>Update Expense</DialogTitle>
         </DialogHeader>
-        <UpdateExpenseForm expense={expense} />
+        <UpdateExpenseForm expense={expense} onDelete={handleDelete} />
       </DialogContent>
     </Dialog>
   )
