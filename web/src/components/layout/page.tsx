@@ -12,7 +12,7 @@ export function Page(props: PageProps) {
     useHeaderStore.setState({ title: props.title })
   }, [])
   return (
-    <div className={cn("p-6  md:px-16 w-full h-full", props.className)}>
+    <div className={cn("p-4 xl:px-8 w-full h-full", props.className)}>
       {props.children}
     </div>
 

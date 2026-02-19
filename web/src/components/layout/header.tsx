@@ -24,8 +24,8 @@ export function Header() {
   }
 
   return (
-    <div className="h-16 border-b flex items-center px-4 gap-4">
-      <SidebarTrigger>Menu</SidebarTrigger>
+    <div className="h-16 border-b flex items-center px-4 xl:px-8 gap-4">
+      <SidebarTrigger />
       <p className="font-bold text-2xl">{t(title)}</p>
       <div id="app-layout-header-portal" className="flex-1">
       </div>
