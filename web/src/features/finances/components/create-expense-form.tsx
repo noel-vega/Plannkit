@@ -9,9 +9,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useCreateFinanceExpense } from "../hooks";
+import { useDialog } from "@/hooks";
 
 type CreateExpenseFormProps = {
   spaceId: number,
+  onSubmit: () => void
 }
 
 export function CreateExpenseForm(props: CreateExpenseFormProps) {
@@ -30,7 +32,10 @@ export function CreateExpenseForm(props: CreateExpenseFormProps) {
   const handleSubmit = (e: FormEvent) => {
     form.handleSubmit(data => {
       createExpense.mutate(data, {
-        onSuccess: () => form.reset()
+        onSuccess: () => {
+          form.reset()
+          props.onSubmit()
+        }
       })
     })(e)
   }
@@ -129,8 +134,9 @@ type Props = {
 } & PropsWithChildren
 
 export function CreateExpenseDialog(props: Props) {
+  const dialog = useDialog()
   return (
-    <Dialog>
+    <Dialog {...dialog}>
       <DialogTrigger asChild>
         {props.children}
       </DialogTrigger>
@@ -138,7 +144,7 @@ export function CreateExpenseDialog(props: Props) {
         <DialogHeader>
           <DialogTitle>Create Expense</DialogTitle>
         </DialogHeader>
-        <CreateExpenseForm spaceId={props.spaceId} />
+        <CreateExpenseForm spaceId={props.spaceId} onSubmit={dialog.close} />
       </DialogContent>
     </Dialog>
   )

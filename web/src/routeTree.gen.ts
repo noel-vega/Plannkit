@@ -26,7 +26,6 @@ import { Route as AppDashboardIndexRouteImport } from './routes/app/dashboard/in
 import { Route as AppHabitsIdRouteImport } from './routes/app/habits/$id'
 import { Route as AppFinancesSpaceIdIndexRouteImport } from './routes/app/finances/$spaceId/index'
 import { Route as AppFinancesSpaceIdSettingsRouteImport } from './routes/app/finances/$spaceId/settings'
-import { Route as AppFinancesSpaceIdExpensesExpenseIdRouteImport } from './routes/app/finances/$spaceId/expenses/$expenseId'
 
 const AuthRouteRoute = AuthRouteRouteImport.update({
   id: '/auth',
@@ -114,12 +113,6 @@ const AppFinancesSpaceIdSettingsRoute =
     path: '/$spaceId/settings',
     getParentRoute: () => AppFinancesRouteRoute,
   } as any)
-const AppFinancesSpaceIdExpensesExpenseIdRoute =
-  AppFinancesSpaceIdExpensesExpenseIdRouteImport.update({
-    id: '/$spaceId/expenses/$expenseId',
-    path: '/$spaceId/expenses/$expenseId',
-    getParentRoute: () => AppFinancesRouteRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -139,7 +132,6 @@ export interface FileRoutesByFullPath {
   '/app/user': typeof AppUserIndexRoute
   '/app/finances/$spaceId/settings': typeof AppFinancesSpaceIdSettingsRoute
   '/app/finances/$spaceId': typeof AppFinancesSpaceIdIndexRoute
-  '/app/finances/$spaceId/expenses/$expenseId': typeof AppFinancesSpaceIdExpensesExpenseIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -159,7 +151,6 @@ export interface FileRoutesByTo {
   '/app/user': typeof AppUserIndexRoute
   '/app/finances/$spaceId/settings': typeof AppFinancesSpaceIdSettingsRoute
   '/app/finances/$spaceId': typeof AppFinancesSpaceIdIndexRoute
-  '/app/finances/$spaceId/expenses/$expenseId': typeof AppFinancesSpaceIdExpensesExpenseIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -180,7 +171,6 @@ export interface FileRoutesById {
   '/app/user/': typeof AppUserIndexRoute
   '/app/finances/$spaceId/settings': typeof AppFinancesSpaceIdSettingsRoute
   '/app/finances/$spaceId/': typeof AppFinancesSpaceIdIndexRoute
-  '/app/finances/$spaceId/expenses/$expenseId': typeof AppFinancesSpaceIdExpensesExpenseIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -202,7 +192,6 @@ export interface FileRouteTypes {
     | '/app/user'
     | '/app/finances/$spaceId/settings'
     | '/app/finances/$spaceId'
-    | '/app/finances/$spaceId/expenses/$expenseId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -222,7 +211,6 @@ export interface FileRouteTypes {
     | '/app/user'
     | '/app/finances/$spaceId/settings'
     | '/app/finances/$spaceId'
-    | '/app/finances/$spaceId/expenses/$expenseId'
   id:
     | '__root__'
     | '/'
@@ -242,7 +230,6 @@ export interface FileRouteTypes {
     | '/app/user/'
     | '/app/finances/$spaceId/settings'
     | '/app/finances/$spaceId/'
-    | '/app/finances/$spaceId/expenses/$expenseId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -372,27 +359,17 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppFinancesSpaceIdSettingsRouteImport
       parentRoute: typeof AppFinancesRouteRoute
     }
-    '/app/finances/$spaceId/expenses/$expenseId': {
-      id: '/app/finances/$spaceId/expenses/$expenseId'
-      path: '/$spaceId/expenses/$expenseId'
-      fullPath: '/app/finances/$spaceId/expenses/$expenseId'
-      preLoaderRoute: typeof AppFinancesSpaceIdExpensesExpenseIdRouteImport
-      parentRoute: typeof AppFinancesRouteRoute
-    }
   }
 }
 
 interface AppFinancesRouteRouteChildren {
   AppFinancesSpaceIdSettingsRoute: typeof AppFinancesSpaceIdSettingsRoute
   AppFinancesSpaceIdIndexRoute: typeof AppFinancesSpaceIdIndexRoute
-  AppFinancesSpaceIdExpensesExpenseIdRoute: typeof AppFinancesSpaceIdExpensesExpenseIdRoute
 }
 
 const AppFinancesRouteRouteChildren: AppFinancesRouteRouteChildren = {
   AppFinancesSpaceIdSettingsRoute: AppFinancesSpaceIdSettingsRoute,
   AppFinancesSpaceIdIndexRoute: AppFinancesSpaceIdIndexRoute,
-  AppFinancesSpaceIdExpensesExpenseIdRoute:
-    AppFinancesSpaceIdExpensesExpenseIdRoute,
 }
 
 const AppFinancesRouteRouteWithChildren =

@@ -11,12 +11,17 @@ import { MonthlyExpensesCard } from '@/features/finances/components/monthly-expe
 import { MonthlyGoalCommitmentsCard } from '@/features/finances/components/monthly-goal-commitment-card'
 import { MonthlyIncomeCard } from '@/features/finances/components/monthly-income-card'
 import { CreateExpenseDialog } from '@/features/finances/components/create-expense-form'
-import { useListFinanceExpenses } from '@/features/finances/hooks'
+import { getUseListFinanceExpensesOptions, useListFinanceExpenses } from '@/features/finances/hooks'
 import { createFileRoute } from '@tanstack/react-router'
 import { PlusIcon, TargetIcon } from 'lucide-react'
 import z from 'zod/v3'
+import { queryClient } from '@/lib/react-query'
 
 export const Route = createFileRoute('/app/finances/$spaceId/')({
+  beforeLoad: async ({ params }) => {
+    const expenses = await queryClient.ensureQueryData(getUseListFinanceExpensesOptions(params))
+    return { expenses }
+  },
   params: {
     parse: z.object({ spaceId: z.coerce.number() }).parse
   },
@@ -25,12 +30,13 @@ export const Route = createFileRoute('/app/finances/$spaceId/')({
 
 function RouteComponent() {
   const { spaceId } = Route.useParams()
-  const expenses = useListFinanceExpenses({ spaceId })
+  const rtCtx = Route.useRouteContext()
+  const expenses = useListFinanceExpenses({ spaceId, initialData: rtCtx.expenses })
   return (
     <div className="@container">
       <div className="grid grid-cols-1 @3xl:grid-cols-3 gap-3.5 mb-4">
         <MonthlyIncomeCard />
-        <MonthlyExpensesCard />
+        <MonthlyExpensesCard expenses={expenses.data ?? []} />
         <MonthlyGoalCommitmentsCard />
       </div>
       <div className="mb-8">
@@ -55,7 +61,8 @@ function RouteComponent() {
         </Card>
         {/* Goals here  */}
       </Container>
-      <Separator className="my-8 bg-transparent" />
+
+      <Separator className="my-6 bg-transparent" />
 
       <Container className="space-y-4">
         <div>
