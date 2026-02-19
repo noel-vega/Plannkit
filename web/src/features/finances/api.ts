@@ -1,6 +1,6 @@
 import { pkFetch } from "@/lib/plannkit-api-client"
 import type { ByIdParams } from "../habits/types"
-import { ExpenseSchema, FinanceSpaceSchema, type CreateExpenseParams, type CreateFinanceSpaceParams, type Expense } from "./types"
+import { ExpenseSchema, FinanceSpaceSchema, GoalSchema, type CreateExpenseParams, type CreateFinanceSpaceParams, type CreateGoalParams, type Expense } from "./types"
 
 
 
@@ -23,6 +23,16 @@ export const finances = {
       await pkFetch(`/finances/spaces/${params.id}`, {
         method: "DELETE"
       })
+    },
+  },
+  goals: {
+    create: async (params: CreateGoalParams) => {
+      const response = await pkFetch(`/finances/spaces/${params.spaceId}/goals`, {
+        method: "POST",
+        body: JSON.stringify(params)
+      })
+      const data = await response.json()
+      return GoalSchema.parse(data)
     },
   },
   expenses: {

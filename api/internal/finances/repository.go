@@ -114,8 +114,30 @@ func (r *Repository) ListIncomeSources()      {}
 func (r *Repository) DeleteIncomeSourceByID() {}
 func (r *Repository) GetIncomeSourceByID()    {}
 
-func (r *Repository) CreateGoal()     {}
-func (r *Repository) ListGoals()      {}
+func (r *Repository) CreateGoal(params *CreateGoalParams) (*Goal, error) {
+	query := `
+		INSERT INTO 
+	    finance_spaces_goals (user_id, finance_space_id, name, amount, monthly_commitment)
+	  VALUES (:user_id, :finance_space_id, :name, :amount, :monthly_commitment)
+	  RETURNING *
+	`
+	query, args, err := sqlx.Named(query, params)
+	if err != nil {
+		return nil, err
+	}
+	query = r.db.Rebind(query)
+
+	goal := &Goal{}
+	err = r.db.Get(goal, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	return goal, nil
+}
+
+func (r *Repository) ListGoals() {
+}
+
 func (r *Repository) DeleteGoalByID() {}
 func (r *Repository) GetGoalByID()    {}
 
@@ -123,8 +145,8 @@ func (r *Repository) CreateExpense(params *CreateExpenseParams) (*Expense, error
 	data := &Expense{}
 	query := `
 		INSERT INTO 
-	  finance_spaces_expenses (finance_space_id, user_id, name, amount, category, description)
-	VALUES (:finance_space_id, :user_id, :name, :amount, :category, :description)
+	    finance_spaces_expenses (finance_space_id, user_id, name, amount, category, description)
+	  VALUES (:finance_space_id, :user_id, :name, :amount, :category, :description)
 	  RETURNING *
 	`
 
@@ -169,5 +191,3 @@ func (r *Repository) DeleteExpense(params *DeleteExpenseParams) error {
 	}
 	return nil
 }
-
-func (r *Repository) GetExpenseByID() {}

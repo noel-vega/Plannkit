@@ -16,6 +16,22 @@ export const CreateFinanceSpaceSchema = z.object(({
 
 export type CreateFinanceSpaceParams = z.infer<typeof CreateFinanceSpaceSchema>
 
+export const CreateGoalParamsSchema = z.object({
+  spaceId: z.number(),
+  name: z.string().min(1, { message: "Required" }),
+  amount: z.coerce.number().positive({ message: "Minimum $1" }),
+  monthlyCommitment: z.coerce.number(),
+})
+export type CreateGoalParams = z.infer<typeof CreateGoalParamsSchema>
+
+export const GoalSchema = z.object({
+  spaceId: z.number(),
+  name: z.string(),
+  amount: z.coerce.number(),
+  monthlyCommitment: z.coerce.number(),
+})
+export type Goal = z.infer<typeof GoalSchema>
+
 export const ExpenseSchema = z.object({
   id: z.number(),
   spaceId: z.number(),
@@ -36,4 +52,3 @@ export const CreateExpenseParamsSchema = z.object({
   description: z.string().nullable(),
 })
 export type CreateExpenseParams = z.infer<typeof CreateExpenseParamsSchema>
-

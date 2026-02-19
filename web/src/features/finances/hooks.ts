@@ -73,6 +73,19 @@ export function useUpdateFinanceExpense() {
   })
 }
 
+export function useCreateGoal() {
+  return useMutation({
+    mutationFn: finances.goals.create,
+    onSuccess: () => {
+      // TODO: invalidate goals
+      console.log("TODO: invalidate goals")
+    },
+    onError: ({ message }) => {
+      console.error(message)
+    }
+  })
+}
+
 export function useDeleteFinanceExpense() {
   return useMutation({
     mutationFn: finances.expenses.delete,

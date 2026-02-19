@@ -16,6 +16,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { PlusIcon, TargetIcon } from 'lucide-react'
 import z from 'zod/v3'
 import { queryClient } from '@/lib/react-query'
+import { CreateGoalDialog } from '@/features/finances/components/create-goal-form'
 
 export const Route = createFileRoute('/app/finances/$spaceId/')({
   beforeLoad: async ({ params }) => {
@@ -51,7 +52,9 @@ function RouteComponent() {
               Track your progress towards financial goals.
             </p>
           </div>
-          <Button><PlusIcon />Add Goal</Button>
+          <CreateGoalDialog spaceId={spaceId}>
+            <Button><PlusIcon />Add Goal</Button>
+          </CreateGoalDialog>
         </div>
         <Card>
           <CardContent className="grid place-content-center place-items-center gap-4 h-52">
@@ -73,7 +76,7 @@ function RouteComponent() {
         </div>
         <div className="flex gap-3 items-end">
           <Field className="max-w-sm w-full">
-            <FieldLabel >Name</FieldLabel>
+            <FieldLabel>Name</FieldLabel>
             <Input className="w-full" placeholder="Search expenses..." />
           </Field>
           <Select>

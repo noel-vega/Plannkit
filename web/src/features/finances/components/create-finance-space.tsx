@@ -43,7 +43,6 @@ export function CreateFinanceSpaceForm(props: { onSuccess: (space: FinanceSpace)
 
   const handleSubmit = (e: FormEvent) => {
     form.handleSubmit((data) => {
-      console.log(data)
       createSpace.mutate(data, {
         onSuccess: (data) => {
           props.onSuccess(data)
