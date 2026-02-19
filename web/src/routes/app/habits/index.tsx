@@ -27,7 +27,7 @@ function RouteComponent() {
   const habits = useListHabits({ initialData: loaderData.habits })
   return (
     <Page title="Habits">
-      <Container className="max-w-6xl space-y-6 @container">
+      <Container className="space-y-6">
         <Header />
         <WeekDayIndicator habits={habits.data} />
         <TodaysProgress habits={habits.data} />

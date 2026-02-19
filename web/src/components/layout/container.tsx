@@ -3,7 +3,7 @@ import type { PropsWithChildren } from "react";
 
 export function Container({ children, className }: { className?: string } & PropsWithChildren) {
   return (
-    <div className={cn("@container", className)}>
+    <div className={cn("max-w-7xl w-full @container ", className)}>
       {children}
     </div>
   )

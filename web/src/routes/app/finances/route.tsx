@@ -1,3 +1,4 @@
+import { Container } from '@/components/layout/container'
 import { Page } from '@/components/layout/page'
 import { FinanceSpaceSwitcher } from '@/features/finances/components/finance-space-switcher'
 import { getUseListSpacesOptions, useListSpaces } from '@/features/finances/hooks'
@@ -42,15 +43,17 @@ function RouteComponent() {
 
   return (
     <Page title="Finances">
-      <div className="mb-4 grid grid-cols-1 @7xl:grid-cols-3 gap-4">
-        <FinanceSpaceSwitcher
-          currentSpace={rtCtx.currentSpace}
-          spaces={spaces.data}
-          onSpaceSelect={handleSwitchSpace}
-          onCreate={handleCreate}
-          onSettings={handleSettings}
-        />
-      </div>
+      <Container>
+        <div className="mb-4 grid grid-cols-1 @7xl:grid-cols-3 gap-4">
+          <FinanceSpaceSwitcher
+            currentSpace={rtCtx.currentSpace}
+            spaces={spaces.data}
+            onSpaceSelect={handleSwitchSpace}
+            onCreate={handleCreate}
+            onSettings={handleSettings}
+          />
+        </div>
+      </Container>
       <Outlet />
     </Page>
   )

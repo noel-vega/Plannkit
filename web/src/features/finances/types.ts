@@ -25,6 +25,7 @@ export const CreateGoalParamsSchema = z.object({
 export type CreateGoalParams = z.infer<typeof CreateGoalParamsSchema>
 
 export const GoalSchema = z.object({
+  id: z.number(),
   spaceId: z.number(),
   name: z.string(),
   amount: z.coerce.number(),

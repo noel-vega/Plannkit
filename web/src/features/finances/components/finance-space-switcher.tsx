@@ -31,8 +31,8 @@ export function FinanceSpaceSwitcher(props: Props) {
           <ChevronsUpDownIcon className=" h-3.5 w-3.5 shrink-0 text-muted-foreground ml-auto" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="p-0" align="start">
-        <Command className="max-w-sm w-full rounded-lg border" onSelect={() => {
+      <PopoverContent className="p-0" align="start" style={{ width: "var(--radix-popover-trigger-width)" }} >
+        <Command className="w-full rounded-lg border" onSelect={() => {
           popover.onOpenChange(false)
         }}>
           <CommandInput placeholder="Type a command or search..." />
