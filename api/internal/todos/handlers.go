@@ -100,6 +100,7 @@ func (handler *Handler) DeleteTodo(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
+	c.Status(http.StatusNoContent)
 }
 
 func (handler *Handler) GetTodoByID(c *gin.Context) {

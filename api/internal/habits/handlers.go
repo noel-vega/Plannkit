@@ -130,6 +130,7 @@ func (handler *Handler) DeleteHabit(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
+	c.Status(http.StatusNoContent)
 }
 
 func (handler *Handler) CreateHabitContribution(c *gin.Context) {
@@ -183,4 +184,6 @@ func (handler *Handler) DeleteHabitContribution(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
+
+	c.Status(http.StatusNoContent)
 }

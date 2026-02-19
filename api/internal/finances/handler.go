@@ -62,6 +62,8 @@ func (h *Handler) DeleteSpace(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
+
+	c.Status(http.StatusNoContent)
 }
 
 func (h *Handler) CreateGoal(c *gin.Context) {}
@@ -135,4 +137,6 @@ func (h *Handler) DeleteExpense(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
+
+	c.Status(http.StatusNoContent)
 }
