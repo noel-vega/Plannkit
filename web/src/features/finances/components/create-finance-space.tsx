@@ -13,7 +13,7 @@ type Props = {
   onSuccess: (space: FinanceSpace) => void
 } & DialogProps
 
-export function CreateFinanceSpaceDialog(props: Props) {
+export function CreateSpaceDialog(props: Props) {
 
   const handleOpenChange = (open: boolean) => {
     props.onOpenChange(open)

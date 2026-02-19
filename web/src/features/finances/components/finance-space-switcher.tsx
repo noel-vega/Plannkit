@@ -3,7 +3,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ChevronsUpDownIcon, PlusIcon, WalletIcon } from "lucide-react";
 import type { FinanceSpace } from "../types";
-import { CreateFinanceSpaceDialog } from "./create-finance-space";
+import { CreateSpaceDialog } from "./create-finance-space";
 import { useDialog } from "@/hooks";
 
 type Props = {
@@ -65,7 +65,7 @@ export function FinanceSpaceSwitcher(props: Props) {
           </CommandList>
         </Command>
       </PopoverContent>
-      <CreateFinanceSpaceDialog {...createSpaceDialog} onSuccess={props.onCreate} />
+      <CreateSpaceDialog {...createSpaceDialog} onSuccess={props.onCreate} />
     </Popover>
   )
 }

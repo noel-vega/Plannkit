@@ -2,8 +2,10 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/format";
 import { TargetIcon } from "lucide-react";
 import { data } from "../dummy-data";
+import type { Goal } from "../types";
 
-export function MonthlyGoalCommitmentsCard() {
+export function MonthlyGoalCommitmentsCard(props: { goals: Goal[] }) {
+  const totalCommitments = props.goals.reduce((total, goal) => total + goal.monthlyCommitment, 0)
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -14,11 +16,11 @@ export function MonthlyGoalCommitmentsCard() {
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">
-          {formatCurrency(data.monthlyGoalCommitments)}
+          {formatCurrency(totalCommitments)}
         </div>
         <p className="text-xs text-muted-foreground">
           {data.monthlyIncome > 0
-            ? `${((data.monthlyGoalCommitments / data.monthlyIncome) * 100).toFixed(1)}% of income`
+            ? `${((totalCommitments / data.monthlyIncome) * 100).toFixed(1)}% of income`
             : "0% of income"}
         </p>
       </CardContent>

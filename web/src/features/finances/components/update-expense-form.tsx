@@ -8,8 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { useDeleteFinanceExpense, useUpdateFinanceExpense } from "../hooks";
 import type { DialogProps } from "@/types";
+import { useDeleteExpense, useUpdateExpense } from "../hooks";
 
 type CreateExpenseFormProps = {
   expense: Expense
@@ -17,8 +17,8 @@ type CreateExpenseFormProps = {
 }
 
 export function UpdateExpenseForm(props: CreateExpenseFormProps) {
-  const updateExpense = useUpdateFinanceExpense()
-  const deleteExpense = useDeleteFinanceExpense()
+  const updateExpense = useUpdateExpense()
+  const deleteExpense = useDeleteExpense()
 
   const form = useForm({
     resolver: zodResolver(ExpenseSchema),

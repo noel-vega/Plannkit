@@ -1,6 +1,6 @@
 import { Page } from '@/components/layout/page'
 import { FinanceSpaceSwitcher } from '@/features/finances/components/finance-space-switcher'
-import { getUseListFinanceSpacesOptions, useListFinanceSpaces } from '@/features/finances/hooks'
+import { getUseListSpacesOptions, useListSpaces } from '@/features/finances/hooks'
 import type { FinanceSpace } from '@/features/finances/types'
 import { queryClient } from '@/lib/react-query'
 import { createFileRoute, Outlet, redirect, useNavigate } from '@tanstack/react-router'
@@ -11,7 +11,7 @@ export const Route = createFileRoute('/app/finances')({
     parse: z.object({ spaceId: z.coerce.number().nullish() }).parse
   },
   beforeLoad: async ({ params }) => {
-    const spaces = await queryClient.ensureQueryData(getUseListFinanceSpacesOptions())
+    const spaces = await queryClient.ensureQueryData(getUseListSpacesOptions())
     if (params.spaceId === undefined) {
       throw redirect({ to: "/app/finances/$spaceId", params: { spaceId: spaces[0].id } })
     }
@@ -25,7 +25,7 @@ export const Route = createFileRoute('/app/finances')({
 function RouteComponent() {
   const navigate = useNavigate()
   const rtCtx = Route.useRouteContext()
-  const spaces = useListFinanceSpaces({ initialData: rtCtx.spaces })
+  const spaces = useListSpaces({ initialData: rtCtx.spaces })
 
 
   const handleSwitchSpace = (space: FinanceSpace) => {

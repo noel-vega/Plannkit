@@ -34,6 +34,11 @@ export const finances = {
       const data = await response.json()
       return GoalSchema.parse(data)
     },
+    list: async (params: { spaceId: number }) => {
+      const response = await pkFetch(`/finances/spaces/${params.spaceId}/goals`)
+      const data = await response.json()
+      return GoalSchema.array().parse(data)
+    },
   },
   expenses: {
     list: async (params: { spaceId: number }) => {

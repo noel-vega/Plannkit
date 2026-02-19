@@ -8,8 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { useCreateFinanceExpense } from "../hooks";
 import { useDialog } from "@/hooks";
+import { useCreateExpense } from "../hooks";
 
 type CreateExpenseFormProps = {
   spaceId: number,
@@ -17,7 +17,7 @@ type CreateExpenseFormProps = {
 }
 
 export function CreateExpenseForm(props: CreateExpenseFormProps) {
-  const createExpense = useCreateFinanceExpense()
+  const createExpense = useCreateExpense()
   const form = useForm({
     resolver: zodResolver(CreateExpenseParamsSchema),
     defaultValues: {

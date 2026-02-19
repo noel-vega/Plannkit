@@ -85,7 +85,26 @@ func (h *Handler) CreateGoal(c *gin.Context) {
 	c.JSON(http.StatusCreated, goal)
 }
 
-func (h *Handler) ListGoals(c *gin.Context) {}
+func (h *Handler) ListGoals(c *gin.Context) {
+	spaceID, err := strconv.Atoi(c.Param("spaceID"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	data := &ListGoalsParams{
+		UserID:  c.MustGet("user_id").(int),
+		SpaceID: spaceID,
+	}
+
+	goals, err := h.service.ListGoals(data)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, goals)
+}
 
 func (h *Handler) CreateExpense(c *gin.Context) {
 	userID := c.MustGet("user_id").(int)
@@ -111,7 +130,7 @@ func (h *Handler) CreateExpense(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, expense)
+	c.JSON(http.StatusCreated, expense)
 }
 
 func (h *Handler) ListExpenses(c *gin.Context) {
@@ -122,7 +141,12 @@ func (h *Handler) ListExpenses(c *gin.Context) {
 		return
 	}
 
-	expenses, err := h.service.ListExpenses(userID, spaceID)
+	data := &ListExpensesParams{
+		UserID:  userID,
+		SpaceID: spaceID,
+	}
+
+	expenses, err := h.service.ListExpenses(data)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return

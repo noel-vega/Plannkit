@@ -11,7 +11,7 @@ import { MonthlyExpensesCard } from '@/features/finances/components/monthly-expe
 import { MonthlyGoalCommitmentsCard } from '@/features/finances/components/monthly-goal-commitment-card'
 import { MonthlyIncomeCard } from '@/features/finances/components/monthly-income-card'
 import { CreateExpenseDialog } from '@/features/finances/components/create-expense-form'
-import { getUseListFinanceExpensesOptions, useListFinanceExpenses } from '@/features/finances/hooks'
+import { getUseListExpensesOptions, getUseListGoalsOptions, useListExpenses, useListGoals } from '@/features/finances/hooks'
 import { createFileRoute } from '@tanstack/react-router'
 import { PlusIcon, TargetIcon } from 'lucide-react'
 import z from 'zod/v3'
@@ -20,8 +20,11 @@ import { CreateGoalDialog } from '@/features/finances/components/create-goal-for
 
 export const Route = createFileRoute('/app/finances/$spaceId/')({
   beforeLoad: async ({ params }) => {
-    const expenses = await queryClient.ensureQueryData(getUseListFinanceExpensesOptions(params))
-    return { expenses }
+    const [expenses, goals] = await Promise.all([
+      queryClient.ensureQueryData(getUseListExpensesOptions(params)),
+      queryClient.ensureQueryData(getUseListGoalsOptions(params))
+    ])
+    return { expenses, goals }
   },
   params: {
     parse: z.object({ spaceId: z.coerce.number() }).parse
@@ -32,13 +35,14 @@ export const Route = createFileRoute('/app/finances/$spaceId/')({
 function RouteComponent() {
   const { spaceId } = Route.useParams()
   const rtCtx = Route.useRouteContext()
-  const expenses = useListFinanceExpenses({ spaceId, initialData: rtCtx.expenses })
+  const expenses = useListExpenses({ spaceId, initialData: rtCtx.expenses })
+  const goals = useListGoals({ spaceId, initialData: rtCtx.goals })
   return (
     <div className="@container">
       <div className="grid grid-cols-1 @3xl:grid-cols-3 gap-3.5 mb-4">
         <MonthlyIncomeCard />
-        <MonthlyExpensesCard expenses={expenses.data ?? []} />
-        <MonthlyGoalCommitmentsCard />
+        <MonthlyExpensesCard expenses={expenses.data} />
+        <MonthlyGoalCommitmentsCard goals={goals.data} />
       </div>
       <div className="mb-8">
         <MarginStatusBanner />

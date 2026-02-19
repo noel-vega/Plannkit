@@ -135,7 +135,24 @@ func (r *Repository) CreateGoal(params *CreateGoalParams) (*Goal, error) {
 	return goal, nil
 }
 
-func (r *Repository) ListGoals() {
+func (r *Repository) ListGoals(params *ListGoalsParams) ([]Goal, error) {
+	query := `
+		SELECT * 
+	  FROM finance_spaces_goals 
+	  WHERE user_id = :user_id AND finance_space_id = :finance_space_id
+	`
+	query, args, err := sqlx.Named(query, params)
+	if err != nil {
+		return nil, err
+	}
+	query = r.db.Rebind(query)
+
+	data := []Goal{}
+	err = r.db.Select(&data, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
 }
 
 func (r *Repository) DeleteGoalByID() {}
@@ -165,14 +182,19 @@ func (r *Repository) CreateExpense(params *CreateExpenseParams) (*Expense, error
 	return data, nil
 }
 
-func (r *Repository) ListExpenses(userID, spaceID int) ([]Expense, error) {
+func (r *Repository) ListExpenses(params *ListExpensesParams) ([]Expense, error) {
 	data := []Expense{}
 	query := `
 	SELECT * 
 	FROM finance_spaces_expenses
-	WHERE user_id = $1 AND finance_space_id = $2`
+	WHERE user_id = :user_id AND finance_space_id = :finance_space_id`
 
-	err := r.db.Select(&data, query, userID, spaceID)
+	query, args, err := sqlx.Named(query, params)
+	if err != nil {
+		return nil, err
+	}
+	query = r.db.Rebind(query)
+	err = r.db.Select(&data, query, args...)
 	if err != nil {
 		return nil, err
 	}

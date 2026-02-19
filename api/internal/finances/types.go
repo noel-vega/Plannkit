@@ -40,6 +40,11 @@ type CreateExpenseParams struct {
 	Description *string `json:"description" db:"description"`
 }
 
+type ListExpensesParams struct {
+	SpaceID int `json:"spaceId" db:"finance_space_id"`
+	UserID  int `json:"userId" db:"user_id"`
+}
+
 type Goal struct {
 	ID                int       `json:"id" db:"id"`
 	SpaceID           int       `json:"spaceId" db:"finance_space_id"`
@@ -49,6 +54,11 @@ type Goal struct {
 	MonthlyCommitment int       `json:"monthlyCommitment" db:"monthly_commitment"`
 	CreatedAt         time.Time `json:"createdAt" db:"created_at"`
 	UpdatedAt         time.Time `json:"updatedAt" db:"updated_at"`
+}
+
+type ListGoalsParams struct {
+	SpaceID int `json:"spaceId" db:"finance_space_id"`
+	UserID  int `json:"userId" db:"user_id"`
 }
 
 type CreateGoalParams struct {

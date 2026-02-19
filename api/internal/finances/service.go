@@ -36,6 +36,10 @@ func (s *Service) CreateGoal(params *CreateGoalParams) (*Goal, error) {
 	return s.repository.CreateGoal(params)
 }
 
+func (s *Service) ListGoals(params *ListGoalsParams) ([]Goal, error) {
+	return s.repository.ListGoals(params)
+}
+
 func (s *Service) DeleteSpace(userID, spaceID int) error {
 	return s.repository.DeleteSpaceByID(userID, spaceID)
 }
@@ -44,8 +48,8 @@ func (s *Service) CreateExpense(params *CreateExpenseParams) (*Expense, error) {
 	return s.repository.CreateExpense(params)
 }
 
-func (s *Service) ListExpenses(userID, spaceID int) ([]Expense, error) {
-	return s.repository.ListExpenses(userID, spaceID)
+func (s *Service) ListExpenses(params *ListExpensesParams) ([]Expense, error) {
+	return s.repository.ListExpenses(params)
 }
 
 func (s *Service) DeleteExpense(params *DeleteExpenseParams) error {

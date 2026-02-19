@@ -1,7 +1,7 @@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from '@/components/ui/item'
-import { useDeleteFinanceSpace } from '@/features/finances/hooks'
+import { useDeleteSpace } from '@/features/finances/hooks'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import type { PropsWithChildren } from 'react'
 import z from 'zod/v3'
@@ -37,7 +37,7 @@ function RouteComponent() {
 
 function DeleteSpaceAlertDialog(props: { spaceId: number; } & PropsWithChildren) {
   const navigate = useNavigate()
-  const deleteSpace = useDeleteFinanceSpace()
+  const deleteSpace = useDeleteSpace()
   const handleConfirm = () => {
     deleteSpace.mutate({ id: props.spaceId })
     navigate({ to: "/app/finances" })
