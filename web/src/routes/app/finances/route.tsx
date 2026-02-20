@@ -1,10 +1,7 @@
-import { Container } from '@/components/layout/container'
 import { Page } from '@/components/layout/page'
-import { FinanceSpaceSwitcher } from '@/features/finances/components/finance-space-switcher'
-import { getUseListSpacesOptions, useListSpaces } from '@/features/finances/hooks'
-import type { FinanceSpace } from '@/features/finances/types'
+import { getUseListSpacesOptions } from '@/features/finances/hooks'
 import { queryClient } from '@/lib/react-query'
-import { createFileRoute, Outlet, redirect, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 import z from 'zod/v3'
 
 export const Route = createFileRoute('/app/finances')({
@@ -24,36 +21,8 @@ export const Route = createFileRoute('/app/finances')({
 })
 
 function RouteComponent() {
-  const navigate = useNavigate()
-  const rtCtx = Route.useRouteContext()
-  const spaces = useListSpaces({ initialData: rtCtx.spaces })
-
-
-  const handleSwitchSpace = (space: FinanceSpace) => {
-    navigate({ to: "/app/finances/$spaceId", params: { spaceId: space.id } })
-  }
-
-  const handleCreate = (space: FinanceSpace) => {
-    navigate({ to: "/app/finances/$spaceId", params: { spaceId: space.id } })
-  }
-
-  const handleSettings = (space: FinanceSpace) => {
-    navigate({ to: "/app/finances/$spaceId/settings", params: { spaceId: space.id } })
-  }
-
   return (
     <Page title="Finances">
-      <Container>
-        <div className="mb-4 grid grid-cols-1 @7xl:grid-cols-3 gap-4">
-          <FinanceSpaceSwitcher
-            currentSpace={rtCtx.currentSpace}
-            spaces={spaces.data}
-            onSpaceSelect={handleSwitchSpace}
-            onCreate={handleCreate}
-            onSettings={handleSettings}
-          />
-        </div>
-      </Container>
       <Outlet />
     </Page>
   )

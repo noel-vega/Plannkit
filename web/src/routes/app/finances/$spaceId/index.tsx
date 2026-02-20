@@ -11,14 +11,15 @@ import { MonthlyExpensesCard } from '@/features/finances/components/monthly-expe
 import { MonthlyGoalCommitmentsCard } from '@/features/finances/components/monthly-goal-commitment-card'
 import { MonthlyIncomeCard } from '@/features/finances/components/monthly-income-card'
 import { CreateExpenseDialog } from '@/features/finances/components/create-expense-form'
-import { getUseListExpensesOptions, getUseListGoalsOptions, useListExpenses, useListGoals } from '@/features/finances/hooks'
-import { createFileRoute } from '@tanstack/react-router'
-import { CheckCircle2Icon, CircleIcon, PauseIcon, PlusIcon, TargetIcon } from 'lucide-react'
+import { FinanceSpaceSwitcher } from '@/features/finances/components/finance-space-switcher'
+import { getUseListExpensesOptions, getUseListGoalsOptions, useListExpenses, useListGoals, useListSpaces } from '@/features/finances/hooks'
+import type { FinanceSpace } from '@/features/finances/types'
+import { GoalCard } from '@/features/finances/components/goal-card'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { PlusIcon, TargetIcon } from 'lucide-react'
 import z from 'zod/v3'
 import { queryClient } from '@/lib/react-query'
 import { CreateGoalDialog } from '@/features/finances/components/create-goal-form'
-import { formatCurrency } from '@/lib/format'
-import { Progress } from '@/components/ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 export const Route = createFileRoute('/app/finances/$spaceId/')({
@@ -37,11 +38,35 @@ export const Route = createFileRoute('/app/finances/$spaceId/')({
 
 function RouteComponent() {
   const { spaceId } = Route.useParams()
+  const navigate = useNavigate()
   const rtCtx = Route.useRouteContext()
   const expenses = useListExpenses({ spaceId, initialData: rtCtx.expenses })
   const goals = useListGoals({ spaceId, initialData: rtCtx.goals })
+  const spaces = useListSpaces({ initialData: rtCtx.spaces })
+
+  const handleSwitchSpace = (space: FinanceSpace) => {
+    navigate({ to: "/app/finances/$spaceId", params: { spaceId: space.id } })
+  }
+  const handleCreate = (space: FinanceSpace) => {
+    navigate({ to: "/app/finances/$spaceId", params: { spaceId: space.id } })
+  }
+  const handleSettings = (space: FinanceSpace) => {
+    navigate({ to: "/app/finances/$spaceId/settings", params: { spaceId: space.id } })
+  }
+
   return (
     <div className="@container">
+      <Container>
+        <div className="mb-4 grid grid-cols-1 @7xl:grid-cols-3 gap-4">
+          <FinanceSpaceSwitcher
+            currentSpace={rtCtx.currentSpace}
+            spaces={spaces.data}
+            onSpaceSelect={handleSwitchSpace}
+            onCreate={handleCreate}
+            onSettings={handleSettings}
+          />
+        </div>
+      </Container>
       <Container>
         <div className="grid grid-cols-1 @3xl:grid-cols-3 gap-3.5 mb-4">
           <MonthlyIncomeCard />
@@ -60,7 +85,7 @@ function RouteComponent() {
             <TabsTrigger value="expenses">Expenses</TabsTrigger>
           </TabsList>
           <Separator className="my-2 bg-transparent" />
-          <TabsContent value="goals">
+          <TabsContent value="goals" id="goals">
             <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <h2 className="text-2xl font-bold">Goals</h2>
@@ -82,113 +107,10 @@ function RouteComponent() {
               </Card>
             )}
 
-            <div className="grid-cols-1 grid @3xl:grid-cols-2  gap-4">
-              {goals.data.map((goal) => {
-                const progress = 50
-                const isComplete = progress >= 100;
-                {/* const projectedDate = getProjectedCompletionDate(goal); */ }
-                {/* const monthsToComplete = getMonthsToCompletion(goal); */ }
-                {/* const status = getGoalStatus(goal); */ }
-
-                const statusConfig = {
-                  active: {
-                    icon: CircleIcon,
-                    color: "text-blue-600",
-                    label: "Active",
-                  },
-                  complete: {
-                    icon: CheckCircle2Icon,
-                    color: "text-emerald-600",
-                    label: "Complete",
-                  },
-                  "on-hold": {
-                    icon: PauseIcon,
-                    color: "text-gray-500",
-                    label: "On Hold",
-                  },
-                };
-                const projectedDate = new Date();
-                const getCurrentAmount = () => 10
-
-                const monthsToComplete = 1;
-
-                const status = statusConfig["active"];
-
-                const formatDate = (dateString: string) => {
-                  return new Date(dateString).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                  });
-                };
-
-                return (
-                  <Card key={goal.id}>
-                    <CardContent className="pt-6 space-y-4">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-semibold text-lg">{goal.name}</h3>
-                            <div
-                              className={`flex items-center gap-1 text-xs ${status.color}`}
-                            >
-                              <status.icon className="h-3.5 w-3.5" />
-                              <span>{status.label}</span>
-                            </div>
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            Monthly commitment:{" "}
-                            {goal.monthlyCommitment > 0
-                              ? formatCurrency(goal.monthlyCommitment)
-                              : "Not set"}
-                          </div>
-                          {!isComplete && projectedDate && status.label !== "on-hold" && (
-                            <div className="text-sm text-muted-foreground">
-                              Projected completion:{" "}
-                              {formatDate(
-                                projectedDate.toISOString().split("T")[0],
-                              )}
-                              {monthsToComplete > 0 &&
-                                monthsToComplete !== Infinity && (
-                                  <span className="ml-2">
-                                    ({monthsToComplete}{" "}
-                                    {monthsToComplete === 1 ? "month" : "months"})
-                                  </span>
-                                )}
-                            </div>
-                          )}
-                          {status.label === "on-hold" && (
-                            <div className="text-sm text-muted-foreground italic">
-                              Set a monthly commitment to activate this goal
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">
-                            {formatCurrency(getCurrentAmount())} of{" "}
-                            {formatCurrency(goal.amount)}
-                          </span>
-                          <span className="font-semibold">
-                            {progress.toFixed(1)}%
-                          </span>
-                        </div>
-                        <Progress value={progress} className="h-2" />
-                        <div className="flex items-center justify-between text-sm gap-3">
-                          <span className="text-muted-foreground">
-                            {formatCurrency(
-                              goal.amount - 5000,
-                            )}{" "}
-                            remaining
-                          </span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+            <div className="grid-cols-1 grid @3xl:grid-cols-2 gap-4">
+              {goals.data.map((goal) => (
+                <GoalCard key={goal.id} goal={goal} />
+              ))}
             </div>
           </TabsContent>
           <TabsContent value="expenses">

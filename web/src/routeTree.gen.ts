@@ -26,6 +26,7 @@ import { Route as AppDashboardIndexRouteImport } from './routes/app/dashboard/in
 import { Route as AppHabitsIdRouteImport } from './routes/app/habits/$id'
 import { Route as AppFinancesSpaceIdIndexRouteImport } from './routes/app/finances/$spaceId/index'
 import { Route as AppFinancesSpaceIdSettingsRouteImport } from './routes/app/finances/$spaceId/settings'
+import { Route as AppFinancesSpaceIdGoalsGoalIdRouteImport } from './routes/app/finances/$spaceId/goals.$goalId'
 
 const AuthRouteRoute = AuthRouteRouteImport.update({
   id: '/auth',
@@ -113,6 +114,12 @@ const AppFinancesSpaceIdSettingsRoute =
     path: '/$spaceId/settings',
     getParentRoute: () => AppFinancesRouteRoute,
   } as any)
+const AppFinancesSpaceIdGoalsGoalIdRoute =
+  AppFinancesSpaceIdGoalsGoalIdRouteImport.update({
+    id: '/$spaceId/goals/$goalId',
+    path: '/$spaceId/goals/$goalId',
+    getParentRoute: () => AppFinancesRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -132,6 +139,7 @@ export interface FileRoutesByFullPath {
   '/app/user': typeof AppUserIndexRoute
   '/app/finances/$spaceId/settings': typeof AppFinancesSpaceIdSettingsRoute
   '/app/finances/$spaceId': typeof AppFinancesSpaceIdIndexRoute
+  '/app/finances/$spaceId/goals/$goalId': typeof AppFinancesSpaceIdGoalsGoalIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -151,6 +159,7 @@ export interface FileRoutesByTo {
   '/app/user': typeof AppUserIndexRoute
   '/app/finances/$spaceId/settings': typeof AppFinancesSpaceIdSettingsRoute
   '/app/finances/$spaceId': typeof AppFinancesSpaceIdIndexRoute
+  '/app/finances/$spaceId/goals/$goalId': typeof AppFinancesSpaceIdGoalsGoalIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -171,6 +180,7 @@ export interface FileRoutesById {
   '/app/user/': typeof AppUserIndexRoute
   '/app/finances/$spaceId/settings': typeof AppFinancesSpaceIdSettingsRoute
   '/app/finances/$spaceId/': typeof AppFinancesSpaceIdIndexRoute
+  '/app/finances/$spaceId/goals/$goalId': typeof AppFinancesSpaceIdGoalsGoalIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -192,6 +202,7 @@ export interface FileRouteTypes {
     | '/app/user'
     | '/app/finances/$spaceId/settings'
     | '/app/finances/$spaceId'
+    | '/app/finances/$spaceId/goals/$goalId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -211,6 +222,7 @@ export interface FileRouteTypes {
     | '/app/user'
     | '/app/finances/$spaceId/settings'
     | '/app/finances/$spaceId'
+    | '/app/finances/$spaceId/goals/$goalId'
   id:
     | '__root__'
     | '/'
@@ -230,6 +242,7 @@ export interface FileRouteTypes {
     | '/app/user/'
     | '/app/finances/$spaceId/settings'
     | '/app/finances/$spaceId/'
+    | '/app/finances/$spaceId/goals/$goalId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -359,17 +372,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppFinancesSpaceIdSettingsRouteImport
       parentRoute: typeof AppFinancesRouteRoute
     }
+    '/app/finances/$spaceId/goals/$goalId': {
+      id: '/app/finances/$spaceId/goals/$goalId'
+      path: '/$spaceId/goals/$goalId'
+      fullPath: '/app/finances/$spaceId/goals/$goalId'
+      preLoaderRoute: typeof AppFinancesSpaceIdGoalsGoalIdRouteImport
+      parentRoute: typeof AppFinancesRouteRoute
+    }
   }
 }
 
 interface AppFinancesRouteRouteChildren {
   AppFinancesSpaceIdSettingsRoute: typeof AppFinancesSpaceIdSettingsRoute
   AppFinancesSpaceIdIndexRoute: typeof AppFinancesSpaceIdIndexRoute
+  AppFinancesSpaceIdGoalsGoalIdRoute: typeof AppFinancesSpaceIdGoalsGoalIdRoute
 }
 
 const AppFinancesRouteRouteChildren: AppFinancesRouteRouteChildren = {
   AppFinancesSpaceIdSettingsRoute: AppFinancesSpaceIdSettingsRoute,
   AppFinancesSpaceIdIndexRoute: AppFinancesSpaceIdIndexRoute,
+  AppFinancesSpaceIdGoalsGoalIdRoute: AppFinancesSpaceIdGoalsGoalIdRoute,
 }
 
 const AppFinancesRouteRouteWithChildren =
