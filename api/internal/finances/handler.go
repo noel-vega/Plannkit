@@ -1,6 +1,8 @@
 package finances
 
 import (
+	"database/sql"
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -128,6 +130,10 @@ func (h *Handler) GetGoal(c *gin.Context) {
 
 	goal, err := h.service.GetGoal(params)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			c.AbortWithStatus(http.StatusNotFound)
+			return
+		}
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}

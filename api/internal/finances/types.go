@@ -75,17 +75,6 @@ type GetGoalParams struct {
 	UserID  int `json:"userId" db:"user_id"`
 }
 
-// CREATE TABLE IF NOT EXISTS finance_spaces_goals_contributions (
-//   id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-//   finance_space_id INT NOT NULL REFERENCES finance_spaces(id) ON DELETE CASCADE,
-//   finance_space_goal_id INT NOT NULL REFERENCES finance_spaces_goals(id) ON DELETE CASCADE,
-//   user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-//   amount INT NOT NULL,
-//   note TEXT NULL,
-//   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-//   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-// );
-
 type GoalContribution struct {
 	ID        int       `json:"id" db:"id"`
 	SpaceID   int       `json:"spaceId" db:"finance_space_id"`
