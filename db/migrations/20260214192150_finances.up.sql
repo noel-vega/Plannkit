@@ -90,7 +90,7 @@ ON finance_spaces_goals(user_id);
 CREATE INDEX idx_finance_spaces_goals_created_at
 ON finance_spaces_goals(created_at);
 
-CREATE TABLE IF NOT EXISTS finance_spaces_goals_commitments (
+CREATE TABLE IF NOT EXISTS finance_spaces_goals_contributions (
   id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   finance_space_id INT NOT NULL REFERENCES finance_spaces(id) ON DELETE CASCADE,
   finance_space_goal_id INT NOT NULL REFERENCES finance_spaces_goals(id) ON DELETE CASCADE,
@@ -101,17 +101,17 @@ CREATE TABLE IF NOT EXISTS finance_spaces_goals_commitments (
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_finance_spaces_goals_commitments_finance_space_id
-ON finance_spaces_goals_commitments(finance_space_id);
+CREATE INDEX idx_finance_spaces_goals_contributions_finance_space_id
+ON finance_spaces_goals_contributions(finance_space_id);
 
-CREATE INDEX idx_finance_spaces_goals_commitments_finance_goal_id
-ON finance_spaces_goals_commitments(finance_space_goal_id);
+CREATE INDEX idx_finance_spaces_goals_contributions_finance_goal_id
+ON finance_spaces_goals_contributions(finance_space_goal_id);
 
-CREATE INDEX idx_finance_spaces_goals_commitments_user_id
-ON finance_spaces_goals_commitments(user_id);
+CREATE INDEX idx_finance_spaces_goals_contributions_user_id
+ON finance_spaces_goals_contributions(user_id);
 
-CREATE INDEX idx_finance_spaces_goals_commitments_created_at
-ON finance_spaces_goals_commitments(created_at);
+CREATE INDEX idx_finance_spaces_goals_contributions_created_at
+ON finance_spaces_goals_contributions(created_at);
 
 
 
