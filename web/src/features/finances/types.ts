@@ -10,6 +10,12 @@ export const FinanceSpaceSchema = z.object({
 
 export type FinanceSpace = z.infer<typeof FinanceSpaceSchema>
 
+export const SpaceIdentSchema = z.object({
+  spaceId: z.coerce.number()
+})
+export type SpaceIdent = z.infer<typeof SpaceIdentSchema>
+
+
 export const CreateFinanceSpaceSchema = z.object(({
   name: z.string().min(1)
 }))
@@ -45,6 +51,9 @@ export const ExpenseSchema = z.object({
 })
 export type Expense = z.infer<typeof ExpenseSchema>
 
+export const ExpenseIdentSchema = SpaceIdentSchema.merge(z.object({ expenseId: z.coerce.number() }))
+export type ExpenseIdent = z.infer<typeof ExpenseIdentSchema>
+
 export const CreateExpenseParamsSchema = z.object({
   spaceId: z.number(),
   name: z.string().min(1, { message: "Required" }),
@@ -53,3 +62,7 @@ export const CreateExpenseParamsSchema = z.object({
   description: z.string().nullable(),
 })
 export type CreateExpenseParams = z.infer<typeof CreateExpenseParamsSchema>
+
+
+export const GoalIdentSchema = SpaceIdentSchema.merge(z.object({ goalId: z.coerce.number() }))
+export type GoalIdent = z.infer<typeof GoalIdentSchema> 

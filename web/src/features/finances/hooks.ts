@@ -1,6 +1,6 @@
 import { queryOptions, useMutation, useQuery } from "@tanstack/react-query";
 import { finances } from "./api";
-import type { Expense, FinanceSpace, Goal } from "./types";
+import type { Expense, FinanceSpace, Goal, GoalIdent, SpaceIdent } from "./types";
 import { queryClient } from "@/lib/react-query";
 
 
@@ -19,7 +19,6 @@ export async function invalidateUseListSpaces() {
 export function useListSpaces({ initialData }: { initialData: FinanceSpace[] }) {
   return useQuery({ ...getUseListSpacesOptions(), initialData })
 }
-
 
 export function useCreateFinanceSpace() {
   return useMutation({
@@ -49,18 +48,18 @@ export function useCreateExpense() {
   })
 }
 
-export function getUseListExpensesOptions(params: { spaceId: number }) {
+export function getUseListExpensesOptions(params: SpaceIdent) {
   return queryOptions({
     queryKey: ["finance-space-expenses"],
     queryFn: () => finances.expenses.list(params)
   })
 }
 
-export async function invalidateUseListExpenses(params: { spaceId: number }) {
+export async function invalidateUseListExpenses(params: SpaceIdent) {
   return queryClient.invalidateQueries(getUseListExpensesOptions(params))
 }
 
-export function useListExpenses({ spaceId, initialData }: { spaceId: number, initialData: Expense[] }) {
+export function useListExpenses({ spaceId, initialData }: SpaceIdent & { initialData: Expense[] }) {
   return useQuery({ ...getUseListExpensesOptions({ spaceId }), initialData })
 }
 
@@ -72,8 +71,6 @@ export function useUpdateExpense() {
     }
   })
 }
-
-
 
 export function useCreateGoal() {
   return useMutation({
@@ -87,19 +84,34 @@ export function useCreateGoal() {
   })
 }
 
-export function getUseListGoalsOptions(params: { spaceId: number; }) {
+export function getUseListGoalsOptions(params: SpaceIdent) {
   return queryOptions({
     queryKey: ["list-goals"],
     queryFn: () => finances.goals.list(params)
   })
 }
 
-export async function invalidateUseListGoals(params: { spaceId: number }) {
+export async function invalidateUseListGoals(params: SpaceIdent) {
   return queryClient.invalidateQueries(getUseListGoalsOptions(params))
 }
 
 export function useListGoals({ spaceId, initialData }: { spaceId: number, initialData: Goal[] }) {
   return useQuery({ ...getUseListGoalsOptions({ spaceId }), initialData })
+}
+
+export function getUseGetGoalOptions(params: GoalIdent) {
+  return queryOptions({
+    queryKey: ['goal', params.goalId],
+    queryFn: () => finances.goals.getById(params)
+  })
+}
+
+export function invalidateUseGetGoal(params: GoalIdent) {
+  return queryClient.invalidateQueries(getUseGetGoalOptions(params))
+}
+
+export function useGetGoal(params: GoalIdent, initialData: Goal) {
+  return useQuery({ ...getUseGetGoalOptions(params), initialData })
 }
 
 export function useDeleteExpense() {

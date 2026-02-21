@@ -1,14 +1,15 @@
 import { BackButton } from '@/components/back-button'
 import { Container } from '@/components/layout/container'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Separator } from '@/components/ui/separator'
-import { getUseListGoalsOptions, useListGoals } from '@/features/finances/hooks'
+import { getUseGetGoalOptions, useGetGoal } from '@/features/finances/hooks'
+import { GoalIdentSchema } from '@/features/finances/types'
 import { formatCurrency } from '@/lib/format'
 import { queryClient } from '@/lib/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { CheckCircle2Icon, CircleIcon, PauseIcon, Trash2Icon } from 'lucide-react'
-import z from 'zod/v3'
+import { CheckCircle2Icon, CircleIcon, PauseIcon, PlusIcon, Trash2Icon } from 'lucide-react'
 
 const DUMMY_CONTRIBUTIONS = [
   { id: 1, amount: 350, date: '2026-02-15' },
@@ -34,22 +35,19 @@ const formatDate = (dateString: string) =>
 
 export const Route = createFileRoute('/app/finances/$spaceId/goals/$goalId')({
   params: {
-    parse: z.object({ spaceId: z.coerce.number(), goalId: z.coerce.number() }).parse,
+    parse: GoalIdentSchema.parse,
   },
   beforeLoad: async ({ params }) => {
-    const goals = await queryClient.ensureQueryData(getUseListGoalsOptions(params))
-    const goal = goals.find((g) => g.id === params.goalId)
-    if (!goal) throw new Error('Goal not found')
-    return { goals, goal }
+    const goal = await queryClient.ensureQueryData(getUseGetGoalOptions(params))
+    return { goal }
   },
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const { spaceId } = Route.useParams()
+  const { spaceId, goalId } = Route.useParams()
   const rtCtx = Route.useRouteContext()
-  const goals = useListGoals({ spaceId, initialData: rtCtx.goals })
-  const goal = goals.data.find((g) => g.id === rtCtx.goal.id) ?? rtCtx.goal
+  const { data: goal } = useGetGoal({ spaceId, goalId }, rtCtx.goal)
 
   const currentAmount = DUMMY_CONTRIBUTIONS.reduce((sum, c) => sum + c.amount, 0)
   const progress = Math.min((currentAmount / goal.amount) * 100, 100)
@@ -126,9 +124,11 @@ function RouteComponent() {
 
       <Separator className="mb-8" />
 
-
       <div>
-        <h3 className="text-lg font-semibold mb-4">Contributions</h3>
+        <div className="flex justify-between">
+          <h3 className="text-lg font-semibold mb-4">Contributions</h3>
+          <Button><PlusIcon /> Add Contribution</Button>
+        </div>
         {DUMMY_CONTRIBUTIONS.length === 0 ? (
           <p className="text-sm text-muted-foreground">
             No contributions yet. Add your first one above.

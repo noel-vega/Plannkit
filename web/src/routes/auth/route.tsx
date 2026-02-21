@@ -12,7 +12,6 @@ function RouteComponent() {
         <NotebookTabsIcon className="size-6 sm:size-10 stroke-2" />
         <h1 className="text-xl sm:text-3xl font-bold ">Plannkit</h1>
       </div>
-
       <Outlet />
     </div>
   )
