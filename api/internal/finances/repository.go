@@ -156,7 +156,26 @@ func (r *Repository) ListGoals(params *ListGoalsParams) ([]Goal, error) {
 }
 
 func (r *Repository) DeleteGoalByID() {}
-func (r *Repository) GetGoalByID()    {}
+func (r *Repository) GetGoal(params *GetGoalParams) (*Goal, error) {
+	query := `
+	SELECT * 
+	FROM finance_spaces_goals
+	WHERE user_id = :user_id AND finance_space_id = :finance_space_id AND id = :id
+	`
+	query, args, err := sqlx.Named(query, params)
+	if err != nil {
+		return nil, err
+	}
+
+	query = r.db.Rebind(query)
+
+	data := &Goal{}
+	err = r.db.Get(data, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
 
 func (r *Repository) CreateExpense(params *CreateExpenseParams) (*Expense, error) {
 	data := &Expense{}

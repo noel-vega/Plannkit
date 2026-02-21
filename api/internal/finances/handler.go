@@ -106,6 +106,34 @@ func (h *Handler) ListGoals(c *gin.Context) {
 	c.JSON(http.StatusOK, goals)
 }
 
+func (h *Handler) GetGoal(c *gin.Context) {
+	userID := c.MustGet("user_id").(int)
+	spaceID, err := strconv.Atoi(c.Param("spaceID"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	goalID, err := strconv.Atoi(c.Param("goalID"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	params := &GetGoalParams{
+		ID:      goalID,
+		SpaceID: spaceID,
+		UserID:  userID,
+	}
+
+	goal, err := h.service.GetGoal(params)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+	c.JSON(http.StatusOK, goal)
+}
+
 func (h *Handler) CreateExpense(c *gin.Context) {
 	userID := c.MustGet("user_id").(int)
 	spaceID, err := strconv.Atoi(c.Param("spaceID"))
