@@ -6,38 +6,38 @@ const isDev = import.meta.env.DEV
 //
 export const links = [
   {
-    title: "Habits",
-    url: "/app/habits",
-    icon: SproutIcon,
-    active: true,
-  },
-]
-
-export const comingSoonLinks = [
-  {
     title: "Dashboard",
     url: "/app/dashboard",
     icon: LayoutDashboard,
     active: isDev,
   },
   {
+    title: "Habits",
+    url: "/app/habits",
+    icon: SproutIcon,
+    active: true,
+  },
+  {
     title: "Tasks",
     url: "/app/todos",
     icon: ListIcon,
-    active: isDev,
+    active: true,
   },
   {
     title: "Finances",
     url: "/app/finances",
     icon: BanknoteIcon,
-    active: isDev,
+    active: true,
   },
   {
     title: "Groceries",
     url: "/app/groceries",
     icon: ShoppingBasketIcon,
-    active: isDev,
+    active: true,
   },
+]
+
+export const comingSoonLinks = [
   {
     title: "Email",
     url: "/app/email",
