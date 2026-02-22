@@ -17,7 +17,6 @@ export function Header() {
   const signOut = useSignOut()
 
   const handleSignOut = () => {
-
     signOut.mutate(undefined, {
       onSuccess: () => {
         queryClient.clear()
