@@ -6,6 +6,7 @@ import { Button } from "../ui/button"
 import { Link, useNavigate } from "@tanstack/react-router"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog"
 import { useSignOut } from "@/features/auth/hooks"
+import { queryClient } from "@/lib/react-query"
 
 
 export function Header() {
@@ -16,8 +17,10 @@ export function Header() {
   const signOut = useSignOut()
 
   const handleSignOut = () => {
+
     signOut.mutate(undefined, {
       onSuccess: () => {
+        queryClient.clear()
         navigate({ to: "/auth/signin" })
       }
     })
