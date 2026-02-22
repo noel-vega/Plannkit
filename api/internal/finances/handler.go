@@ -20,15 +20,14 @@ func NewHandler(service *Service) *Handler {
 }
 
 func (h *Handler) CreateSpace(c *gin.Context) {
-	data := &CreateSpaceParams{
-		UserID: c.MustGet("userID").(int),
-	}
+	data := &CreateSpaceParams{}
 
 	err := c.Bind(data)
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
+	data.UserID = c.MustGet("userID").(int)
 
 	space, err := h.service.CreateSpace(data)
 	if err != nil {
@@ -64,14 +63,13 @@ func (h *Handler) DeleteSpace(c *gin.Context) {
 }
 
 func (h *Handler) CreateGoal(c *gin.Context) {
-	data := &CreateGoalParams{
-		UserID: c.MustGet("userID").(int),
-	}
+	data := &CreateGoalParams{}
 	err := c.Bind(data)
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
+	data.UserID = c.MustGet("userID").(int)
 
 	goal, err := h.service.CreateGoal(data)
 	if err != nil {
@@ -125,20 +123,48 @@ func (h *Handler) GetGoal(c *gin.Context) {
 	c.JSON(http.StatusOK, goal)
 }
 
+func (h *Handler) CreateGoalContribution(c *gin.Context) {
+	goalID, err := strconv.Atoi(c.Param("goalID"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+	params := &CreateGoalContributionParams{}
+
+	err = c.Bind(params)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	params.UserID = c.MustGet("userID").(int)
+	params.SpaceID = c.MustGet("spaceID").(int)
+	params.GoalID = goalID
+
+	goal, err := h.service.CreateGoalContribution(params)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusCreated, goal)
+}
+
 func (h *Handler) CreateExpense(c *gin.Context) {
 	userID := c.MustGet("userID").(int)
 	spaceID := c.MustGet("spaceID").(int)
 
-	data := &CreateExpenseParams{
-		UserID:  userID,
-		SpaceID: spaceID,
-	}
+	data := &CreateExpenseParams{}
 
 	err := c.Bind(data)
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
+
+	data.UserID = userID
+	data.SpaceID = spaceID
+
 	expense, err := h.service.CreateExpense(data)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)

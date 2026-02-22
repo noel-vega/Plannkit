@@ -64,8 +64,8 @@ func (s *Service) GetGoal(params *GetGoalParams) (*Goal, error) {
 	return s.repository.GetGoal(params)
 }
 
-func (s *Service) CreateGoalContribution() (*GoalContribution, error) {
-	return nil, nil
+func (s *Service) CreateGoalContribution(params *CreateGoalContributionParams) (*GoalContribution, error) {
+	return s.repository.CreateGoalContribution(params)
 }
 
 func (s *Service) CreateExpense(params *CreateExpenseParams) (*Expense, error) {
