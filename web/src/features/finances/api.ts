@@ -1,6 +1,6 @@
 import { pkFetch } from "@/lib/plannkit-api-client"
 import type { ByIdParams } from "../habits/types"
-import { ExpenseSchema, FinanceSpaceSchema, GoalSchema, type CreateExpenseParams, type CreateFinanceSpaceParams, type CreateGoalParams, type Expense, type ExpenseIdent, type GoalIdent, type SpaceIdent } from "./types"
+import { ExpenseSchema, FinanceSpaceSchema, GoalContributionSchema, GoalSchema, type CreateExpenseParams, type CreateFinanceSpaceParams, type CreateGoalContributionParams, type CreateGoalParams, type Expense, type ExpenseIdent, type GoalIdent, type SpaceIdent } from "./types"
 
 export const finances = {
   spaces: {
@@ -41,6 +41,21 @@ export const finances = {
       const response = await pkFetch(`/finances/spaces/${params.spaceId}/goals/${params.goalId}`)
       const data = await response.json()
       return GoalSchema.parse(data)
+    },
+    contributions: {
+      create: async (params: GoalIdent & { data: CreateGoalContributionParams }) => {
+        const response = await pkFetch(`/finances/spaces/${params.spaceId}/goals/${params.goalId}/contributions`, {
+          method: "POST",
+          body: JSON.stringify(params.data)
+        })
+        const data = await response.json()
+        return GoalContributionSchema.parse(data)
+      },
+      list: async (params: GoalIdent) => {
+        const response = await pkFetch(`/finances/spaces/${params.spaceId}/goals/${params.goalId}/contributions`)
+        const data = await response.json()
+        return GoalContributionSchema.array().parse(data)
+      }
     }
   },
   expenses: {

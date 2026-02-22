@@ -39,6 +39,24 @@ export const GoalSchema = z.object({
 })
 export type Goal = z.infer<typeof GoalSchema>
 
+export const GoalContributionSchema = z.object({
+  id: z.number(),
+  spaceId: z.number(),
+  goalId: z.number(),
+  userId: z.number(),
+  amount: z.coerce.number(),
+  note: z.string().nullable(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date()
+})
+export type GoalContribution = z.infer<typeof GoalContributionSchema>
+
+export const CreateGoalContributionParamsSchema = z.object({
+  amount: z.coerce.number(),
+  note: z.string().nullable()
+})
+export type CreateGoalContributionParams = z.infer<typeof CreateGoalContributionParamsSchema>
+
 export const ExpenseSchema = z.object({
   id: z.number(),
   spaceId: z.number(),

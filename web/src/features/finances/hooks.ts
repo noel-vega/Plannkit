@@ -1,6 +1,6 @@
 import { queryOptions, useMutation, useQuery } from "@tanstack/react-query";
 import { finances } from "./api";
-import type { Expense, FinanceSpace, Goal, GoalIdent, SpaceIdent } from "./types";
+import type { Expense, FinanceSpace, Goal, GoalContribution, GoalIdent, SpaceIdent } from "./types";
 import { queryClient } from "@/lib/react-query";
 
 
@@ -112,6 +112,30 @@ export function invalidateUseGetGoal(params: GoalIdent) {
 
 export function useGetGoal(params: GoalIdent, initialData: Goal) {
   return useQuery({ ...getUseGetGoalOptions(params), initialData })
+}
+
+export function getUseGoalContributionsQueryOptions(params: GoalIdent) {
+  return queryOptions({
+    queryKey: ["goal", params.goalId],
+    queryFn: () => finances.goals.contributions.list(params)
+  })
+}
+
+export function invalidateUseGoalContributionsQuery(params: GoalIdent) {
+  return queryClient.invalidateQueries(getUseGoalContributionsQueryOptions(params))
+}
+
+export function useGetGoalContributionsQuery(params: GoalIdent & { initialData: GoalContribution[] }) {
+  return useQuery({ ...getUseGoalContributionsQueryOptions(params), initialData: params.initialData })
+}
+
+export function useCreateGoalContributionMutation() {
+  return useMutation({
+    mutationFn: finances.goals.contributions.create,
+    onSuccess: (_, vars) => {
+      invalidateUseGoalContributionsQuery(vars)
+    }
+  })
 }
 
 export function useDeleteExpense() {
