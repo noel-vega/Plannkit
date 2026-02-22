@@ -19,7 +19,7 @@ func NewHandler(db *sqlx.DB) *Handler {
 }
 
 func (handler *Handler) ListTodos(c *gin.Context) {
-	userID := c.MustGet("user_id").(int)
+	userID := c.MustGet("userID").(int)
 	todos, err := handler.TodosRepo.List(userID)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
@@ -29,7 +29,7 @@ func (handler *Handler) ListTodos(c *gin.Context) {
 }
 
 func (handler *Handler) GetTodosBoard(c *gin.Context) {
-	userID := c.MustGet("user_id").(int)
+	userID := c.MustGet("userID").(int)
 	t, err := handler.TodosRepo.List(userID)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
@@ -50,7 +50,7 @@ func (handler *Handler) GetTodosBoard(c *gin.Context) {
 }
 
 func (handler *Handler) CreateTodo(c *gin.Context) {
-	userID := c.MustGet("user_id").(int)
+	userID := c.MustGet("userID").(int)
 	todo := &CreateTodoParams{
 		UserID: userID,
 	}
@@ -68,7 +68,7 @@ func (handler *Handler) CreateTodo(c *gin.Context) {
 }
 
 func (handler *Handler) UpdateTodoPosition(c *gin.Context) {
-	userID := c.MustGet("user_id").(int)
+	userID := c.MustGet("userID").(int)
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -88,7 +88,7 @@ func (handler *Handler) UpdateTodoPosition(c *gin.Context) {
 }
 
 func (handler *Handler) DeleteTodo(c *gin.Context) {
-	userID := c.MustGet("user_id").(int)
+	userID := c.MustGet("userID").(int)
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -104,7 +104,7 @@ func (handler *Handler) DeleteTodo(c *gin.Context) {
 }
 
 func (handler *Handler) GetTodoByID(c *gin.Context) {
-	userID := c.MustGet("user_id").(int)
+	userID := c.MustGet("userID").(int)
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)

@@ -21,7 +21,7 @@ func NewHandler(service *Service) *Handler {
 
 func (h *Handler) CreateSpace(c *gin.Context) {
 	data := &CreateSpaceParams{
-		UserID: c.MustGet("user_id").(int),
+		UserID: c.MustGet("userID").(int),
 	}
 
 	err := c.Bind(data)
@@ -40,7 +40,7 @@ func (h *Handler) CreateSpace(c *gin.Context) {
 }
 
 func (h *Handler) ListSpaces(c *gin.Context) {
-	userID := c.MustGet("user_id").(int)
+	userID := c.MustGet("userID").(int)
 	spaces, err := h.service.ListSpaces(userID)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
@@ -51,15 +51,10 @@ func (h *Handler) ListSpaces(c *gin.Context) {
 }
 
 func (h *Handler) DeleteSpace(c *gin.Context) {
-	userID := c.MustGet("user_id").(int)
-	spaceIDParam := c.Param("spaceID")
-	spaceID, err := strconv.Atoi(spaceIDParam)
-	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
+	userID := c.MustGet("userID").(int)
+	spaceID := c.MustGet("spaceID").(int)
 
-	err = h.service.DeleteSpace(userID, spaceID)
+	err := h.service.DeleteSpace(userID, spaceID)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -70,7 +65,7 @@ func (h *Handler) DeleteSpace(c *gin.Context) {
 
 func (h *Handler) CreateGoal(c *gin.Context) {
 	data := &CreateGoalParams{
-		UserID: c.MustGet("user_id").(int),
+		UserID: c.MustGet("userID").(int),
 	}
 	err := c.Bind(data)
 	if err != nil {
@@ -88,15 +83,9 @@ func (h *Handler) CreateGoal(c *gin.Context) {
 }
 
 func (h *Handler) ListGoals(c *gin.Context) {
-	spaceID, err := strconv.Atoi(c.Param("spaceID"))
-	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
-
 	data := &ListGoalsParams{
-		UserID:  c.MustGet("user_id").(int),
-		SpaceID: spaceID,
+		UserID:  c.MustGet("userID").(int),
+		SpaceID: c.MustGet("spaceID").(int),
 	}
 
 	goals, err := h.service.ListGoals(data)
@@ -109,12 +98,8 @@ func (h *Handler) ListGoals(c *gin.Context) {
 }
 
 func (h *Handler) GetGoal(c *gin.Context) {
-	userID := c.MustGet("user_id").(int)
-	spaceID, err := strconv.Atoi(c.Param("spaceID"))
-	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
+	userID := c.MustGet("userID").(int)
+	spaceID := c.MustGet("spaceID").(int)
 
 	goalID, err := strconv.Atoi(c.Param("goalID"))
 	if err != nil {
@@ -141,19 +126,15 @@ func (h *Handler) GetGoal(c *gin.Context) {
 }
 
 func (h *Handler) CreateExpense(c *gin.Context) {
-	userID := c.MustGet("user_id").(int)
-	spaceID, err := strconv.Atoi(c.Param("spaceID"))
-	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
+	userID := c.MustGet("userID").(int)
+	spaceID := c.MustGet("spaceID").(int)
 
 	data := &CreateExpenseParams{
 		UserID:  userID,
 		SpaceID: spaceID,
 	}
 
-	err = c.Bind(data)
+	err := c.Bind(data)
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
@@ -168,12 +149,8 @@ func (h *Handler) CreateExpense(c *gin.Context) {
 }
 
 func (h *Handler) ListExpenses(c *gin.Context) {
-	userID := c.MustGet("user_id").(int)
-	spaceID, err := strconv.Atoi(c.Param("spaceID"))
-	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
+	userID := c.MustGet("userID").(int)
+	spaceID := c.MustGet("spaceID").(int)
 
 	data := &ListExpensesParams{
 		UserID:  userID,
@@ -190,12 +167,8 @@ func (h *Handler) ListExpenses(c *gin.Context) {
 }
 
 func (h *Handler) DeleteExpense(c *gin.Context) {
-	userID := c.MustGet("user_id").(int)
-	spaceID, err := strconv.Atoi(c.Param("spaceID"))
-	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
+	userID := c.MustGet("userID").(int)
+	spaceID := c.MustGet("spaceID").(int)
 
 	expenseID, err := strconv.Atoi(c.Param("expenseID"))
 	if err != nil {

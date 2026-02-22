@@ -21,7 +21,7 @@ func NewHandler(db *sqlx.DB) *Handler {
 }
 
 func (handler *Handler) GetHabitByID(c *gin.Context) {
-	userID := c.MustGet("user_id").(int)
+	userID := c.MustGet("userID").(int)
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -52,7 +52,7 @@ func (handler *Handler) GetHabitByID(c *gin.Context) {
 }
 
 func (handler *Handler) ListHabits(c *gin.Context) {
-	userID := c.MustGet("user_id").(int)
+	userID := c.MustGet("userID").(int)
 	habitsWithContributions := []HabitWithContributions{}
 	habits, err := handler.HabitRepo.ListHabits(userID)
 	if err != nil {
@@ -94,7 +94,7 @@ func (handler *Handler) UpdateHabit(c *gin.Context) {
 }
 
 func (handler *Handler) CreateHabit(c *gin.Context) {
-	userID := c.MustGet("user_id").(int)
+	userID := c.MustGet("userID").(int)
 	data := CreateHabitParams{
 		UserID: userID,
 	}
@@ -118,7 +118,7 @@ func (handler *Handler) CreateHabit(c *gin.Context) {
 }
 
 func (handler *Handler) DeleteHabit(c *gin.Context) {
-	userID := c.MustGet("user_id").(int)
+	userID := c.MustGet("userID").(int)
 	habitID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -134,7 +134,7 @@ func (handler *Handler) DeleteHabit(c *gin.Context) {
 }
 
 func (handler *Handler) CreateHabitContribution(c *gin.Context) {
-	userID := c.MustGet("user_id").(int)
+	userID := c.MustGet("userID").(int)
 	habitID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -153,7 +153,7 @@ func (handler *Handler) CreateHabitContribution(c *gin.Context) {
 }
 
 func (handler *Handler) UpdateHabitContribution(c *gin.Context) {
-	userID := c.MustGet("user_id").(int)
+	userID := c.MustGet("userID").(int)
 	contributionID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -173,7 +173,7 @@ func (handler *Handler) UpdateHabitContribution(c *gin.Context) {
 }
 
 func (handler *Handler) DeleteHabitContribution(c *gin.Context) {
-	userID := c.MustGet("user_id").(int)
+	userID := c.MustGet("userID").(int)
 	contributionID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)

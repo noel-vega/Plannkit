@@ -1,6 +1,11 @@
 package finances
 
-import "github.com/jmoiron/sqlx"
+import (
+	"database/sql"
+	"errors"
+
+	"github.com/jmoiron/sqlx"
+)
 
 type Service struct {
 	repository *Repository
@@ -22,6 +27,17 @@ func (s *Service) CreateSpace(params *CreateSpaceParams) (*Space, error) {
 		return nil, err
 	}
 	return space, nil
+}
+
+func (s *Service) SpaceMembershipExists(userID, spaceID int) (bool, error) {
+	_, err := s.repository.GetSpaceMembership(userID, spaceID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return false, nil
+		}
+		return false, err
+	}
+	return true, nil
 }
 
 func (s *Service) GetSpace(userID, spaceID int) (*Space, error) {
