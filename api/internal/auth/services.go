@@ -75,7 +75,6 @@ func (s *Service) SignUp(params users.CreateUserParams) (*TokenPair, *users.User
 }
 
 func (s *Service) SignIn(params *SignInParams) (*TokenPair, *users.UserNoPassword, error) {
-	fmt.Printf("[SERVICE SIGNIN]: %v", params)
 	user, err := s.userService.GetUserByEmailWithPassword(params.Email)
 	if err != nil {
 		return nil, nil, err

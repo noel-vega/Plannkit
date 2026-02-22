@@ -20,21 +20,26 @@ func NewHandler(db *sqlx.DB) *Handler {
 	}
 }
 
-func (handler *Handler) GetHabitByID(c *gin.Context) {
+func (handler *Handler) GetHabit(c *gin.Context) {
 	userID := c.MustGet("userID").(int)
-	id, err := strconv.Atoi(c.Param("id"))
+	habitID, err := strconv.Atoi(c.Param("habitID"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	h, err := handler.HabitRepo.GetByHabitID(id, userID)
+	params := &GetHabitParams{
+		ID:     habitID,
+		UserID: userID,
+	}
+
+	h, err := handler.HabitRepo.GetHabit(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
-	contributions, err := handler.ContribRepo.List(h.ID, userID)
+	contributions, err := handler.ContribRepo.List(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -52,15 +57,19 @@ func (handler *Handler) GetHabitByID(c *gin.Context) {
 }
 
 func (handler *Handler) ListHabits(c *gin.Context) {
-	userID := c.MustGet("userID").(int)
-	habitsWithContributions := []HabitWithContributions{}
-	habits, err := handler.HabitRepo.ListHabits(userID)
+	habits, err := handler.HabitRepo.ListHabits(c.MustGet("userID").(int))
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
+
+	habitsWithContributions := []HabitWithContributions{}
 	for _, h := range habits {
-		contributions, err := handler.ContribRepo.List(h.ID, userID)
+		params := &GetHabitParams{
+			UserID: h.UserID,
+			ID:     h.ID,
+		}
+		contributions, err := handler.ContribRepo.List(params)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
@@ -79,14 +88,29 @@ func (handler *Handler) ListHabits(c *gin.Context) {
 }
 
 func (handler *Handler) UpdateHabit(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+	habitID, err := strconv.Atoi(c.Param("habitID"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	params := UpdateHabitParams{ID: id}
-	c.Bind(&params)
+	body := &UpdateHabitBody{}
+	err = c.Bind(body)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	params := &UpdateHabitParams{
+		ID:                habitID,
+		UserID:            c.MustGet("userID").(int),
+		Name:              body.Name,
+		Description:       body.Description,
+		Icon:              body.Icon,
+		UnitOfMeasurement: body.UnitOfMeasurement,
+		CompletionType:    body.CompletionType,
+		CompletionsPerDay: body.CompletionsPerDay,
+	}
 	err = handler.HabitRepo.UpdateHabit(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
@@ -94,13 +118,24 @@ func (handler *Handler) UpdateHabit(c *gin.Context) {
 }
 
 func (handler *Handler) CreateHabit(c *gin.Context) {
-	userID := c.MustGet("userID").(int)
-	data := CreateHabitParams{
-		UserID: userID,
+	body := &CreateHabitBody{}
+	err := c.Bind(body)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
 	}
-	c.Bind(&data)
 
-	h, err := handler.HabitRepo.CreateHabit(data)
+	params := &CreateHabitParams{
+		UserID:            c.MustGet("userID").(int),
+		Icon:              body.Icon,
+		Name:              body.Name,
+		Description:       body.Description,
+		CompletionType:    body.CompletionType,
+		UnitOfMeasurement: body.UnitOfMeasurement,
+		CompletionsPerDay: body.CompletionsPerDay,
+	}
+
+	h, err := handler.HabitRepo.CreateHabit(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -118,14 +153,18 @@ func (handler *Handler) CreateHabit(c *gin.Context) {
 }
 
 func (handler *Handler) DeleteHabit(c *gin.Context) {
-	userID := c.MustGet("userID").(int)
-	habitID, err := strconv.Atoi(c.Param("id"))
+	habitID, err := strconv.Atoi(c.Param("habitID"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	err = handler.HabitRepo.DeleteHabit(habitID, userID)
+	params := &DeleteHabitParams{
+		ID:     habitID,
+		UserID: c.MustGet("userID").(int),
+	}
+
+	err = handler.HabitRepo.DeleteHabit(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -134,37 +173,54 @@ func (handler *Handler) DeleteHabit(c *gin.Context) {
 }
 
 func (handler *Handler) CreateHabitContribution(c *gin.Context) {
-	userID := c.MustGet("userID").(int)
-	habitID, err := strconv.Atoi(c.Param("id"))
+	habitID, err := strconv.Atoi(c.Param("habitID"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	params := CreateContributionParams{
-		HabitID: habitID,
-		UserID:  userID,
+	body := &CreateContributionBody{}
+	err = c.Bind(body)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
 	}
-	c.Bind(&params)
 
-	if err := handler.ContribRepo.Create(params); err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+	params := &CreateContributionParams{
+		HabitID:     habitID,
+		UserID:      c.MustGet("userID").(int),
+		Completions: body.Completions,
+		Date:        body.Date,
 	}
+
+	err = handler.ContribRepo.Create(params)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.Status(http.StatusCreated)
 }
 
 func (handler *Handler) UpdateHabitContribution(c *gin.Context) {
-	userID := c.MustGet("userID").(int)
-	contributionID, err := strconv.Atoi(c.Param("id"))
+	contributionID, err := strconv.Atoi(c.Param("contributionID"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	body := &UpdateCompletionsBody{}
+	err = c.Bind(body)
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
 	params := UpdateCompletionsParams{
-		ID:     contributionID,
-		UserID: userID,
+		ID:          contributionID,
+		UserID:      c.MustGet("userID").(int),
+		Completions: body.Completions,
 	}
-	c.Bind(&params)
 
 	if err := handler.ContribRepo.UpdateCompletions(params); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
@@ -173,13 +229,24 @@ func (handler *Handler) UpdateHabitContribution(c *gin.Context) {
 }
 
 func (handler *Handler) DeleteHabitContribution(c *gin.Context) {
-	userID := c.MustGet("userID").(int)
-	contributionID, err := strconv.Atoi(c.Param("id"))
+	habitID, err := strconv.Atoi(c.Param("habitID"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	err = handler.ContribRepo.Delete(contributionID, userID)
+
+	contributionID, err := strconv.Atoi(c.Param("contributionID"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	params := &DeleteContributionParams{
+		ID:      contributionID,
+		HabitID: habitID,
+		UserID:  c.MustGet("userID").(int),
+	}
+	err = handler.ContribRepo.Delete(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return

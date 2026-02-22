@@ -31,6 +31,22 @@ type Expense struct {
 	UpdatedAt   time.Time `json:"updatedAt" db:"updated_at"`
 }
 
+type CreateSpaceBody struct {
+	Name string `json:"name"`
+}
+
+type CreateSpaceParams struct {
+	UserID int    `json:"userId" db:"user_id"`
+	Name   string `json:"name" db:"name"`
+}
+
+type CreateExpenseBody struct {
+	Name        string  `json:"name"`
+	Amount      int     `json:"amount"`
+	Category    *string `json:"category"`
+	Description *string `json:"description"`
+}
+
 type CreateExpenseParams struct {
 	SpaceID     int     `json:"spaceId" db:"finance_space_id"`
 	UserID      int     `json:"userId" db:"user_id"`
@@ -54,6 +70,12 @@ type Goal struct {
 	MonthlyCommitment int       `json:"monthlyCommitment" db:"monthly_commitment"`
 	CreatedAt         time.Time `json:"createdAt" db:"created_at"`
 	UpdatedAt         time.Time `json:"updatedAt" db:"updated_at"`
+}
+
+type CreateGoalBody struct {
+	Name              string `json:"name"`
+	Amount            int    `json:"amount"`
+	MonthlyCommitment int    `json:"monthlyCommitment"`
 }
 
 type CreateGoalParams struct {
@@ -84,6 +106,11 @@ type GoalContribution struct {
 	Note      *string   `json:"note" db:"note"`
 	CreatedAt time.Time `json:"createdAt" db:"created_at"`
 	UpdatedAt time.Time `json:"updatedAt" db:"updated_at"`
+}
+
+type CreateGoalContributionBody struct {
+	Amount int     `json:"amount"`
+	Note   *string `json:"note"`
 }
 
 type CreateGoalContributionParams struct {

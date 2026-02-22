@@ -1,8 +1,6 @@
 package finances
 
 import (
-	"fmt"
-
 	"github.com/jmoiron/sqlx"
 )
 
@@ -14,11 +12,6 @@ func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
 		db: db,
 	}
-}
-
-type CreateSpaceParams struct {
-	UserID int    `json:"userId" db:"user_id"`
-	Name   string `json:"name" db:"name"`
 }
 
 func (r *Repository) CreateSpace(params *CreateSpaceParams) (*Space, error) {
@@ -90,7 +83,6 @@ func (r *Repository) ListSpaces(userID int) ([]Space, error) {
 
 	spaces := []Space{}
 	for _, membership := range memberships {
-		fmt.Printf("Membbership | %+v", membership)
 		space := Space{}
 		query := `SELECT * FROM finance_spaces WHERE user_id = $1 AND id = $2`
 		err := r.db.Get(&space, query, userID, membership.SpaceID)
