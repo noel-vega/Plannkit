@@ -50,7 +50,7 @@ export function useCreateExpense() {
 
 export function getUseListExpensesOptions(params: SpaceIdent) {
   return queryOptions({
-    queryKey: ["finance-space-expenses"],
+    queryKey: ["finance-space-expenses", params.spaceId],
     queryFn: () => finances.expenses.list(params)
   })
 }

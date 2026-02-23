@@ -1,6 +1,9 @@
+import { BackButton } from '@/components/back-button'
+import { Container } from '@/components/layout/container'
 import { Page } from '@/components/layout/page'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
 import { useAuth } from '@/features/auth/store'
 import { AvatarSchema } from '@/features/auth/types'
 import { pkFetch } from '@/lib/plannkit-api-client'
@@ -17,7 +20,9 @@ function RouteComponent() {
   const { me } = useAuth()
   return (
     <Page title="Profile">
-      <div className="max-w-5xl">
+      <Container>
+        <BackButton />
+        <Separator className="my-2 bg-transparent" />
         <Card className="p-0 overflow-clip gap-0">
           <CardHeader className="h-60 bg-blue-500" />
           <CardContent className="pt-0 relative">
@@ -30,7 +35,7 @@ function RouteComponent() {
           </CardContent>
           <CardFooter className="p-4"></CardFooter>
         </Card>
-      </div>
+      </Container>
     </Page>
   )
 }
