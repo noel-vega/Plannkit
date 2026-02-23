@@ -162,6 +162,25 @@ func (h *Handler) CreateGoalContribution(c *gin.Context) {
 	c.JSON(http.StatusCreated, goal)
 }
 
+func (h *Handler) ListGoalContributions(c *gin.Context) {
+	goalID, err := strconv.Atoi(c.Param("goalID"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+	params := &ListGoalContributionsParams{
+		UserID:  c.MustGet("userID").(int),
+		SpaceID: c.MustGet("spaceID").(int),
+		GoalID:  goalID,
+	}
+	contributions, err := h.service.ListGoalContributions(params)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+	c.JSON(http.StatusOK, contributions)
+}
+
 func (h *Handler) CreateExpense(c *gin.Context) {
 	body := &CreateExpenseBody{}
 

@@ -97,6 +97,12 @@ type GetGoalParams struct {
 	UserID  int `json:"userId" db:"user_id"`
 }
 
+type ListGoalContributionsParams struct {
+	GoalID  int `json:"goalId" db:"finance_space_goal_id"`
+	SpaceID int `json:"spaceId" db:"finance_space_id"`
+	UserID  int `json:"userId" db:"user_id"`
+}
+
 type GoalContribution struct {
 	ID        int       `json:"id" db:"id"`
 	SpaceID   int       `json:"spaceId" db:"finance_space_id"`

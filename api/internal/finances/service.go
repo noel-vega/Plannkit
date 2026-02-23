@@ -68,6 +68,10 @@ func (s *Service) CreateGoalContribution(params *CreateGoalContributionParams) (
 	return s.repository.CreateGoalContribution(params)
 }
 
+func (s *Service) ListGoalContributions(params *ListGoalContributionsParams) (*[]GoalContribution, error) {
+	return s.repository.ListGoalContributions(params)
+}
+
 func (s *Service) CreateExpense(params *CreateExpenseParams) (*Expense, error) {
 	return s.repository.CreateExpense(params)
 }

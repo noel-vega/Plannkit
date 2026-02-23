@@ -12,7 +12,7 @@ import { MonthlyGoalCommitmentsCard } from '@/features/finances/components/month
 import { MonthlyIncomeCard } from '@/features/finances/components/monthly-income-card'
 import { CreateExpenseDialog } from '@/features/finances/components/create-expense-form'
 import { FinanceSpaceSwitcher } from '@/features/finances/components/finance-space-switcher'
-import { getUseListExpensesOptions, getUseListGoalsOptions, invalidateUseListGoals, useListExpenses, useListGoals, useListSpaces } from '@/features/finances/hooks'
+import { getUseListExpensesOptions, getUseListGoalsOptions, useListExpenses, useListGoals, useListSpaces } from '@/features/finances/hooks'
 import type { FinanceSpace } from '@/features/finances/types'
 import { GoalCard } from '@/features/finances/components/goal-card'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'

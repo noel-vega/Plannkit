@@ -101,7 +101,7 @@ export function useListGoals({ spaceId, initialData }: { spaceId: number, initia
 
 export function getUseGetGoalOptions(params: GoalIdent) {
   return queryOptions({
-    queryKey: ['goal', params.goalId],
+    queryKey: ['goal', params.spaceId, params.goalId],
     queryFn: () => finances.goals.getById(params)
   })
 }
@@ -125,8 +125,8 @@ export function invalidateUseGoalContributionsQuery(params: GoalIdent) {
   return queryClient.invalidateQueries(getUseGoalContributionsQueryOptions(params))
 }
 
-export function useGetGoalContributionsQuery(params: GoalIdent & { initialData: GoalContribution[] }) {
-  return useQuery({ ...getUseGoalContributionsQueryOptions(params), initialData: params.initialData })
+export function useGetGoalContributionsQuery(params: GoalIdent, initialData: GoalContribution[]) {
+  return useQuery({ ...getUseGoalContributionsQueryOptions(params), initialData })
 }
 
 export function useCreateGoalContributionMutation() {

@@ -4,21 +4,12 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Separator } from '@/components/ui/separator'
-import { getUseGetGoalOptions, useGetGoal } from '@/features/finances/hooks'
+import { getUseGetGoalOptions, getUseGoalContributionsQueryOptions, useGetGoal, useGetGoalContributionsQuery } from '@/features/finances/hooks'
 import { GoalIdentSchema } from '@/features/finances/types'
 import { formatCurrency } from '@/lib/format'
 import { queryClient } from '@/lib/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { CheckCircle2Icon, CircleIcon, PauseIcon, PlusIcon, Trash2Icon } from 'lucide-react'
-
-const DUMMY_CONTRIBUTIONS = [
-  { id: 1, amount: 350, date: '2026-02-15' },
-  { id: 2, amount: 200, date: '2026-01-15', note: 'Monthly auto-transfer' },
-  { id: 3, amount: 200, date: '2025-12-15', note: 'Monthly auto-transfer' },
-  { id: 4, amount: 500, date: '2025-11-20', note: 'Bonus deposit' },
-  { id: 5, amount: 200, date: '2025-10-15' },
-  { id: 6, amount: 200, date: '2025-09-15' },
-]
 
 const statusConfig = {
   active: { icon: CircleIcon, color: 'text-blue-600', label: 'Active' },
@@ -39,7 +30,8 @@ export const Route = createFileRoute('/app/finances/$spaceId/goals/$goalId')({
   },
   beforeLoad: async ({ params }) => {
     const goal = await queryClient.ensureQueryData(getUseGetGoalOptions(params))
-    return { goal }
+    const contributions = await queryClient.ensureQueryData(getUseGoalContributionsQueryOptions(params))
+    return { goal, contributions }
   },
   component: RouteComponent,
 })
@@ -48,8 +40,9 @@ function RouteComponent() {
   const { spaceId, goalId } = Route.useParams()
   const rtCtx = Route.useRouteContext()
   const { data: goal } = useGetGoal({ spaceId, goalId }, rtCtx.goal)
+  const { data: contributions } = useGetGoalContributionsQuery({ spaceId, goalId }, rtCtx.contributions)
 
-  const currentAmount = DUMMY_CONTRIBUTIONS.reduce((sum, c) => sum + c.amount, 0)
+  const currentAmount = contributions.reduce((sum, c) => sum + c.amount, 0)
   const progress = Math.min((currentAmount / goal.amount) * 100, 100)
   const isComplete = progress >= 100
   const remaining = Math.max(goal.amount - currentAmount, 0)
@@ -129,20 +122,20 @@ function RouteComponent() {
           <h3 className="text-lg font-semibold mb-4">Contributions</h3>
           <Button><PlusIcon /> Add Contribution</Button>
         </div>
-        {DUMMY_CONTRIBUTIONS.length === 0 ? (
+        {contributions.length === 0 ? (
           <p className="text-sm text-muted-foreground">
             No contributions yet. Add your first one above.
           </p>
         ) : (
           <div className="space-y-1">
-            {DUMMY_CONTRIBUTIONS.map((contribution) => (
+            {contributions.map((contribution) => (
               <div
                 key={contribution.id}
                 className="group flex items-center justify-between text-sm py-3"
               >
                 <div className="flex items-center gap-4">
                   <span className="text-muted-foreground w-28 shrink-0">
-                    {formatDate(contribution.date)}
+                    {formatDate(contribution.createdAt.toISOString())}
                   </span>
                   <span className="font-medium text-emerald-600">
                     +{formatCurrency(contribution.amount)}

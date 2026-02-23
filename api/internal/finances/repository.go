@@ -184,7 +184,7 @@ func (r *Repository) GetGoal(params *GetGoalParams) (*Goal, error) {
 func (r *Repository) CreateGoalContribution(params *CreateGoalContributionParams) (*GoalContribution, error) {
 	query := `
 		INSERT INTO
-			finance_spaces_contributions (finance_space_id, finance_space_goal_id, user_id, amount, note)
+			finance_spaces_goals_contributions (finance_space_id, finance_space_goal_id, user_id, amount, note)
 	  VALUES (:finance_space_id, :finance_space_goal_id, :user_id, :amount, :note)
 	  RETURNING *
 	`
@@ -199,6 +199,28 @@ func (r *Repository) CreateGoalContribution(params *CreateGoalContributionParams
 	if err != nil {
 		return nil, err
 	}
+	return data, nil
+}
+
+func (r *Repository) ListGoalContributions(params *ListGoalContributionsParams) (*[]GoalContribution, error) {
+	query := `
+		SELECT * 
+	  FROM finance_spaces_goals_contributions
+	  WHERE user_id = :user_id AND finance_space_id = :finance_space_id AND finance_space_goal_id = :finance_space_goal_id
+	`
+	query, args, err := sqlx.Named(query, params)
+	if err != nil {
+		return nil, err
+	}
+
+	query = r.db.Rebind(query)
+
+	data := &[]GoalContribution{}
+	err = r.db.Select(data, query, args...)
+	if err != nil {
+		return nil, err
+	}
+
 	return data, nil
 }
 
