@@ -53,7 +53,7 @@ export type GoalContribution = z.infer<typeof GoalContributionSchema>
 
 export const CreateGoalContributionParamsSchema = z.object({
   amount: z.coerce.number(),
-  note: z.string().nullable()
+  note: z.string()
 })
 export type CreateGoalContributionParams = z.infer<typeof CreateGoalContributionParamsSchema>
 

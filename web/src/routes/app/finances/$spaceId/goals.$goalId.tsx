@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Separator } from '@/components/ui/separator'
+import { CreateGoalContributionDialog } from '@/features/finances/components/create-goal-contribution-form'
 import { getUseGetGoalOptions, getUseGoalContributionsQueryOptions, useGetGoal, useGetGoalContributionsQuery } from '@/features/finances/hooks'
 import { GoalIdentSchema } from '@/features/finances/types'
 import { formatCurrency } from '@/lib/format'
@@ -29,8 +30,10 @@ export const Route = createFileRoute('/app/finances/$spaceId/goals/$goalId')({
     parse: GoalIdentSchema.parse,
   },
   beforeLoad: async ({ params }) => {
-    const goal = await queryClient.ensureQueryData(getUseGetGoalOptions(params))
-    const contributions = await queryClient.ensureQueryData(getUseGoalContributionsQueryOptions(params))
+    const [goal, contributions] = await Promise.all([
+      queryClient.ensureQueryData(getUseGetGoalOptions(params)),
+      queryClient.ensureQueryData(getUseGoalContributionsQueryOptions(params))
+    ])
     return { goal, contributions }
   },
   component: RouteComponent,
@@ -120,7 +123,9 @@ function RouteComponent() {
       <div>
         <div className="flex justify-between">
           <h3 className="text-lg font-semibold mb-4">Contributions</h3>
-          <Button><PlusIcon /> Add Contribution</Button>
+          <CreateGoalContributionDialog spaceId={spaceId} goalId={goalId}>
+            <Button><PlusIcon /> Add Contribution</Button>
+          </CreateGoalContributionDialog>
         </div>
         {contributions.length === 0 ? (
           <p className="text-sm text-muted-foreground">
