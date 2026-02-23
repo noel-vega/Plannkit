@@ -181,6 +181,33 @@ func (h *Handler) ListGoalContributions(c *gin.Context) {
 	c.JSON(http.StatusOK, contributions)
 }
 
+func (h *Handler) DeleteGoalContribution(c *gin.Context) {
+	goalID, err := strconv.Atoi(c.Param("goalID"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	contributionID, err := strconv.Atoi(c.Param("contributionID"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	params := &DeleteGoalContributionParams{
+		ID:      contributionID,
+		SpaceID: c.MustGet("spaceID").(int),
+		GoalID:  goalID,
+	}
+
+	err = h.service.DeleteGoalContribution(params)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+	c.Status(http.StatusNoContent)
+}
+
 func (h *Handler) CreateExpense(c *gin.Context) {
 	body := &CreateExpenseBody{}
 

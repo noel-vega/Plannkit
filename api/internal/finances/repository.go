@@ -95,8 +95,10 @@ func (r *Repository) ListSpaces(userID int) ([]Space, error) {
 }
 
 func (r *Repository) DeleteSpaceByID(userID, spaceID int) error {
-	query := `DELETE FROM finance_spaces WHERE user_id = $1 AND id = $2`
-	_, err := r.db.Exec(query, userID, spaceID)
+	query := `
+	DELETE FROM finance_spaces 
+	WHERE id = $1 AND user_id = $2`
+	_, err := r.db.Exec(query, spaceID, userID)
 	if err != nil {
 		return err
 	}
@@ -224,6 +226,21 @@ func (r *Repository) ListGoalContributions(params *ListGoalContributionsParams) 
 	return data, nil
 }
 
+func (r *Repository) DeleteGoalContribution(params *DeleteGoalContributionParams) error {
+	query := `
+    DELETE FROM finance_spaces_goals_contributions
+	  WHERE id = :id 
+	  AND finance_space_id = :finance_space_id 
+	  AND finance_space_goal_id = :finance_space_goal_id 
+	`
+	_, err := r.db.NamedExec(query, params)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (r *Repository) CreateExpense(params *CreateExpenseParams) (*Expense, error) {
 	data := &Expense{}
 	query := `
@@ -271,7 +288,9 @@ func (r *Repository) ListExpenses(params *ListExpensesParams) ([]Expense, error)
 func (r *Repository) DeleteExpense(params *DeleteExpenseParams) error {
 	query := `
     DELETE FROM finance_spaces_expenses
-	  WHERE user_id = :user_id AND finance_space_id = :finance_space_id AND id = :id
+	  WHERE id = :id 
+	  AND user_id = :user_id
+	  AND finance_space_id = :finance_space_id
 	`
 	_, err := r.db.NamedExec(query, params)
 	if err != nil {

@@ -97,12 +97,6 @@ type GetGoalParams struct {
 	UserID  int `json:"userId" db:"user_id"`
 }
 
-type ListGoalContributionsParams struct {
-	GoalID  int `json:"goalId" db:"finance_space_goal_id"`
-	SpaceID int `json:"spaceId" db:"finance_space_id"`
-	UserID  int `json:"userId" db:"user_id"`
-}
-
 type GoalContribution struct {
 	ID        int       `json:"id" db:"id"`
 	SpaceID   int       `json:"spaceId" db:"finance_space_id"`
@@ -114,17 +108,29 @@ type GoalContribution struct {
 	UpdatedAt time.Time `json:"updatedAt" db:"updated_at"`
 }
 
+type ListGoalContributionsParams struct {
+	UserID  int `json:"userId" db:"user_id"`
+	SpaceID int `json:"spaceId" db:"finance_space_id"`
+	GoalID  int `json:"goalId" db:"finance_space_goal_id"`
+}
+
 type CreateGoalContributionBody struct {
 	Amount int     `json:"amount"`
 	Note   *string `json:"note"`
 }
 
 type CreateGoalContributionParams struct {
-	SpaceID int     `json:"spaceId" db:"finance_space_id"`
-	GoalID  int     `json:"goalId" db:"finance_space_goal_id"`
-	UserID  int     `json:"userId" db:"user_id"`
-	Amount  int     `json:"amount" db:"amount"`
-	Note    *string `json:"note" db:"note"`
+	SpaceID int     `db:"finance_space_id"`
+	GoalID  int     `db:"finance_space_goal_id"`
+	UserID  int     `db:"user_id"`
+	Amount  int     `db:"amount"`
+	Note    *string `db:"note"`
+}
+
+type DeleteGoalContributionParams struct {
+	ID      int `db:"id"`
+	GoalID  int `db:"finance_space_goal_id"`
+	SpaceID int `db:"finance_space_id"`
 }
 
 type DeleteExpenseParams struct {
