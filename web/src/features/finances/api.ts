@@ -55,6 +55,11 @@ export const finances = {
         const response = await pkFetch(`/finances/spaces/${params.spaceId}/goals/${params.goalId}/contributions`)
         const data = await response.json()
         return GoalContributionSchema.array().parse(data)
+      },
+      delete: async (params: GoalIdent & { contributionId: number }) => {
+        return pkFetch(`/finances/spaces/${params.spaceId}/goals/${params.goalId}/contributions/${params.contributionId}`, {
+          method: "DELETE"
+        })
       }
     }
   },

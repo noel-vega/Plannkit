@@ -138,6 +138,15 @@ export function useCreateGoalContributionMutation() {
   })
 }
 
+export function useDeleteGoalContributionMutation() {
+  return useMutation({
+    mutationFn: finances.goals.contributions.delete,
+    onSuccess: (_, vars) => {
+      invalidateUseGoalContributionsQuery(vars)
+    }
+  })
+}
+
 export function useDeleteExpense() {
   return useMutation({
     mutationFn: finances.expenses.delete,
