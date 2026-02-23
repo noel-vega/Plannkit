@@ -109,7 +109,7 @@ function RouteComponent() {
 
             <div className="grid-cols-1 grid @3xl:grid-cols-2 gap-4">
               {goals.data.map((goal) => (
-                <GoalCard key={goal.id} goal={goal} />
+                <GoalCard key={goal.id} goal={goal} contributions={[]} />
               ))}
             </div>
           </TabsContent>

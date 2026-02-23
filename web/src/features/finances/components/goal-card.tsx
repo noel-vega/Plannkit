@@ -1,7 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { formatCurrency } from '@/lib/format'
-import type { Goal } from '../types'
+import type { Goal, GoalContribution } from '../types'
 import { CheckCircle2Icon, CircleIcon, PauseIcon } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 
@@ -13,10 +13,11 @@ const statusConfig = {
 
 type GoalCardProps = {
   goal: Goal
+  contributions: GoalContribution[]
 }
 
-export function GoalCard({ goal }: GoalCardProps) {
-  const currentAmount = 1650
+export function GoalCard({ goal, contributions }: GoalCardProps) {
+  const currentAmount = contributions.reduce((total, contrib) => total + contrib.amount, 0)
   const progress = Math.min((currentAmount / goal.amount) * 100, 100)
   const isComplete = progress >= 100
   const remaining = Math.max(goal.amount - currentAmount, 0)

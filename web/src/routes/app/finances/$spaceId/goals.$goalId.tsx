@@ -2,6 +2,7 @@ import { BackButton } from '@/components/back-button'
 import { Container } from '@/components/layout/container'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { Item, ItemActions, ItemContent } from '@/components/ui/item'
 import { Progress } from '@/components/ui/progress'
 import { Separator } from '@/components/ui/separator'
 import { CreateGoalContributionDialog } from '@/features/finances/components/create-goal-contribution-form'
@@ -87,17 +88,7 @@ function RouteComponent() {
             <Button><PlusIcon /> Add Contribution</Button>
           </CreateGoalContributionDialog>
         </div>
-        {contributions.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            No contributions yet. Add your first one above.
-          </p>
-        ) : (
-          <ul className="space-y-1">
-            {contributions.map((contribution) => (
-              <GoalContributionItem contribution={contribution} />
-            ))}
-          </ul>
-        )}
+        <GoalContributionList contributions={contributions ?? []} />
       </div>
     </Container>
   )
@@ -160,6 +151,34 @@ function GoalInfoCard({ title, children }: { title: string } & PropsWithChildren
   )
 }
 
+function GoalContributionList(props: { contributions: GoalContribution[] }) {
+
+  const deleteContribution = useDeleteGoalContributionMutation()
+
+  const handleDelete = (contribution: GoalContribution) => {
+    deleteContribution.mutate({
+      spaceId: contribution.spaceId,
+      goalId: contribution.goalId,
+      contributionId: contribution.id
+    })
+  }
+  return (
+    <>
+      {props.contributions.length === 0 ? (
+        <p className="text-sm text-muted-foreground">
+          No contributions yet. Add your first one above.
+        </p>
+      ) : (
+        <ul className="space-y-1">
+          {props.contributions.map((contribution) => (
+            <GoalContributionItem key={contribution.id} contribution={contribution} onDelete={handleDelete} />
+          ))}
+        </ul>
+      )}
+    </>
+  )
+}
+
 function GoalProgress(props: { progress: number }) {
   return (
     <div className="mb-8">
@@ -172,35 +191,30 @@ function GoalProgress(props: { progress: number }) {
   )
 }
 
-function GoalContributionItem(props: { contribution: GoalContribution }) {
+function GoalContributionItem(props: { contribution: GoalContribution, onDelete: (contribution: GoalContribution) => void }) {
   const { contribution } = props
-  const deleteContribution = useDeleteGoalContributionMutation()
-
-  const handleDelete = () => {
-    deleteContribution.mutate({
-      spaceId: props.contribution.spaceId,
-      goalId: props.contribution.goalId,
-      contributionId: props.contribution.id
-    })
-  }
   return (
-    <li className="group flex items-center justify-between text-sm py-3">
-      <div className="flex items-center gap-4">
-        <span className="text-muted-foreground w-28 shrink-0">
-          {formatDate(contribution.createdAt.toISOString())}
-        </span>
-        <span className="font-medium text-emerald-600">
-          +{formatCurrency(contribution.amount)}
-        </span>
-        {contribution.note && (
-          <span className="text-muted-foreground text-sm">
-            {contribution.note}
+    <Item variant="outline" className="group flex items-center justify-between text-sm py-3 hover:bg-muted">
+      <ItemContent>
+        <div className="flex items-center gap-4">
+          <span className="text-muted-foreground w-28 shrink-0">
+            {formatDate(contribution.createdAt.toISOString())}
           </span>
-        )}
-      </div>
-      <Button variant="ghost" onClick={handleDelete}>
-        <Trash2Icon className="h-4 w-4" />
-      </Button>
-    </li>
+          <span className="font-medium text-emerald-600">
+            +{formatCurrency(contribution.amount)}
+          </span>
+          {contribution.note && (
+            <span className="text-muted-foreground text-sm">
+              {contribution.note}
+            </span>
+          )}
+        </div>
+      </ItemContent>
+      <ItemActions>
+        <Button variant="ghost" onClick={() => props.onDelete(contribution)}>
+          <Trash2Icon className="h-4 w-4" />
+        </Button>
+      </ItemActions>
+    </Item>
   )
 }
