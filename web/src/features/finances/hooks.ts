@@ -86,7 +86,7 @@ export function useCreateGoal() {
 
 export function getUseListGoalsOptions(params: SpaceIdent) {
   return queryOptions({
-    queryKey: ["list-goals"],
+    queryKey: ["list-goals", params.spaceId],
     queryFn: () => finances.goals.list(params)
   })
 }

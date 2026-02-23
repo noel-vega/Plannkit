@@ -14,7 +14,6 @@ type Props = {
 } & DialogProps
 
 export function CreateSpaceDialog(props: Props) {
-
   const handleOpenChange = (open: boolean) => {
     props.onOpenChange(open)
   }
@@ -25,7 +24,10 @@ export function CreateSpaceDialog(props: Props) {
         <DialogHeader>
           <DialogTitle>Create Finance Space</DialogTitle>
         </DialogHeader>
-        <CreateFinanceSpaceForm onSuccess={props.onSuccess} />
+        <CreateFinanceSpaceForm onSuccess={space => {
+          props.onSuccess(space)
+          props.onOpenChange(false)
+        }} />
       </DialogContent>
     </Dialog>
   )
