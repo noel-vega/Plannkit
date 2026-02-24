@@ -37,3 +37,23 @@ func (handler *Handler) UpdateAvatar(c *gin.Context) {
 		"avatar": filename,
 	})
 }
+
+func (handler *Handler) ListUsers(c *gin.Context) {
+	queryParams := &ListUsersQueryParams{}
+	err := c.BindQuery(queryParams)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	params := &ListUsersParams{
+		QueryParams: queryParams,
+	}
+
+	users, err := handler.UserService.ListUsers(params)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+	c.JSON(http.StatusOK, users)
+}

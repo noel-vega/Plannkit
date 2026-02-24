@@ -1,6 +1,7 @@
 package users
 
 import (
+	sq "github.com/Masterminds/squirrel"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -28,6 +29,24 @@ func (r *Repository) Create(params CreateUserParams) (*UserNoPassword, error) {
 	}
 
 	return user, nil
+}
+
+func (r *Repository) ListUsers(params *ListUsersParams) (*[]UserNoPassword, error) {
+	qb := sq.Select("id, first_name, last_name, email, avatar, created_at, updated_at").From("users")
+
+	if params.QueryParams.Search != "" {
+		qb = qb.Where(sq.Expr("first_name || ' ' || last_name ILIKE ?", "%"+params.QueryParams.Search+"%"))
+	}
+	query, args, err := qb.PlaceholderFormat(sq.Dollar).ToSql()
+	if err != nil {
+		return nil, err
+	}
+	data := &[]UserNoPassword{}
+	err = r.DB.Select(data, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
 }
 
 func (r *Repository) GetByID(ID int) (*UserNoPassword, error) {

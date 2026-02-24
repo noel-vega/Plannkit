@@ -36,9 +36,6 @@ func AddRoutes(router *gin.Engine, db *sqlx.DB, storageService storage.Service) 
 	usersHandler := users.NewHandler(usersService)
 	financesHandler := finances.NewHandler(financesService)
 
-	protected := router.Group("/")
-	protected.Use(Authentication(authService))
-
 	router.GET("/flags", FlagsHandler)
 
 	router.POST("/auth/signup", authHandler.SignUp)
@@ -46,10 +43,13 @@ func AddRoutes(router *gin.Engine, db *sqlx.DB, storageService storage.Service) 
 	router.GET("/auth/signout", authHandler.SignOut)
 	router.GET("/auth/me", authHandler.Me)
 
+	router.GET("/users", usersHandler.ListUsers)
+	router.PUT("/users/avatar", usersHandler.UpdateAvatar)
+
+	protected := router.Group("/")
+	protected.Use(Authentication(authService))
+
 	protected.GET("/auth/refresh", authHandler.RefreshAccessToken)
-
-	protected.PUT("/users/avatar", usersHandler.UpdateAvatar)
-
 	protected.GET("/finances/spaces", financesHandler.ListSpaces)
 	protected.POST("/finances/spaces", financesHandler.CreateSpace)
 

@@ -25,8 +25,8 @@ func NewUserService(db *sqlx.DB, storageService storage.Service, finfinancesServ
 	}
 }
 
-func (svc *Service) CreateUser(params CreateUserParams) (*UserNoPassword, error) {
-	existingUser, err := svc.userRepo.GetByEmail(params.Email)
+func (s *Service) CreateUser(params CreateUserParams) (*UserNoPassword, error) {
+	existingUser, err := s.userRepo.GetByEmail(params.Email)
 	if err != nil {
 		if !errors.Is(err, sql.ErrNoRows) {
 			return nil, err
@@ -37,12 +37,12 @@ func (svc *Service) CreateUser(params CreateUserParams) (*UserNoPassword, error)
 		return nil, fmt.Errorf("%s:%w", params.Email, ErrEmailExists)
 	}
 
-	newUser, err := svc.userRepo.Create(params)
+	newUser, err := s.userRepo.Create(params)
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = svc.financesService.CreateSpace(&finances.CreateSpaceParams{
+	_, err = s.financesService.CreateSpace(&finances.CreateSpaceParams{
 		UserID: newUser.ID,
 		Name:   "My Finances",
 	})
@@ -53,29 +53,33 @@ func (svc *Service) CreateUser(params CreateUserParams) (*UserNoPassword, error)
 	return newUser, nil
 }
 
-func (svc *Service) GetUserByEmailWithPassword(email string) (*User, error) {
-	user, err := svc.userRepo.GetByEmailWithPassword(email)
+func (s *Service) GetUserByEmailWithPassword(email string) (*User, error) {
+	user, err := s.userRepo.GetByEmailWithPassword(email)
 	if err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-func (svc *Service) GetUserByID(ID int) (*UserNoPassword, error) {
-	user, err := svc.userRepo.GetByID(ID)
+func (s *Service) ListUsers(params *ListUsersParams) (*[]UserNoPassword, error) {
+	return s.userRepo.ListUsers(params)
+}
+
+func (s *Service) GetUserByID(ID int) (*UserNoPassword, error) {
+	user, err := s.userRepo.GetByID(ID)
 	if err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-func (svc *Service) UpdateAvatar(userID int, ext string, file io.Reader) (string, error) {
-	fileName, err := svc.storageService.Put("avatars", ext, file)
+func (s *Service) UpdateAvatar(userID int, ext string, file io.Reader) (string, error) {
+	fileName, err := s.storageService.Put("avatars", ext, file)
 	if err != nil {
 		return "", err
 	}
 
-	err = svc.userRepo.UpdateAvatar(userID, fileName)
+	err = s.userRepo.UpdateAvatar(userID, fileName)
 	if err != nil {
 		return "", err
 	}
