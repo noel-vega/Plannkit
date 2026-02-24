@@ -143,9 +143,11 @@ func (r *Repository) CreateGoal(params *CreateGoalParams) (*Goal, error) {
 
 func (r *Repository) ListGoals(params *ListGoalsParams) ([]Goal, error) {
 	query := `
-		SELECT * 
-	  FROM finance_spaces_goals 
-	  WHERE user_id = :user_id AND finance_space_id = :finance_space_id
+  SELECT g.*, COALESCE(SUM(c.amount), 0) AS total_contributions
+  FROM finance_spaces_goals g
+  LEFT JOIN finance_spaces_goals_contributions c ON c.finance_space_goal_id = g.id
+  WHERE g.finance_space_id = :finance_space_id
+  GROUP BY g.id
 	`
 	query, args, err := sqlx.Named(query, params)
 	if err != nil {
@@ -164,9 +166,11 @@ func (r *Repository) ListGoals(params *ListGoalsParams) ([]Goal, error) {
 func (r *Repository) DeleteGoalByID() {}
 func (r *Repository) GetGoal(params *GetGoalParams) (*Goal, error) {
 	query := `
-	SELECT * 
-	FROM finance_spaces_goals
-	WHERE user_id = :user_id AND finance_space_id = :finance_space_id AND id = :id
+  SELECT g.*, COALESCE(SUM(c.amount), 0) AS total_contributions
+  FROM finance_spaces_goals g
+  LEFT JOIN finance_spaces_goals_contributions c ON c.finance_space_goal_id = g.id
+	WHERE g.finance_space_id = :finance_space_id AND g.id = :goal_id
+  GROUP BY g.id
 	`
 	query, args, err := sqlx.Named(query, params)
 	if err != nil {

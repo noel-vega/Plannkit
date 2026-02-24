@@ -93,7 +93,6 @@ func (h *Handler) CreateGoal(c *gin.Context) {
 
 func (h *Handler) ListGoals(c *gin.Context) {
 	params := &ListGoalsParams{
-		UserID:  c.MustGet("userID").(int),
 		SpaceID: c.MustGet("spaceID").(int),
 	}
 
@@ -114,9 +113,8 @@ func (h *Handler) GetGoal(c *gin.Context) {
 	}
 
 	params := &GetGoalParams{
-		ID:      goalID,
+		GoalID:  goalID,
 		SpaceID: c.MustGet("spaceID").(int),
-		UserID:  c.MustGet("userID").(int),
 	}
 
 	goal, err := h.service.GetGoal(params)

@@ -1,7 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { formatCurrency } from '@/lib/format'
-import type { Goal, GoalContribution } from '../types'
+import type { Goal } from '../types'
 import { CheckCircle2Icon, CircleIcon, PauseIcon } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 
@@ -13,14 +13,12 @@ const statusConfig = {
 
 type GoalCardProps = {
   goal: Goal
-  contributions: GoalContribution[]
 }
 
-export function GoalCard({ goal, contributions }: GoalCardProps) {
-  const currentAmount = contributions.reduce((total, contrib) => total + contrib.amount, 0)
-  const progress = Math.min((currentAmount / goal.amount) * 100, 100)
+export function GoalCard({ goal }: GoalCardProps) {
+  const progress = Math.min((goal.totalContributions / goal.amount) * 100, 100)
   const isComplete = progress >= 100
-  const remaining = Math.max(goal.amount - currentAmount, 0)
+  const remaining = Math.max(goal.amount - goal.totalContributions, 0)
   const status = isComplete
     ? statusConfig.complete
     : goal.monthlyCommitment > 0
@@ -56,7 +54,7 @@ export function GoalCard({ goal, contributions }: GoalCardProps) {
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">
-                {formatCurrency(currentAmount)} of {formatCurrency(goal.amount)}
+                {formatCurrency(goal.totalContributions)} of {formatCurrency(goal.amount)}
               </span>
               <span className="font-semibold">{progress.toFixed(1)}%</span>
             </div>

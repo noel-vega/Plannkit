@@ -36,6 +36,7 @@ export const GoalSchema = z.object({
   name: z.string(),
   amount: z.coerce.number(),
   monthlyCommitment: z.coerce.number(),
+  totalContributions: z.number()
 })
 export type Goal = z.infer<typeof GoalSchema>
 
