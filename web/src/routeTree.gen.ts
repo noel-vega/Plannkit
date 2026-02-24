@@ -24,6 +24,8 @@ import { Route as AppEmailIndexRouteImport } from './routes/app/email/index'
 import { Route as AppDocumentsIndexRouteImport } from './routes/app/documents/index'
 import { Route as AppDashboardIndexRouteImport } from './routes/app/dashboard/index'
 import { Route as AppHabitsIdRouteImport } from './routes/app/habits/$id'
+import { Route as AppNetworkPostsIndexRouteImport } from './routes/app/network/posts/index'
+import { Route as AppNetworkPeopleIndexRouteImport } from './routes/app/network/people/index'
 import { Route as AppFinancesSpaceIdIndexRouteImport } from './routes/app/finances/$spaceId/index'
 import { Route as AppFinancesSpaceIdSettingsRouteImport } from './routes/app/finances/$spaceId/settings'
 import { Route as AppFinancesSpaceIdGoalsGoalIdRouteImport } from './routes/app/finances/$spaceId/goals.$goalId'
@@ -103,6 +105,16 @@ const AppHabitsIdRoute = AppHabitsIdRouteImport.update({
   path: '/habits/$id',
   getParentRoute: () => AppRouteRoute,
 } as any)
+const AppNetworkPostsIndexRoute = AppNetworkPostsIndexRouteImport.update({
+  id: '/network/posts/',
+  path: '/network/posts/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppNetworkPeopleIndexRoute = AppNetworkPeopleIndexRouteImport.update({
+  id: '/network/people/',
+  path: '/network/people/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 const AppFinancesSpaceIdIndexRoute = AppFinancesSpaceIdIndexRouteImport.update({
   id: '/$spaceId/',
   path: '/$spaceId/',
@@ -139,6 +151,8 @@ export interface FileRoutesByFullPath {
   '/app/user': typeof AppUserIndexRoute
   '/app/finances/$spaceId/settings': typeof AppFinancesSpaceIdSettingsRoute
   '/app/finances/$spaceId': typeof AppFinancesSpaceIdIndexRoute
+  '/app/network/people': typeof AppNetworkPeopleIndexRoute
+  '/app/network/posts': typeof AppNetworkPostsIndexRoute
   '/app/finances/$spaceId/goals/$goalId': typeof AppFinancesSpaceIdGoalsGoalIdRoute
 }
 export interface FileRoutesByTo {
@@ -159,6 +173,8 @@ export interface FileRoutesByTo {
   '/app/user': typeof AppUserIndexRoute
   '/app/finances/$spaceId/settings': typeof AppFinancesSpaceIdSettingsRoute
   '/app/finances/$spaceId': typeof AppFinancesSpaceIdIndexRoute
+  '/app/network/people': typeof AppNetworkPeopleIndexRoute
+  '/app/network/posts': typeof AppNetworkPostsIndexRoute
   '/app/finances/$spaceId/goals/$goalId': typeof AppFinancesSpaceIdGoalsGoalIdRoute
 }
 export interface FileRoutesById {
@@ -180,6 +196,8 @@ export interface FileRoutesById {
   '/app/user/': typeof AppUserIndexRoute
   '/app/finances/$spaceId/settings': typeof AppFinancesSpaceIdSettingsRoute
   '/app/finances/$spaceId/': typeof AppFinancesSpaceIdIndexRoute
+  '/app/network/people/': typeof AppNetworkPeopleIndexRoute
+  '/app/network/posts/': typeof AppNetworkPostsIndexRoute
   '/app/finances/$spaceId/goals/$goalId': typeof AppFinancesSpaceIdGoalsGoalIdRoute
 }
 export interface FileRouteTypes {
@@ -202,6 +220,8 @@ export interface FileRouteTypes {
     | '/app/user'
     | '/app/finances/$spaceId/settings'
     | '/app/finances/$spaceId'
+    | '/app/network/people'
+    | '/app/network/posts'
     | '/app/finances/$spaceId/goals/$goalId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -222,6 +242,8 @@ export interface FileRouteTypes {
     | '/app/user'
     | '/app/finances/$spaceId/settings'
     | '/app/finances/$spaceId'
+    | '/app/network/people'
+    | '/app/network/posts'
     | '/app/finances/$spaceId/goals/$goalId'
   id:
     | '__root__'
@@ -242,6 +264,8 @@ export interface FileRouteTypes {
     | '/app/user/'
     | '/app/finances/$spaceId/settings'
     | '/app/finances/$spaceId/'
+    | '/app/network/people/'
+    | '/app/network/posts/'
     | '/app/finances/$spaceId/goals/$goalId'
   fileRoutesById: FileRoutesById
 }
@@ -358,6 +382,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppHabitsIdRouteImport
       parentRoute: typeof AppRouteRoute
     }
+    '/app/network/posts/': {
+      id: '/app/network/posts/'
+      path: '/network/posts'
+      fullPath: '/app/network/posts'
+      preLoaderRoute: typeof AppNetworkPostsIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/app/network/people/': {
+      id: '/app/network/people/'
+      path: '/network/people'
+      fullPath: '/app/network/people'
+      preLoaderRoute: typeof AppNetworkPeopleIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
     '/app/finances/$spaceId/': {
       id: '/app/finances/$spaceId/'
       path: '/$spaceId'
@@ -408,6 +446,8 @@ interface AppRouteRouteChildren {
   AppSettingsIndexRoute: typeof AppSettingsIndexRoute
   AppTodosIndexRoute: typeof AppTodosIndexRoute
   AppUserIndexRoute: typeof AppUserIndexRoute
+  AppNetworkPeopleIndexRoute: typeof AppNetworkPeopleIndexRoute
+  AppNetworkPostsIndexRoute: typeof AppNetworkPostsIndexRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
@@ -421,6 +461,8 @@ const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppSettingsIndexRoute: AppSettingsIndexRoute,
   AppTodosIndexRoute: AppTodosIndexRoute,
   AppUserIndexRoute: AppUserIndexRoute,
+  AppNetworkPeopleIndexRoute: AppNetworkPeopleIndexRoute,
+  AppNetworkPostsIndexRoute: AppNetworkPostsIndexRoute,
 }
 
 const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(

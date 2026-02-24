@@ -1,6 +1,21 @@
-import { SproutIcon, ListIcon, BanknoteIcon, MailIcon, FilesIcon, LayoutDashboard, ShoppingBasketIcon } from "lucide-react";
+import { SproutIcon, ListIcon, BanknoteIcon, MailIcon, FilesIcon, LayoutDashboard, ShoppingBasketIcon, StickyNoteIcon, ContactIcon } from "lucide-react";
 
 const isDev = import.meta.env.DEV
+
+export const communityLinks = [
+  {
+    title: "Posts",
+    url: "/app/network/posts",
+    icon: StickyNoteIcon,
+    active: isDev,
+  },
+  {
+    title: "People",
+    url: "/app/network/people",
+    icon: ContactIcon,
+    active: isDev,
+  },
+]
 
 // TODO: make urls type safe with router
 //
@@ -36,6 +51,7 @@ export const links = [
     active: true,
   },
 ]
+
 
 export const comingSoonLinks = [
   {

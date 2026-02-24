@@ -12,7 +12,7 @@ import {
 import { Link } from "@tanstack/react-router"
 import { useTranslation } from "react-i18next"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { comingSoonLinks, links } from "./links"
+import { communityLinks, links } from "./links"
 import { useAuth } from "@/features/auth/store"
 import { ChevronsUpDownIcon } from "lucide-react"
 
@@ -44,13 +44,13 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Coming Soon</SidebarGroupLabel>
+          <SidebarGroupLabel>Network</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {comingSoonLinks.map((item) => (
+              {communityLinks.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link to={item.url} disabled={!import.meta.env.DEV} className="border border-transparent" activeProps={{
+                  <SidebarMenuButton asChild className="">
+                    <Link to={item.url} className="border border-transparent" activeProps={{
                       className: "font-semibold border-border"
                     }}>
                       <item.icon />
@@ -62,6 +62,27 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+
+        {/* <SidebarGroup> */}
+        {/*   <SidebarGroupLabel>Coming Soon</SidebarGroupLabel> */}
+        {/*   <SidebarGroupContent> */}
+        {/*     <SidebarMenu> */}
+        {/*       {comingSoonLinks.map((item) => ( */}
+        {/*         <SidebarMenuItem key={item.title}> */}
+        {/*           <SidebarMenuButton asChild> */}
+        {/*             <Link to={item.url} disabled={!import.meta.env.DEV} className="border border-transparent" activeProps={{ */}
+        {/*               className: "font-semibold border-border" */}
+        {/*             }}> */}
+        {/*               <item.icon /> */}
+        {/*               <span>{t(item.title)}</span> */}
+        {/*             </Link> */}
+        {/*           </SidebarMenuButton> */}
+        {/*         </SidebarMenuItem> */}
+        {/*       ))} */}
+        {/*     </SidebarMenu> */}
+        {/*   </SidebarGroupContent> */}
+        {/* </SidebarGroup> */}
       </SidebarContent>
 
       <SidebarFooter>

@@ -45,6 +45,7 @@ func AddRoutes(router *gin.Engine, db *sqlx.DB, storageService storage.Service) 
 	router.POST("/auth/signin", authHandler.SignIn)
 	router.GET("/auth/signout", authHandler.SignOut)
 	router.GET("/auth/me", authHandler.Me)
+
 	protected.GET("/auth/refresh", authHandler.RefreshAccessToken)
 
 	protected.PUT("/users/avatar", usersHandler.UpdateAvatar)
