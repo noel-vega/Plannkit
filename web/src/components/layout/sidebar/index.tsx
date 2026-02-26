@@ -62,27 +62,6 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-
-
-        {/* <SidebarGroup> */}
-        {/*   <SidebarGroupLabel>Coming Soon</SidebarGroupLabel> */}
-        {/*   <SidebarGroupContent> */}
-        {/*     <SidebarMenu> */}
-        {/*       {comingSoonLinks.map((item) => ( */}
-        {/*         <SidebarMenuItem key={item.title}> */}
-        {/*           <SidebarMenuButton asChild> */}
-        {/*             <Link to={item.url} disabled={!import.meta.env.DEV} className="border border-transparent" activeProps={{ */}
-        {/*               className: "font-semibold border-border" */}
-        {/*             }}> */}
-        {/*               <item.icon /> */}
-        {/*               <span>{t(item.title)}</span> */}
-        {/*             </Link> */}
-        {/*           </SidebarMenuButton> */}
-        {/*         </SidebarMenuItem> */}
-        {/*       ))} */}
-        {/*     </SidebarMenu> */}
-        {/*   </SidebarGroupContent> */}
-        {/* </SidebarGroup> */}
       </SidebarContent>
 
       <SidebarFooter>
