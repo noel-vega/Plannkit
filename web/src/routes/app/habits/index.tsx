@@ -21,7 +21,6 @@ export const Route = createFileRoute('/app/habits/')({
   component: RouteComponent,
 })
 
-
 function RouteComponent() {
   const loaderData = Route.useLoaderData()
   const habits = useListHabits({ initialData: loaderData.habits })
@@ -41,7 +40,7 @@ function HabitsList({ habits }: { habits: HabitWithContributions[] }) {
   return (
     <>
       <div className="text-lg font-medium flex items-center">
-        <div className="h-px w-[18px] bg-border" />
+        <div className="h-px w-4.5 bg-border" />
         <p className="px-2">
           My Daily Habits
         </p>

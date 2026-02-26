@@ -5,6 +5,7 @@ import { getBoardQueryOptions, getListTodosQueryOptions } from '@/features/todos
 import { Board } from '@/features/todos/components/board';
 
 export const Route = createFileRoute('/app/todos/')({
+  head: () => ({ meta: [{ title: "Tasks" }] }),
   loader: async ({ context: { queryClient } }) => {
     const todos = await queryClient.ensureQueryData(getListTodosQueryOptions())
     const board = await queryClient.ensureQueryData(getBoardQueryOptions())

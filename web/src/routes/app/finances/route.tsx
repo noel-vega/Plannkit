@@ -1,10 +1,10 @@
-import { Page } from '@/components/layout/page'
 import { getUseListSpacesOptions } from '@/features/finances/hooks'
 import { queryClient } from '@/lib/react-query'
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 import z from 'zod/v3'
 
 export const Route = createFileRoute('/app/finances')({
+  head: () => ({ meta: [{ title: "Finances" }] }),
   params: {
     parse: z.object({ spaceId: z.coerce.number().nullish() }).parse
   },
@@ -17,14 +17,6 @@ export const Route = createFileRoute('/app/finances')({
     if (!currentSpace) throw Error("Space not found")
     return { spaces, currentSpace }
   },
-  component: RouteComponent,
+  component: Outlet,
 })
-
-function RouteComponent() {
-  return (
-    <Page title="Finances">
-      <Outlet />
-    </Page>
-  )
-}
 

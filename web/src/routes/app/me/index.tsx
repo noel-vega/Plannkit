@@ -12,7 +12,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { type ChangeEvent } from 'react'
 import z from 'zod/v3'
 
-export const Route = createFileRoute('/app/user/')({
+export const Route = createFileRoute('/app/me/')({
   component: RouteComponent,
 })
 
