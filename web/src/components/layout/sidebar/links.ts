@@ -5,13 +5,13 @@ const isDev = import.meta.env.DEV
 export const communityLinks = [
   {
     title: "Posts",
-    url: "/app/network/posts",
+    url: "/network/posts",
     icon: StickyNoteIcon,
     active: isDev,
   },
   {
     title: "People",
-    url: "/app/network/people",
+    url: "/network/people",
     icon: ContactIcon,
     active: isDev,
   },
@@ -22,31 +22,31 @@ export const communityLinks = [
 export const links = [
   {
     title: "Dashboard",
-    url: "/app/dashboard",
+    url: "/dashboard",
     icon: LayoutDashboard,
     active: isDev,
   },
   {
     title: "Habits",
-    url: "/app/habits",
+    url: "/habits",
     icon: SproutIcon,
     active: true,
   },
   {
     title: "Tasks",
-    url: "/app/todos",
+    url: "/todos",
     icon: ListIcon,
     active: true,
   },
   {
     title: "Finances",
-    url: "/app/finances",
+    url: "/finances",
     icon: BanknoteIcon,
     active: true,
   },
   {
     title: "Groceries",
-    url: "/app/groceries",
+    url: "/groceries",
     icon: ShoppingBasketIcon,
     active: true,
   },
@@ -56,13 +56,13 @@ export const links = [
 export const comingSoonLinks = [
   {
     title: "Email",
-    url: "/app/email",
+    url: "/email",
     icon: MailIcon,
     active: isDev,
   },
   {
     title: "Documents",
-    url: "/app/documents",
+    url: "/documents",
     icon: FilesIcon,
     acitve: isDev,
   },

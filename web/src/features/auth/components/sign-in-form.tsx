@@ -36,7 +36,7 @@ export function SignInForm() {
       signIn.mutate(data, {
         onSuccess: (data) => {
           useAuth.setState(data)
-          navigate({ to: "/app/habits" })
+          navigate({ to: "/habits" })
         }
       })
     })(e)

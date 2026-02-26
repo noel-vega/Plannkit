@@ -30,7 +30,7 @@ export function SignUpForm() {
       signUp.mutate(data, {
         onSuccess: (data) => {
           useAuth.setState(data)
-          navigate({ to: "/app/habits" })
+          navigate({ to: "/habits" })
         }
       })
     })(e)

@@ -19,7 +19,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient, toda
     if (response.success) {
       useAuth.setState(response.data)
       if (location.pathname.startsWith("/auth")) {
-        throw redirect({ to: "/app/habits" })
+        throw redirect({ to: "/habits" })
       }
     } else if (!location.pathname.startsWith("/auth")) {
       throw redirect({ to: "/auth/signin" })

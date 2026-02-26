@@ -12,7 +12,7 @@ export function PageNotFound() {
         </p>
       </div>
       <Button asChild>
-        <Link to="/app/habits">Go Home</Link>
+        <Link to="/habits">Go Home</Link>
       </Button>
     </div>
   )

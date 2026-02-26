@@ -27,7 +27,7 @@ export function GoalCard({ goal }: GoalCardProps) {
 
   return (
     <Link
-      to="/app/finances/$spaceId/goals/$goalId"
+      to="/finances/$spaceId/goals/$goalId"
       params={{ spaceId: goal.spaceId, goalId: goal.id }}
       resetScroll={true}
     >

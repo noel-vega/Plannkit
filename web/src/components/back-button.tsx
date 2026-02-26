@@ -14,7 +14,7 @@ export function BackButton({ to }: { to?: string }) {
     if (canGoBack) {
       router.history.back()
     } else {
-      router.navigate({ to: "/app/dashboard" })
+      router.navigate({ to: "/dashboard" })
     }
 
 

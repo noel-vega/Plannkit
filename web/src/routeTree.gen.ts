@@ -9,38 +9,37 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AppRouteImport } from './routes/_app'
 import { Route as AuthRouteRouteImport } from './routes/auth/route'
-import { Route as AppRouteRouteImport } from './routes/app/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AuthSigninRouteImport } from './routes/auth/signin'
-import { Route as AppNetworkRouteRouteImport } from './routes/app/network/route'
-import { Route as AppHabitsRouteRouteImport } from './routes/app/habits/route'
-import { Route as AppGroceriesRouteRouteImport } from './routes/app/groceries/route'
-import { Route as AppFinancesRouteRouteImport } from './routes/app/finances/route'
-import { Route as AppTodosIndexRouteImport } from './routes/app/todos/index'
-import { Route as AppSettingsIndexRouteImport } from './routes/app/settings/index'
-import { Route as AppMeIndexRouteImport } from './routes/app/me/index'
-import { Route as AppHabitsIndexRouteImport } from './routes/app/habits/index'
-import { Route as AppGroceriesIndexRouteImport } from './routes/app/groceries/index'
-import { Route as AppEmailIndexRouteImport } from './routes/app/email/index'
-import { Route as AppDocumentsIndexRouteImport } from './routes/app/documents/index'
-import { Route as AppDashboardIndexRouteImport } from './routes/app/dashboard/index'
-import { Route as AppHabitsIdRouteImport } from './routes/app/habits/$id'
-import { Route as AppNetworkPostsIndexRouteImport } from './routes/app/network/posts/index'
-import { Route as AppNetworkPeopleIndexRouteImport } from './routes/app/network/people/index'
-import { Route as AppFinancesSpaceIdIndexRouteImport } from './routes/app/finances/$spaceId/index'
-import { Route as AppFinancesSpaceIdSettingsRouteImport } from './routes/app/finances/$spaceId/settings'
-import { Route as AppFinancesSpaceIdGoalsGoalIdRouteImport } from './routes/app/finances/$spaceId/goals.$goalId'
+import { Route as AppNetworkRouteRouteImport } from './routes/_app/network/route'
+import { Route as AppHabitsRouteRouteImport } from './routes/_app/habits/route'
+import { Route as AppGroceriesRouteRouteImport } from './routes/_app/groceries/route'
+import { Route as AppFinancesRouteRouteImport } from './routes/_app/finances/route'
+import { Route as AppTodosIndexRouteImport } from './routes/_app/todos/index'
+import { Route as AppSettingsIndexRouteImport } from './routes/_app/settings/index'
+import { Route as AppMeIndexRouteImport } from './routes/_app/me/index'
+import { Route as AppHabitsIndexRouteImport } from './routes/_app/habits/index'
+import { Route as AppGroceriesIndexRouteImport } from './routes/_app/groceries/index'
+import { Route as AppEmailIndexRouteImport } from './routes/_app/email/index'
+import { Route as AppDocumentsIndexRouteImport } from './routes/_app/documents/index'
+import { Route as AppDashboardIndexRouteImport } from './routes/_app/dashboard/index'
+import { Route as AppHabitsIdRouteImport } from './routes/_app/habits/$id'
+import { Route as AppNetworkPostsIndexRouteImport } from './routes/_app/network/posts/index'
+import { Route as AppNetworkPeopleIndexRouteImport } from './routes/_app/network/people/index'
+import { Route as AppFinancesSpaceIdIndexRouteImport } from './routes/_app/finances/$spaceId/index'
+import { Route as AppFinancesSpaceIdSettingsRouteImport } from './routes/_app/finances/$spaceId/settings'
+import { Route as AppFinancesSpaceIdGoalsGoalIdRouteImport } from './routes/_app/finances/$spaceId/goals.$goalId'
 
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRouteRoute = AuthRouteRouteImport.update({
   id: '/auth',
   path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AppRouteRoute = AppRouteRouteImport.update({
-  id: '/app',
-  path: '/app',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -61,37 +60,37 @@ const AuthSigninRoute = AuthSigninRouteImport.update({
 const AppNetworkRouteRoute = AppNetworkRouteRouteImport.update({
   id: '/network',
   path: '/network',
-  getParentRoute: () => AppRouteRoute,
+  getParentRoute: () => AppRoute,
 } as any)
 const AppHabitsRouteRoute = AppHabitsRouteRouteImport.update({
   id: '/habits',
   path: '/habits',
-  getParentRoute: () => AppRouteRoute,
+  getParentRoute: () => AppRoute,
 } as any)
 const AppGroceriesRouteRoute = AppGroceriesRouteRouteImport.update({
   id: '/groceries',
   path: '/groceries',
-  getParentRoute: () => AppRouteRoute,
+  getParentRoute: () => AppRoute,
 } as any)
 const AppFinancesRouteRoute = AppFinancesRouteRouteImport.update({
   id: '/finances',
   path: '/finances',
-  getParentRoute: () => AppRouteRoute,
+  getParentRoute: () => AppRoute,
 } as any)
 const AppTodosIndexRoute = AppTodosIndexRouteImport.update({
   id: '/todos/',
   path: '/todos/',
-  getParentRoute: () => AppRouteRoute,
+  getParentRoute: () => AppRoute,
 } as any)
 const AppSettingsIndexRoute = AppSettingsIndexRouteImport.update({
   id: '/settings/',
   path: '/settings/',
-  getParentRoute: () => AppRouteRoute,
+  getParentRoute: () => AppRoute,
 } as any)
 const AppMeIndexRoute = AppMeIndexRouteImport.update({
   id: '/me/',
   path: '/me/',
-  getParentRoute: () => AppRouteRoute,
+  getParentRoute: () => AppRoute,
 } as any)
 const AppHabitsIndexRoute = AppHabitsIndexRouteImport.update({
   id: '/',
@@ -106,17 +105,17 @@ const AppGroceriesIndexRoute = AppGroceriesIndexRouteImport.update({
 const AppEmailIndexRoute = AppEmailIndexRouteImport.update({
   id: '/email/',
   path: '/email/',
-  getParentRoute: () => AppRouteRoute,
+  getParentRoute: () => AppRoute,
 } as any)
 const AppDocumentsIndexRoute = AppDocumentsIndexRouteImport.update({
   id: '/documents/',
   path: '/documents/',
-  getParentRoute: () => AppRouteRoute,
+  getParentRoute: () => AppRoute,
 } as any)
 const AppDashboardIndexRoute = AppDashboardIndexRouteImport.update({
   id: '/dashboard/',
   path: '/dashboard/',
-  getParentRoute: () => AppRouteRoute,
+  getParentRoute: () => AppRoute,
 } as any)
 const AppHabitsIdRoute = AppHabitsIdRouteImport.update({
   id: '/$id',
@@ -153,174 +152,170 @@ const AppFinancesSpaceIdGoalsGoalIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/app': typeof AppRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
-  '/app/finances': typeof AppFinancesRouteRouteWithChildren
-  '/app/groceries': typeof AppGroceriesRouteRouteWithChildren
-  '/app/habits': typeof AppHabitsRouteRouteWithChildren
-  '/app/network': typeof AppNetworkRouteRouteWithChildren
+  '/finances': typeof AppFinancesRouteRouteWithChildren
+  '/groceries': typeof AppGroceriesRouteRouteWithChildren
+  '/habits': typeof AppHabitsRouteRouteWithChildren
+  '/network': typeof AppNetworkRouteRouteWithChildren
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
-  '/app/habits/$id': typeof AppHabitsIdRoute
-  '/app/dashboard': typeof AppDashboardIndexRoute
-  '/app/documents': typeof AppDocumentsIndexRoute
-  '/app/email': typeof AppEmailIndexRoute
-  '/app/groceries/': typeof AppGroceriesIndexRoute
-  '/app/habits/': typeof AppHabitsIndexRoute
-  '/app/me': typeof AppMeIndexRoute
-  '/app/settings': typeof AppSettingsIndexRoute
-  '/app/todos': typeof AppTodosIndexRoute
-  '/app/finances/$spaceId/settings': typeof AppFinancesSpaceIdSettingsRoute
-  '/app/finances/$spaceId': typeof AppFinancesSpaceIdIndexRoute
-  '/app/network/people': typeof AppNetworkPeopleIndexRoute
-  '/app/network/posts': typeof AppNetworkPostsIndexRoute
-  '/app/finances/$spaceId/goals/$goalId': typeof AppFinancesSpaceIdGoalsGoalIdRoute
+  '/habits/$id': typeof AppHabitsIdRoute
+  '/dashboard': typeof AppDashboardIndexRoute
+  '/documents': typeof AppDocumentsIndexRoute
+  '/email': typeof AppEmailIndexRoute
+  '/groceries/': typeof AppGroceriesIndexRoute
+  '/habits/': typeof AppHabitsIndexRoute
+  '/me': typeof AppMeIndexRoute
+  '/settings': typeof AppSettingsIndexRoute
+  '/todos': typeof AppTodosIndexRoute
+  '/finances/$spaceId/settings': typeof AppFinancesSpaceIdSettingsRoute
+  '/finances/$spaceId': typeof AppFinancesSpaceIdIndexRoute
+  '/network/people': typeof AppNetworkPeopleIndexRoute
+  '/network/posts': typeof AppNetworkPostsIndexRoute
+  '/finances/$spaceId/goals/$goalId': typeof AppFinancesSpaceIdGoalsGoalIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/app': typeof AppRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
-  '/app/finances': typeof AppFinancesRouteRouteWithChildren
-  '/app/network': typeof AppNetworkRouteRouteWithChildren
+  '/finances': typeof AppFinancesRouteRouteWithChildren
+  '/network': typeof AppNetworkRouteRouteWithChildren
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
-  '/app/habits/$id': typeof AppHabitsIdRoute
-  '/app/dashboard': typeof AppDashboardIndexRoute
-  '/app/documents': typeof AppDocumentsIndexRoute
-  '/app/email': typeof AppEmailIndexRoute
-  '/app/groceries': typeof AppGroceriesIndexRoute
-  '/app/habits': typeof AppHabitsIndexRoute
-  '/app/me': typeof AppMeIndexRoute
-  '/app/settings': typeof AppSettingsIndexRoute
-  '/app/todos': typeof AppTodosIndexRoute
-  '/app/finances/$spaceId/settings': typeof AppFinancesSpaceIdSettingsRoute
-  '/app/finances/$spaceId': typeof AppFinancesSpaceIdIndexRoute
-  '/app/network/people': typeof AppNetworkPeopleIndexRoute
-  '/app/network/posts': typeof AppNetworkPostsIndexRoute
-  '/app/finances/$spaceId/goals/$goalId': typeof AppFinancesSpaceIdGoalsGoalIdRoute
+  '/habits/$id': typeof AppHabitsIdRoute
+  '/dashboard': typeof AppDashboardIndexRoute
+  '/documents': typeof AppDocumentsIndexRoute
+  '/email': typeof AppEmailIndexRoute
+  '/groceries': typeof AppGroceriesIndexRoute
+  '/habits': typeof AppHabitsIndexRoute
+  '/me': typeof AppMeIndexRoute
+  '/settings': typeof AppSettingsIndexRoute
+  '/todos': typeof AppTodosIndexRoute
+  '/finances/$spaceId/settings': typeof AppFinancesSpaceIdSettingsRoute
+  '/finances/$spaceId': typeof AppFinancesSpaceIdIndexRoute
+  '/network/people': typeof AppNetworkPeopleIndexRoute
+  '/network/posts': typeof AppNetworkPostsIndexRoute
+  '/finances/$spaceId/goals/$goalId': typeof AppFinancesSpaceIdGoalsGoalIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/app': typeof AppRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
-  '/app/finances': typeof AppFinancesRouteRouteWithChildren
-  '/app/groceries': typeof AppGroceriesRouteRouteWithChildren
-  '/app/habits': typeof AppHabitsRouteRouteWithChildren
-  '/app/network': typeof AppNetworkRouteRouteWithChildren
+  '/_app': typeof AppRouteWithChildren
+  '/_app/finances': typeof AppFinancesRouteRouteWithChildren
+  '/_app/groceries': typeof AppGroceriesRouteRouteWithChildren
+  '/_app/habits': typeof AppHabitsRouteRouteWithChildren
+  '/_app/network': typeof AppNetworkRouteRouteWithChildren
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
-  '/app/habits/$id': typeof AppHabitsIdRoute
-  '/app/dashboard/': typeof AppDashboardIndexRoute
-  '/app/documents/': typeof AppDocumentsIndexRoute
-  '/app/email/': typeof AppEmailIndexRoute
-  '/app/groceries/': typeof AppGroceriesIndexRoute
-  '/app/habits/': typeof AppHabitsIndexRoute
-  '/app/me/': typeof AppMeIndexRoute
-  '/app/settings/': typeof AppSettingsIndexRoute
-  '/app/todos/': typeof AppTodosIndexRoute
-  '/app/finances/$spaceId/settings': typeof AppFinancesSpaceIdSettingsRoute
-  '/app/finances/$spaceId/': typeof AppFinancesSpaceIdIndexRoute
-  '/app/network/people/': typeof AppNetworkPeopleIndexRoute
-  '/app/network/posts/': typeof AppNetworkPostsIndexRoute
-  '/app/finances/$spaceId/goals/$goalId': typeof AppFinancesSpaceIdGoalsGoalIdRoute
+  '/_app/habits/$id': typeof AppHabitsIdRoute
+  '/_app/dashboard/': typeof AppDashboardIndexRoute
+  '/_app/documents/': typeof AppDocumentsIndexRoute
+  '/_app/email/': typeof AppEmailIndexRoute
+  '/_app/groceries/': typeof AppGroceriesIndexRoute
+  '/_app/habits/': typeof AppHabitsIndexRoute
+  '/_app/me/': typeof AppMeIndexRoute
+  '/_app/settings/': typeof AppSettingsIndexRoute
+  '/_app/todos/': typeof AppTodosIndexRoute
+  '/_app/finances/$spaceId/settings': typeof AppFinancesSpaceIdSettingsRoute
+  '/_app/finances/$spaceId/': typeof AppFinancesSpaceIdIndexRoute
+  '/_app/network/people/': typeof AppNetworkPeopleIndexRoute
+  '/_app/network/posts/': typeof AppNetworkPostsIndexRoute
+  '/_app/finances/$spaceId/goals/$goalId': typeof AppFinancesSpaceIdGoalsGoalIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/app'
     | '/auth'
-    | '/app/finances'
-    | '/app/groceries'
-    | '/app/habits'
-    | '/app/network'
+    | '/finances'
+    | '/groceries'
+    | '/habits'
+    | '/network'
     | '/auth/signin'
     | '/auth/signup'
-    | '/app/habits/$id'
-    | '/app/dashboard'
-    | '/app/documents'
-    | '/app/email'
-    | '/app/groceries/'
-    | '/app/habits/'
-    | '/app/me'
-    | '/app/settings'
-    | '/app/todos'
-    | '/app/finances/$spaceId/settings'
-    | '/app/finances/$spaceId'
-    | '/app/network/people'
-    | '/app/network/posts'
-    | '/app/finances/$spaceId/goals/$goalId'
+    | '/habits/$id'
+    | '/dashboard'
+    | '/documents'
+    | '/email'
+    | '/groceries/'
+    | '/habits/'
+    | '/me'
+    | '/settings'
+    | '/todos'
+    | '/finances/$spaceId/settings'
+    | '/finances/$spaceId'
+    | '/network/people'
+    | '/network/posts'
+    | '/finances/$spaceId/goals/$goalId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/app'
     | '/auth'
-    | '/app/finances'
-    | '/app/network'
+    | '/finances'
+    | '/network'
     | '/auth/signin'
     | '/auth/signup'
-    | '/app/habits/$id'
-    | '/app/dashboard'
-    | '/app/documents'
-    | '/app/email'
-    | '/app/groceries'
-    | '/app/habits'
-    | '/app/me'
-    | '/app/settings'
-    | '/app/todos'
-    | '/app/finances/$spaceId/settings'
-    | '/app/finances/$spaceId'
-    | '/app/network/people'
-    | '/app/network/posts'
-    | '/app/finances/$spaceId/goals/$goalId'
+    | '/habits/$id'
+    | '/dashboard'
+    | '/documents'
+    | '/email'
+    | '/groceries'
+    | '/habits'
+    | '/me'
+    | '/settings'
+    | '/todos'
+    | '/finances/$spaceId/settings'
+    | '/finances/$spaceId'
+    | '/network/people'
+    | '/network/posts'
+    | '/finances/$spaceId/goals/$goalId'
   id:
     | '__root__'
     | '/'
-    | '/app'
     | '/auth'
-    | '/app/finances'
-    | '/app/groceries'
-    | '/app/habits'
-    | '/app/network'
+    | '/_app'
+    | '/_app/finances'
+    | '/_app/groceries'
+    | '/_app/habits'
+    | '/_app/network'
     | '/auth/signin'
     | '/auth/signup'
-    | '/app/habits/$id'
-    | '/app/dashboard/'
-    | '/app/documents/'
-    | '/app/email/'
-    | '/app/groceries/'
-    | '/app/habits/'
-    | '/app/me/'
-    | '/app/settings/'
-    | '/app/todos/'
-    | '/app/finances/$spaceId/settings'
-    | '/app/finances/$spaceId/'
-    | '/app/network/people/'
-    | '/app/network/posts/'
-    | '/app/finances/$spaceId/goals/$goalId'
+    | '/_app/habits/$id'
+    | '/_app/dashboard/'
+    | '/_app/documents/'
+    | '/_app/email/'
+    | '/_app/groceries/'
+    | '/_app/habits/'
+    | '/_app/me/'
+    | '/_app/settings/'
+    | '/_app/todos/'
+    | '/_app/finances/$spaceId/settings'
+    | '/_app/finances/$spaceId/'
+    | '/_app/network/people/'
+    | '/_app/network/posts/'
+    | '/_app/finances/$spaceId/goals/$goalId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AppRouteRoute: typeof AppRouteRouteWithChildren
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
+  AppRoute: typeof AppRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/app': {
-      id: '/app'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof AppRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -344,134 +339,148 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSigninRouteImport
       parentRoute: typeof AuthRouteRoute
     }
-    '/app/network': {
-      id: '/app/network'
+    '/_app/network': {
+      id: '/_app/network'
       path: '/network'
-      fullPath: '/app/network'
+      fullPath: '/network'
       preLoaderRoute: typeof AppNetworkRouteRouteImport
-      parentRoute: typeof AppRouteRoute
+      parentRoute: typeof AppRoute
     }
-    '/app/habits': {
-      id: '/app/habits'
+    '/_app/habits': {
+      id: '/_app/habits'
       path: '/habits'
-      fullPath: '/app/habits'
+      fullPath: '/habits'
       preLoaderRoute: typeof AppHabitsRouteRouteImport
-      parentRoute: typeof AppRouteRoute
+      parentRoute: typeof AppRoute
     }
-    '/app/groceries': {
-      id: '/app/groceries'
+    '/_app/groceries': {
+      id: '/_app/groceries'
       path: '/groceries'
-      fullPath: '/app/groceries'
+      fullPath: '/groceries'
       preLoaderRoute: typeof AppGroceriesRouteRouteImport
-      parentRoute: typeof AppRouteRoute
+      parentRoute: typeof AppRoute
     }
-    '/app/finances': {
-      id: '/app/finances'
+    '/_app/finances': {
+      id: '/_app/finances'
       path: '/finances'
-      fullPath: '/app/finances'
+      fullPath: '/finances'
       preLoaderRoute: typeof AppFinancesRouteRouteImport
-      parentRoute: typeof AppRouteRoute
+      parentRoute: typeof AppRoute
     }
-    '/app/todos/': {
-      id: '/app/todos/'
+    '/_app/todos/': {
+      id: '/_app/todos/'
       path: '/todos'
-      fullPath: '/app/todos'
+      fullPath: '/todos'
       preLoaderRoute: typeof AppTodosIndexRouteImport
-      parentRoute: typeof AppRouteRoute
+      parentRoute: typeof AppRoute
     }
-    '/app/settings/': {
-      id: '/app/settings/'
+    '/_app/settings/': {
+      id: '/_app/settings/'
       path: '/settings'
-      fullPath: '/app/settings'
+      fullPath: '/settings'
       preLoaderRoute: typeof AppSettingsIndexRouteImport
-      parentRoute: typeof AppRouteRoute
+      parentRoute: typeof AppRoute
     }
-    '/app/me/': {
-      id: '/app/me/'
+    '/_app/me/': {
+      id: '/_app/me/'
       path: '/me'
-      fullPath: '/app/me'
+      fullPath: '/me'
       preLoaderRoute: typeof AppMeIndexRouteImport
-      parentRoute: typeof AppRouteRoute
+      parentRoute: typeof AppRoute
     }
-    '/app/habits/': {
-      id: '/app/habits/'
+    '/_app/habits/': {
+      id: '/_app/habits/'
       path: '/'
-      fullPath: '/app/habits/'
+      fullPath: '/habits/'
       preLoaderRoute: typeof AppHabitsIndexRouteImport
       parentRoute: typeof AppHabitsRouteRoute
     }
-    '/app/groceries/': {
-      id: '/app/groceries/'
+    '/_app/groceries/': {
+      id: '/_app/groceries/'
       path: '/'
-      fullPath: '/app/groceries/'
+      fullPath: '/groceries/'
       preLoaderRoute: typeof AppGroceriesIndexRouteImport
       parentRoute: typeof AppGroceriesRouteRoute
     }
-    '/app/email/': {
-      id: '/app/email/'
+    '/_app/email/': {
+      id: '/_app/email/'
       path: '/email'
-      fullPath: '/app/email'
+      fullPath: '/email'
       preLoaderRoute: typeof AppEmailIndexRouteImport
-      parentRoute: typeof AppRouteRoute
+      parentRoute: typeof AppRoute
     }
-    '/app/documents/': {
-      id: '/app/documents/'
+    '/_app/documents/': {
+      id: '/_app/documents/'
       path: '/documents'
-      fullPath: '/app/documents'
+      fullPath: '/documents'
       preLoaderRoute: typeof AppDocumentsIndexRouteImport
-      parentRoute: typeof AppRouteRoute
+      parentRoute: typeof AppRoute
     }
-    '/app/dashboard/': {
-      id: '/app/dashboard/'
+    '/_app/dashboard/': {
+      id: '/_app/dashboard/'
       path: '/dashboard'
-      fullPath: '/app/dashboard'
+      fullPath: '/dashboard'
       preLoaderRoute: typeof AppDashboardIndexRouteImport
-      parentRoute: typeof AppRouteRoute
+      parentRoute: typeof AppRoute
     }
-    '/app/habits/$id': {
-      id: '/app/habits/$id'
+    '/_app/habits/$id': {
+      id: '/_app/habits/$id'
       path: '/$id'
-      fullPath: '/app/habits/$id'
+      fullPath: '/habits/$id'
       preLoaderRoute: typeof AppHabitsIdRouteImport
       parentRoute: typeof AppHabitsRouteRoute
     }
-    '/app/network/posts/': {
-      id: '/app/network/posts/'
+    '/_app/network/posts/': {
+      id: '/_app/network/posts/'
       path: '/posts'
-      fullPath: '/app/network/posts'
+      fullPath: '/network/posts'
       preLoaderRoute: typeof AppNetworkPostsIndexRouteImport
       parentRoute: typeof AppNetworkRouteRoute
     }
-    '/app/network/people/': {
-      id: '/app/network/people/'
+    '/_app/network/people/': {
+      id: '/_app/network/people/'
       path: '/people'
-      fullPath: '/app/network/people'
+      fullPath: '/network/people'
       preLoaderRoute: typeof AppNetworkPeopleIndexRouteImport
       parentRoute: typeof AppNetworkRouteRoute
     }
-    '/app/finances/$spaceId/': {
-      id: '/app/finances/$spaceId/'
+    '/_app/finances/$spaceId/': {
+      id: '/_app/finances/$spaceId/'
       path: '/$spaceId'
-      fullPath: '/app/finances/$spaceId'
+      fullPath: '/finances/$spaceId'
       preLoaderRoute: typeof AppFinancesSpaceIdIndexRouteImport
       parentRoute: typeof AppFinancesRouteRoute
     }
-    '/app/finances/$spaceId/settings': {
-      id: '/app/finances/$spaceId/settings'
+    '/_app/finances/$spaceId/settings': {
+      id: '/_app/finances/$spaceId/settings'
       path: '/$spaceId/settings'
-      fullPath: '/app/finances/$spaceId/settings'
+      fullPath: '/finances/$spaceId/settings'
       preLoaderRoute: typeof AppFinancesSpaceIdSettingsRouteImport
       parentRoute: typeof AppFinancesRouteRoute
     }
-    '/app/finances/$spaceId/goals/$goalId': {
-      id: '/app/finances/$spaceId/goals/$goalId'
+    '/_app/finances/$spaceId/goals/$goalId': {
+      id: '/_app/finances/$spaceId/goals/$goalId'
       path: '/$spaceId/goals/$goalId'
-      fullPath: '/app/finances/$spaceId/goals/$goalId'
+      fullPath: '/finances/$spaceId/goals/$goalId'
       preLoaderRoute: typeof AppFinancesSpaceIdGoalsGoalIdRouteImport
       parentRoute: typeof AppFinancesRouteRoute
     }
   }
 }
+
+interface AuthRouteRouteChildren {
+  AuthSigninRoute: typeof AuthSigninRoute
+  AuthSignupRoute: typeof AuthSignupRoute
+}
+
+const AuthRouteRouteChildren: AuthRouteRouteChildren = {
+  AuthSigninRoute: AuthSigninRoute,
+  AuthSignupRoute: AuthSignupRoute,
+}
+
+const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
+  AuthRouteRouteChildren,
+)
 
 interface AppFinancesRouteRouteChildren {
   AppFinancesSpaceIdSettingsRoute: typeof AppFinancesSpaceIdSettingsRoute
@@ -527,7 +536,7 @@ const AppNetworkRouteRouteWithChildren = AppNetworkRouteRoute._addFileChildren(
   AppNetworkRouteRouteChildren,
 )
 
-interface AppRouteRouteChildren {
+interface AppRouteChildren {
   AppFinancesRouteRoute: typeof AppFinancesRouteRouteWithChildren
   AppGroceriesRouteRoute: typeof AppGroceriesRouteRouteWithChildren
   AppHabitsRouteRoute: typeof AppHabitsRouteRouteWithChildren
@@ -540,7 +549,7 @@ interface AppRouteRouteChildren {
   AppTodosIndexRoute: typeof AppTodosIndexRoute
 }
 
-const AppRouteRouteChildren: AppRouteRouteChildren = {
+const AppRouteChildren: AppRouteChildren = {
   AppFinancesRouteRoute: AppFinancesRouteRouteWithChildren,
   AppGroceriesRouteRoute: AppGroceriesRouteRouteWithChildren,
   AppHabitsRouteRoute: AppHabitsRouteRouteWithChildren,
@@ -553,28 +562,12 @@ const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppTodosIndexRoute: AppTodosIndexRoute,
 }
 
-const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
-  AppRouteRouteChildren,
-)
-
-interface AuthRouteRouteChildren {
-  AuthSigninRoute: typeof AuthSigninRoute
-  AuthSignupRoute: typeof AuthSignupRoute
-}
-
-const AuthRouteRouteChildren: AuthRouteRouteChildren = {
-  AuthSigninRoute: AuthSigninRoute,
-  AuthSignupRoute: AuthSignupRoute,
-}
-
-const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
-  AuthRouteRouteChildren,
-)
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AppRouteRoute: AppRouteRouteWithChildren,
   AuthRouteRoute: AuthRouteRouteWithChildren,
+  AppRoute: AppRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

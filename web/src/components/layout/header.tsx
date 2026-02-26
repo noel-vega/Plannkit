@@ -33,7 +33,7 @@ export function Header() {
       </div>
       <div>
         <Button asChild variant="ghost" className="[&_svg:not([class*='size-'])]:size-4.5">
-          <Link to="/app/settings">
+          <Link to="/settings">
             <SettingsIcon />
           </Link>
         </Button>
