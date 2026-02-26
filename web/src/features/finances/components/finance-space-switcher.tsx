@@ -5,6 +5,7 @@ import { ChevronsUpDownIcon, PlusIcon, WalletIcon } from "lucide-react";
 import type { FinanceSpace } from "../types";
 import { CreateSpaceDialog } from "./create-finance-space-form";
 import { useDialog } from "@/hooks";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   currentSpace: FinanceSpace,
@@ -15,6 +16,7 @@ type Props = {
 }
 
 export function FinanceSpaceSwitcher(props: Props) {
+  const { t } = useTranslation()
   const createSpaceDialog = useDialog()
   const popover = useDialog()
   return (
@@ -26,7 +28,7 @@ export function FinanceSpaceSwitcher(props: Props) {
         >
           <WalletIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
           <span className="truncate max-w-[180px]">
-            {props.currentSpace.name ?? "Select space"}
+            {props.currentSpace.name ?? t("Select space")}
           </span>
           <ChevronsUpDownIcon className=" h-3.5 w-3.5 shrink-0 text-muted-foreground ml-auto" />
         </Button>
@@ -35,9 +37,9 @@ export function FinanceSpaceSwitcher(props: Props) {
         <Command className="w-full rounded-lg border" onSelect={() => {
           popover.onOpenChange(false)
         }}>
-          <CommandInput placeholder="Type a command or search..." />
+          <CommandInput placeholder={t("Type a command or search...")} />
           <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandEmpty>{t("No results found.")}</CommandEmpty>
 
             <CommandGroup heading={props.currentSpace.name}>
               <CommandItem
@@ -45,10 +47,10 @@ export function FinanceSpaceSwitcher(props: Props) {
                   props.onSettings(props.currentSpace)
                   popover.close()
                 }}>
-                Settings
+                {t("Settings")}
               </CommandItem>
             </CommandGroup>
-            <CommandGroup heading="Spaces">
+            <CommandGroup heading={t("Spaces")}>
               {props.spaces.map(space => (
                 <CommandItem
                   key={space.id}
@@ -59,7 +61,7 @@ export function FinanceSpaceSwitcher(props: Props) {
                   <WalletIcon />{space.name}
                 </CommandItem>
               ))}
-              <CommandItem onSelect={createSpaceDialog.handleOpenDialog}><PlusIcon />Create Space</CommandItem>
+              <CommandItem onSelect={createSpaceDialog.handleOpenDialog}><PlusIcon />{t("Create Space")}</CommandItem>
             </CommandGroup>
             <CommandSeparator />
           </CommandList>

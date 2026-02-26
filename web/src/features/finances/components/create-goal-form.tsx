@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { useDialog } from "@/hooks"
 import { useCreateGoal } from "../hooks"
+import { useTranslation } from "react-i18next"
 
 type CreateGoalFormProps = {
   spaceId: number
@@ -15,6 +16,7 @@ type CreateGoalFormProps = {
 }
 
 export function CreateGoalForm(props: CreateGoalFormProps) {
+  const { t } = useTranslation()
   const { isPending, isSuccess, mutate: createGoal } = useCreateGoal()
   const form = useForm<CreateGoalParams>({
     resolver: zodResolver(CreateGoalParamsSchema),
@@ -41,7 +43,7 @@ export function CreateGoalForm(props: CreateGoalFormProps) {
         <Controller control={form.control} name="name"
           render={({ field, fieldState }) =>
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor={field.name}>Name</FieldLabel>
+              <FieldLabel htmlFor={field.name}>{t("Name")}</FieldLabel>
               <Input
                 {...field}
                 id={field.name}
@@ -56,7 +58,7 @@ export function CreateGoalForm(props: CreateGoalFormProps) {
         <Controller control={form.control} name="amount"
           render={({ field, fieldState }) =>
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor={field.name}>Amount</FieldLabel>
+              <FieldLabel htmlFor={field.name}>{t("Amount")}</FieldLabel>
               <Input
                 type="number"
                 {...field}
@@ -72,7 +74,7 @@ export function CreateGoalForm(props: CreateGoalFormProps) {
         <Controller control={form.control} name="monthlyCommitment"
           render={({ field, fieldState }) =>
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor={field.name}>Monthly Commitment</FieldLabel>
+              <FieldLabel htmlFor={field.name}>{t("Monthly Commitment")}</FieldLabel>
               <Input
                 type="number"
                 {...field}
@@ -84,22 +86,23 @@ export function CreateGoalForm(props: CreateGoalFormProps) {
             </Field>
           }
         />
-        <Button type="submit" disabled={isDisabled}>Add Goal</Button>
+        <Button type="submit" disabled={isDisabled}>{t("Add Goal")}</Button>
       </Field>
     </form>
   )
 }
 
 export function CreateGoalDialog(props: { spaceId: number } & PropsWithChildren) {
+  const { t } = useTranslation()
   const dialog = useDialog()
   return (
     <Dialog {...dialog}>
       <DialogTrigger asChild>{props.children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create Goal</DialogTitle>
+          <DialogTitle>{t("Create Goal")}</DialogTitle>
           <DialogDescription>
-            Set a new financial goal to work towards.
+            {t("Set a new financial goal to work towards.")}
           </DialogDescription>
         </DialogHeader>
         <CreateGoalForm spaceId={props.spaceId} onSubmit={dialog.close} />

@@ -15,6 +15,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { IconPicker, icons } from "@/components/ui/icon-picker"
 import { DynamicIcon } from "@/components/ui/dynamic-icon"
 import { useCreateHabit } from "../hooks"
+import { useTranslation } from "react-i18next"
 
 type CreateHabitFormProps =
   {
@@ -22,6 +23,7 @@ type CreateHabitFormProps =
     onCancel: () => void
   }
 export function CreateHabitForm(props: CreateHabitFormProps) {
+  const { t } = useTranslation()
   const { open, onOpenChange } = useDialog()
   const form = useForm({
     resolver: zodResolver(CreateHabitParamsSchema),
@@ -66,7 +68,7 @@ export function CreateHabitForm(props: CreateHabitFormProps) {
 
               <PopoverContent className="shadow-2xl p-0">
                 <div className="max-h-96 max-w-96 w-full  h-full flex flex-col gap-2">
-                  <div className="font-semibold p-3 border-b">Pick Icon</div>
+                  <div className="font-semibold p-3 border-b">{t("Pick Icon")}</div>
                   <div className="overflow-auto flex-1 p-3">
                     <div className="overflow-auto">
                       <IconPicker
@@ -89,7 +91,7 @@ export function CreateHabitForm(props: CreateHabitFormProps) {
           render={({ field, fieldState }) => {
             return (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>Name</FieldLabel>
+                <FieldLabel htmlFor={field.name}>{t("Name")}</FieldLabel>
                 <Input
                   {...field}
                   id={field.name}
@@ -108,7 +110,7 @@ export function CreateHabitForm(props: CreateHabitFormProps) {
         render={({ field, fieldState }) => {
           return (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor={field.name}>Description</FieldLabel>
+              <FieldLabel htmlFor={field.name}>{t("Description")}</FieldLabel>
               <Input
                 {...field}
                 id={field.name}
@@ -126,7 +128,7 @@ export function CreateHabitForm(props: CreateHabitFormProps) {
         control={form.control}
         render={({ field, fieldState }) => (
           <FieldSet>
-            <FieldLabel htmlFor={field.name}>Completion Type</FieldLabel>
+            <FieldLabel htmlFor={field.name}>{t("Completion Type")}</FieldLabel>
             <RadioGroup
               name={field.name}
               value={field.value}
@@ -135,8 +137,8 @@ export function CreateHabitForm(props: CreateHabitFormProps) {
               <FieldLabel htmlFor={`form-rhf-radiogroup-step`} className="cursor-pointer">
                 <Field orientation="horizontal" data-invalid={fieldState.invalid}>
                   <FieldContent>
-                    <FieldTitle>Step By Step</FieldTitle>
-                    <FieldDescription>Increment by 1  with each completion</FieldDescription>
+                    <FieldTitle>{t("Step By Step")}</FieldTitle>
+                    <FieldDescription>{t("Increment by 1 with each completion")}</FieldDescription>
                   </FieldContent>
                   <RadioGroupItem
                     value="step"
@@ -149,8 +151,8 @@ export function CreateHabitForm(props: CreateHabitFormProps) {
               <FieldLabel htmlFor={`form-rhf-radiogroup-custom`} className="cursor-pointer">
                 <Field orientation="horizontal" data-invalid={fieldState.invalid}>
                   <FieldContent>
-                    <FieldTitle>Custom Value</FieldTitle>
-                    <FieldDescription>Enter any value when completing</FieldDescription>
+                    <FieldTitle>{t("Custom Value")}</FieldTitle>
+                    <FieldDescription>{t("Enter any value when completing")}</FieldDescription>
                   </FieldContent>
                   <RadioGroupItem
                     value="custom"
@@ -168,7 +170,7 @@ export function CreateHabitForm(props: CreateHabitFormProps) {
       <Controller control={form.control} name="completionsPerDay"
         render={({ field, fieldState }) => {
           return <Field data-invalid={fieldState.invalid}>
-            <FieldLabel htmlFor={field.name}>Completions per day</FieldLabel>
+            <FieldLabel htmlFor={field.name}>{t("Completions per day")}</FieldLabel>
             <CompletionsPerDayInput {...field} />
             {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
           </Field>
@@ -178,8 +180,8 @@ export function CreateHabitForm(props: CreateHabitFormProps) {
 
 
       <div className="justify-end gap-3 flex">
-        <Button type="button" variant="outline" onClick={handleCancel}>Cancel</Button>
-        <Button type="submit">Save</Button>
+        <Button type="button" variant="outline" onClick={handleCancel}>{t("Cancel")}</Button>
+        <Button type="submit">{t("Save")}</Button>
       </div>
     </form>
 
@@ -188,13 +190,14 @@ export function CreateHabitForm(props: CreateHabitFormProps) {
 
 
 export function CreateHabitDialog(props: DialogProps) {
+  const { t } = useTranslation()
   const closeDialog = () => {
     props.onOpenChange(false)
   }
   return (
     <Dialog {...props} modal>
       <DialogContent>
-        <DialogTitle>Create Habit</DialogTitle>
+        <DialogTitle>{t("Create Habit")}</DialogTitle>
         <CreateHabitForm onSubmit={closeDialog} onCancel={closeDialog} />
       </DialogContent>
     </Dialog>
@@ -202,6 +205,7 @@ export function CreateHabitDialog(props: DialogProps) {
 }
 
 export function CreateHabitDrawer(props: DialogProps) {
+  const { t } = useTranslation()
   const closeDrawer = () => {
     props.onOpenChange(false)
   }
@@ -210,7 +214,7 @@ export function CreateHabitDrawer(props: DialogProps) {
       <DrawerContent className="pb-3 min-h-[90%]">
         <div className="overflow-scroll px-3">
           <DrawerHeader>
-            <DrawerTitle>Create Habit</DrawerTitle>
+            <DrawerTitle>{t("Create Habit")}</DrawerTitle>
           </DrawerHeader>
           <div className="overflow-scroll">
             <CreateHabitForm onSubmit={closeDrawer} onCancel={closeDrawer} />

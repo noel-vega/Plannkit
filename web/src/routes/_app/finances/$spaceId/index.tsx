@@ -21,6 +21,7 @@ import z from 'zod/v3'
 import { queryClient } from '@/lib/react-query'
 import { CreateGoalDialog } from '@/features/finances/components/create-goal-form'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useTranslation } from 'react-i18next'
 
 export const Route = createFileRoute('/_app/finances/$spaceId/')({
   beforeLoad: async ({ params }) => {
@@ -37,6 +38,7 @@ export const Route = createFileRoute('/_app/finances/$spaceId/')({
 })
 
 function RouteComponent() {
+  const { t } = useTranslation()
   const { spaceId } = Route.useParams()
   const navigate = useNavigate()
   const rtCtx = Route.useRouteContext()
@@ -81,20 +83,20 @@ function RouteComponent() {
       <Container>
         <Tabs defaultValue='goals'>
           <TabsList className="w-full">
-            <TabsTrigger value="goals">Goals</TabsTrigger>
-            <TabsTrigger value="expenses">Expenses</TabsTrigger>
+            <TabsTrigger value="goals">{t("Goals")}</TabsTrigger>
+            <TabsTrigger value="expenses">{t("Expenses")}</TabsTrigger>
           </TabsList>
           <Separator className="my-2 bg-transparent" />
           <TabsContent value="goals" id="goals">
             <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <h2 className="text-2xl font-bold">Goals</h2>
+                <h2 className="text-2xl font-bold">{t("Goals")}</h2>
                 <p className="text-muted-foreground">
-                  Track your progress towards financial goals.
+                  {t("Track your progress towards financial goals.")}
                 </p>
               </div>
               <CreateGoalDialog spaceId={spaceId}>
-                <Button><PlusIcon />Add Goal</Button>
+                <Button><PlusIcon />{t("Add Goal")}</Button>
               </CreateGoalDialog>
             </div>
 
@@ -102,7 +104,7 @@ function RouteComponent() {
               <Card>
                 <CardContent className="grid place-content-center place-items-center gap-4 h-52">
                   <TargetIcon size={52} className="text-muted-foreground" />
-                  <p>No goals set yet. Click "Add Goal" to get started.</p>
+                  <p>{t('No goals set yet. Click "Add Goal" to get started.')}</p>
                 </CardContent>
               </Card>
             )}
@@ -116,32 +118,32 @@ function RouteComponent() {
           <TabsContent value="expenses">
             <div className="flex items-end mb-4">
               <div>
-                <h2 className="text-2xl font-semibold">Expenses</h2>
+                <h2 className="text-2xl font-semibold">{t("Expenses")}</h2>
                 <p className="text-muted-foreground">
-                  Track and organize your monthly expenses.
+                  {t("Track and organize your monthly expenses.")}
                 </p>
               </div>
 
               <CreateExpenseDialog spaceId={spaceId}>
                 <Button className="ml-auto">
-                  <PlusIcon /> Add Expense
+                  <PlusIcon /> {t("Add Expense")}
                 </Button>
               </CreateExpenseDialog>
             </div>
 
             <div className="flex gap-3 items-end mb-4">
               <Field className="w-full">
-                <FieldLabel>Search</FieldLabel>
-                <Input className="w-full" placeholder="Search expenses..." />
+                <FieldLabel>{t("Search")}</FieldLabel>
+                <Input className="w-full" placeholder={t("Search expenses...")} />
               </Field>
               <Select>
                 <SelectTrigger className="w-full max-w-52">
-                  <SelectValue placeholder="Select a category" />
+                  <SelectValue placeholder={t("Select a category")} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectItem value="en">Childcare</SelectItem>
-                    <SelectItem value="es">Housing</SelectItem>
+                    <SelectItem value="en">{t("Childcare")}</SelectItem>
+                    <SelectItem value="es">{t("Housing")}</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>

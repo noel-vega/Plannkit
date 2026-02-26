@@ -9,6 +9,7 @@ import { useAuth } from "../store"
 import { useNavigate } from "@tanstack/react-router"
 import { useSignIn } from "../hooks"
 import { AuthErrorMessage } from "./auth-error-message"
+import { useTranslation } from "react-i18next"
 
 const SignInDataSchema = z.object({
   email: z.string().min(1, { message: "Required" }),
@@ -19,6 +20,7 @@ type SignInFormData = z.infer<typeof SignInDataSchema>
 
 
 export function SignInForm() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const form = useForm<SignInFormData>({
     resolver: zodResolver(SignInDataSchema),
@@ -53,7 +55,7 @@ export function SignInForm() {
           render={({ field, fieldState }) => {
             return (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+                <FieldLabel htmlFor={field.name}>{t("Email")}</FieldLabel>
                 <Input
                   {...field}
                   id={field.name}
@@ -72,7 +74,7 @@ export function SignInForm() {
           render={({ field, fieldState }) => {
             return (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>Password</FieldLabel>
+                <FieldLabel htmlFor={field.name}>{t("Password")}</FieldLabel>
                 <Input
                   {...field}
                   id={field.name}
@@ -87,7 +89,7 @@ export function SignInForm() {
         />
       </FieldGroup>
 
-      <Button className="w-full" disabled={isDisabled}>Sign In</Button>
+      <Button className="w-full" disabled={isDisabled}>{t("Sign In")}</Button>
     </form>
   )
 }

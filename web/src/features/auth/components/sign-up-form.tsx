@@ -9,8 +9,10 @@ import { useNavigate } from "@tanstack/react-router"
 import { useSignUp } from "../hooks"
 import { AuthErrorMessage } from "./auth-error-message"
 import { SignUpDataSchema, type SignUpFormData } from "../types"
+import { useTranslation } from "react-i18next"
 
 export function SignUpForm() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const form = useForm<SignUpFormData>({
     resolver: zodResolver(SignUpDataSchema),
@@ -46,10 +48,10 @@ export function SignUpForm() {
         <Controller control={form.control} name="username"
           render={({ field, fieldState }) =>
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor={field.name}>Username</FieldLabel>
+              <FieldLabel htmlFor={field.name}>{t("Username")}</FieldLabel>
               <Input
                 {...field}
-                placeholder="Username"
+                placeholder={t("Username")}
                 id={field.name}
                 aria-invalid={fieldState.invalid}
                 autoComplete="off"
@@ -62,7 +64,7 @@ export function SignUpForm() {
           <Controller control={form.control} name="firstName"
             render={({ field, fieldState }) =>
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>First Name</FieldLabel>
+                <FieldLabel htmlFor={field.name}>{t("First Name")}</FieldLabel>
                 <Input
                   {...field}
                   placeholder="John"
@@ -78,7 +80,7 @@ export function SignUpForm() {
           <Controller control={form.control} name="lastName"
             render={({ field, fieldState }) =>
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>Last Name</FieldLabel>
+                <FieldLabel htmlFor={field.name}>{t("Last Name")}</FieldLabel>
                 <Input
                   {...field}
                   id={field.name}
@@ -95,7 +97,7 @@ export function SignUpForm() {
         <Controller control={form.control} name="email"
           render={({ field, fieldState }) =>
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+              <FieldLabel htmlFor={field.name}>{t("Email")}</FieldLabel>
               <Input
                 {...field}
                 id={field.name}
@@ -112,7 +114,7 @@ export function SignUpForm() {
         <Controller control={form.control} name="password"
           render={({ field, fieldState }) =>
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor={field.name}>Password</FieldLabel>
+              <FieldLabel htmlFor={field.name}>{t("Password")}</FieldLabel>
               <Input
                 {...field}
                 id={field.name}
@@ -128,7 +130,7 @@ export function SignUpForm() {
         <Controller control={form.control} name="confirmPassword"
           render={({ field, fieldState }) =>
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor={field.name}>Confirm Password</FieldLabel>
+              <FieldLabel htmlFor={field.name}>{t("Confirm Password")}</FieldLabel>
               <Input
                 {...field}
                 id={field.name}
@@ -141,7 +143,7 @@ export function SignUpForm() {
           }
         />
 
-        <Button className="w-full" disabled={isDisabled}>Sign Up</Button>
+        <Button className="w-full" disabled={isDisabled}>{t("Sign Up")}</Button>
 
       </Field>
     </form>

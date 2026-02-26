@@ -9,6 +9,7 @@ import { useDraggable, useDroppable } from "@dnd-kit/core"
 import { cn } from "@/lib/utils"
 import { tasks } from "../api"
 import { invalidateGetBoardQuery } from "../hooks"
+import { useTranslation } from "react-i18next"
 
 type Props = {
   todo: Todo
@@ -98,6 +99,7 @@ export function TodoCard(props: Props) {
 }
 
 function TodoCardOptionsDropdown({ id, children }: { id: number } & PropsWithChildren) {
+  const { t } = useTranslation()
   const deleteTodoMutation = useMutation({
     mutationFn: tasks.delete,
     onSuccess: () => {
@@ -117,7 +119,7 @@ function TodoCardOptionsDropdown({ id, children }: { id: number } & PropsWithChi
         {children}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-40">
-        <DropdownMenuItem onClick={handleDeleteTodo}>Delete</DropdownMenuItem>
+        <DropdownMenuItem onClick={handleDeleteTodo}>{t("Delete")}</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )

@@ -6,6 +6,7 @@ import { TodoCard } from "./todo-card";
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "lucide-react";
 import { CreateTodoDialog } from "./create-todo-dialog";
+import { useTranslation } from "react-i18next";
 
 type BoardLaneProps = {
   title: string,
@@ -17,6 +18,7 @@ type BoardLaneProps = {
 }
 
 export function BoardLane(props: BoardLaneProps) {
+  const { t } = useTranslation()
   const createTodoDialog = useDialog()
   const { setNodeRef } = useDroppable({ id: props.status, data: { type: "lane", status: props.status } });
   const handleCreateBtnClick = () => createTodoDialog.onOpenChange(true)
@@ -48,7 +50,7 @@ export function BoardLane(props: BoardLaneProps) {
             <div>
               <Button variant="ghost" className="w-full justify-start hover:bg-neutral-200" onClick={handleCreateBtnClick}>
                 <PlusIcon />
-                <span>Create</span>
+                <span>{t("Create")}</span>
               </Button>
             </div>
           </div>

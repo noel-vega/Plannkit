@@ -5,12 +5,14 @@ import { Spinner } from "@/components/ui/spinner"
 import { buttonVariants } from "@/components/ui/button"
 import type { DialogProps } from "@/types"
 import { useDeleteHabit } from "../hooks"
+import { useTranslation } from "react-i18next"
 
 type Props = {
   id: number
 } & PropsWithChildren & DialogProps
 
 export function DeleteHabitDialog(props: Props) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const deleteHabit = useDeleteHabit()
 
@@ -24,13 +26,13 @@ export function DeleteHabitDialog(props: Props) {
     <AlertDialog open={props.open} onOpenChange={props.onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete Habit</AlertDialogTitle>
-          <AlertDialogDescription>Are you sure you want to permanently delete this habit?</AlertDialogDescription>
+          <AlertDialogTitle>{t("Delete Habit")}</AlertDialogTitle>
+          <AlertDialogDescription>{t("Are you sure you want to permanently delete this habit?")}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel>{t("Cancel")}</AlertDialogCancel>
           <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={handleDelete}>
-            {deleteHabit.isPending ? <Spinner /> : "Delete"}
+            {deleteHabit.isPending ? <Spinner /> : t("Delete")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

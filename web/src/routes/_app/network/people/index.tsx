@@ -11,6 +11,7 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { GlobeIcon, HandshakeIcon, SpotlightIcon } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { useDebounce } from 'use-debounce'
+import { useTranslation } from 'react-i18next'
 
 export const Route = createFileRoute('/_app/network/people/')({
   head: () => ({ meta: [{ title: "People" }] }),
@@ -22,14 +23,15 @@ export const Route = createFileRoute('/_app/network/people/')({
 })
 
 function RouteComponent() {
+  const { t } = useTranslation()
   return (
     <Page title="Network">
       <Container>
         <Tabs defaultValue='discover'>
           <TabsList className="mb-8" variant="line">
-            <TabsTrigger value="discover"><GlobeIcon />Discover</TabsTrigger>
-            <TabsTrigger value="following"><SpotlightIcon />Following</TabsTrigger>
-            <TabsTrigger value="connections"><HandshakeIcon />Connections</TabsTrigger>
+            <TabsTrigger value="discover"><GlobeIcon />{t("Discover")}</TabsTrigger>
+            <TabsTrigger value="following"><SpotlightIcon />{t("Following")}</TabsTrigger>
+            <TabsTrigger value="connections"><HandshakeIcon />{t("Connections")}</TabsTrigger>
           </TabsList>
           <TabsContent value="discover">
             <DiscoverUsers />
@@ -43,6 +45,7 @@ function RouteComponent() {
 }
 
 function DiscoverUsers() {
+  const { t } = useTranslation()
   const rtCtx = Route.useRouteContext()
   const [search, setSearch] = useState("")
   const [value] = useDebounce(search, 500)
@@ -54,8 +57,8 @@ function DiscoverUsers() {
   return (
     <>
       <Field className="mb-4">
-        <FieldLabel htmlFor="search">Search</FieldLabel>
-        <Input onInput={handleSearchInput} placeholder="Search users..." />
+        <FieldLabel htmlFor="search">{t("Search")}</FieldLabel>
+        <Input onInput={handleSearchInput} placeholder={t("Search users...")} />
       </Field>
       <ul className="grid grid-cols-1 lg:grid-cols-5 gap-4">
         {users.data.map(user => (

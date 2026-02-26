@@ -8,12 +8,14 @@ import { Controller, useForm } from "react-hook-form";
 import { CreateFinanceSpaceSchema, type FinanceSpace } from "../types";
 import { type FormEvent } from "react";
 import { useCreateFinanceSpace } from "../hooks";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   onSuccess: (space: FinanceSpace) => void
 } & DialogProps
 
 export function CreateSpaceDialog(props: Props) {
+  const { t } = useTranslation()
   const handleOpenChange = (open: boolean) => {
     props.onOpenChange(open)
   }
@@ -22,7 +24,7 @@ export function CreateSpaceDialog(props: Props) {
     <Dialog {...props} onOpenChange={handleOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create Finance Space</DialogTitle>
+          <DialogTitle>{t("Create Finance Space")}</DialogTitle>
         </DialogHeader>
         <CreateFinanceSpaceForm onSuccess={space => {
           props.onSuccess(space)
@@ -34,6 +36,7 @@ export function CreateSpaceDialog(props: Props) {
 }
 
 export function CreateFinanceSpaceForm(props: { onSuccess: (space: FinanceSpace) => void }) {
+  const { t } = useTranslation()
   const form = useForm({
     resolver: zodResolver(CreateFinanceSpaceSchema),
     defaultValues: {
@@ -60,7 +63,7 @@ export function CreateFinanceSpaceForm(props: { onSuccess: (space: FinanceSpace)
       <Controller control={form.control} name="name"
         render={({ field, fieldState }) =>
           <Field data-invalid={fieldState.invalid}>
-            <FieldLabel htmlFor={field.name}>Name</FieldLabel>
+            <FieldLabel htmlFor={field.name}>{t("Name")}</FieldLabel>
             <Input
               {...field}
               id={field.name}
@@ -73,7 +76,7 @@ export function CreateFinanceSpaceForm(props: { onSuccess: (space: FinanceSpace)
       />
 
       <div>
-        <Button type="submit" disabled={isDisabled}>Create</Button>
+        <Button type="submit" disabled={isDisabled}>{t("Create")}</Button>
       </div>
     </form>
   )

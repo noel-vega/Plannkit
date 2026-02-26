@@ -5,6 +5,7 @@ import { useDeleteSpace } from '@/features/finances/hooks'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import type { PropsWithChildren } from 'react'
 import z from 'zod/v3'
+import { useTranslation } from 'react-i18next'
 
 export const Route = createFileRoute('/_app/finances/$spaceId/settings')({
   params: {
@@ -14,20 +15,21 @@ export const Route = createFileRoute('/_app/finances/$spaceId/settings')({
 })
 
 function RouteComponent() {
+  const { t } = useTranslation()
   const params = Route.useParams()
   return (
     <>
       <Item variant="outline">
         <ItemContent>
-          <ItemTitle>Delete this space</ItemTitle>
+          <ItemTitle>{t("Delete this space")}</ItemTitle>
           <ItemDescription>
-            Once you delete a space, there is no going back. Please be certain.
+            {t("Once you delete a space, there is no going back. Please be certain.")}
           </ItemDescription>
         </ItemContent>
 
         <ItemActions>
           <DeleteSpaceAlertDialog spaceId={params.spaceId}>
-            <Button variant="secondary">Delete space</Button>
+            <Button variant="secondary">{t("Delete space")}</Button>
           </DeleteSpaceAlertDialog>
         </ItemActions>
       </Item>
@@ -36,6 +38,7 @@ function RouteComponent() {
 }
 
 function DeleteSpaceAlertDialog(props: { spaceId: number; } & PropsWithChildren) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const deleteSpace = useDeleteSpace()
   const handleConfirm = () => {
@@ -49,15 +52,15 @@ function DeleteSpaceAlertDialog(props: { spaceId: number; } & PropsWithChildren)
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-          <AlertDialogDescription>Once you delete a space, there is no going back.</AlertDialogDescription>
+          <AlertDialogTitle>{t("Are you sure?")}</AlertDialogTitle>
+          <AlertDialogDescription>{t("Once you delete a space, there is no going back.")}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>
-            Cancel
+            {t("Cancel")}
           </AlertDialogCancel>
           <AlertDialogAction onClick={handleConfirm}>
-            Delete
+            {t("Delete")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

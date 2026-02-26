@@ -6,11 +6,13 @@ import { useMoveTodo } from "../hooks";
 import { TodoInfoDialog } from "./todo-info-dialog";
 import { useDialog } from "@/hooks";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type BoardProps = {
   board: Board
 }
 export function Board(props: BoardProps) {
+  const { t } = useTranslation()
   const { board } = props
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -113,9 +115,9 @@ export function Board(props: BoardProps) {
         onDragStart={handleDragStart}
       >
         <div className="flex gap-4">
-          <BoardLane activeTodo={activeTodo} onTodoClick={handleTodoClick} title="Todo" status={"todo"} todos={board["todo"] ?? []} showDropZone={activeTodo && activeTodo.status !== "todo" ? true : false} />
-          <BoardLane activeTodo={activeTodo} onTodoClick={handleTodoClick} title="In Progress" status={"in-progress"} todos={board["in-progress"] ?? []} showDropZone={activeTodo && activeTodo.status !== "in-progress" ? true : false} />
-          <BoardLane activeTodo={activeTodo} onTodoClick={handleTodoClick} title="Done" status={"done"} todos={board["done"] ?? []} showDropZone={activeTodo && activeTodo.status !== "done" ? true : false} />
+          <BoardLane activeTodo={activeTodo} onTodoClick={handleTodoClick} title={t("Todo")} status={"todo"} todos={board["todo"] ?? []} showDropZone={activeTodo && activeTodo.status !== "todo" ? true : false} />
+          <BoardLane activeTodo={activeTodo} onTodoClick={handleTodoClick} title={t("In Progress")} status={"in-progress"} todos={board["in-progress"] ?? []} showDropZone={activeTodo && activeTodo.status !== "in-progress" ? true : false} />
+          <BoardLane activeTodo={activeTodo} onTodoClick={handleTodoClick} title={t("Done")} status={"done"} todos={board["done"] ?? []} showDropZone={activeTodo && activeTodo.status !== "done" ? true : false} />
         </div>
         {activeTodo && (
           <DragOverlay>

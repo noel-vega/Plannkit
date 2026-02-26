@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { CompletionsPerDayInput } from "@/components/ui/completions-per-day-input"
 import type { DialogProps } from "@/types"
 import { useUpdateHabit } from "../hooks"
+import { useTranslation } from "react-i18next"
 
 type EditHabitFormProps =
   {
@@ -18,6 +19,7 @@ type EditHabitFormProps =
     onCancel: () => void
   }
 export function EditHabitForm(props: EditHabitFormProps) {
+  const { t } = useTranslation()
   const form = useForm({
     resolver: zodResolver(HabitSchema),
     defaultValues: props.habit
@@ -43,7 +45,7 @@ export function EditHabitForm(props: EditHabitFormProps) {
       <Controller control={form.control} name="name"
         render={({ field, fieldState }) => {
           return <Field data-invalid={fieldState.invalid}>
-            <FieldLabel htmlFor={field.name}>Name</FieldLabel>
+            <FieldLabel htmlFor={field.name}>{t("Name")}</FieldLabel>
             <Input
               {...field}
               id={field.name}
@@ -58,7 +60,7 @@ export function EditHabitForm(props: EditHabitFormProps) {
       <Controller control={form.control} name="description"
         render={({ field, fieldState }) => {
           return <Field data-invalid={fieldState.invalid}>
-            <FieldLabel htmlFor={field.name}>Description</FieldLabel>
+            <FieldLabel htmlFor={field.name}>{t("Description")}</FieldLabel>
             <Input
               {...field}
               id={field.name}
@@ -75,7 +77,7 @@ export function EditHabitForm(props: EditHabitFormProps) {
         control={form.control}
         render={({ field, fieldState }) => (
           <FieldSet>
-            <FieldLabel htmlFor={field.name}>Completion Type</FieldLabel>
+            <FieldLabel htmlFor={field.name}>{t("Completion Type")}</FieldLabel>
             <RadioGroup
               name={field.name}
               value={field.value}
@@ -84,8 +86,8 @@ export function EditHabitForm(props: EditHabitFormProps) {
               <FieldLabel htmlFor={`form-rhf-radiogroup-step`} className="cursor-pointer">
                 <Field orientation="horizontal" data-invalid={fieldState.invalid}>
                   <FieldContent>
-                    <FieldTitle>Step By Step</FieldTitle>
-                    <FieldDescription>Increment by 1  with each completion</FieldDescription>
+                    <FieldTitle>{t("Step By Step")}</FieldTitle>
+                    <FieldDescription>{t("Increment by 1 with each completion")}</FieldDescription>
                   </FieldContent>
                   <RadioGroupItem
                     value="step"
@@ -98,8 +100,8 @@ export function EditHabitForm(props: EditHabitFormProps) {
               <FieldLabel htmlFor={`form-rhf-radiogroup-custom`} className="cursor-pointer">
                 <Field orientation="horizontal" data-invalid={fieldState.invalid}>
                   <FieldContent>
-                    <FieldTitle>Custom Value</FieldTitle>
-                    <FieldDescription>Enter any value when completing</FieldDescription>
+                    <FieldTitle>{t("Custom Value")}</FieldTitle>
+                    <FieldDescription>{t("Enter any value when completing")}</FieldDescription>
                   </FieldContent>
                   <RadioGroupItem
                     value="custom"
@@ -117,7 +119,7 @@ export function EditHabitForm(props: EditHabitFormProps) {
       <Controller control={form.control} name="completionsPerDay"
         render={({ field, fieldState }) => {
           return <Field data-invalid={fieldState.invalid}>
-            <FieldLabel htmlFor={field.name}>Completions per day</FieldLabel>
+            <FieldLabel htmlFor={field.name}>{t("Completions per day")}</FieldLabel>
             <CompletionsPerDayInput {...field} />
             {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
           </Field>
@@ -125,8 +127,8 @@ export function EditHabitForm(props: EditHabitFormProps) {
       />
 
       <div className="justify-end gap-3 flex">
-        <Button type="button" variant="outline" onClick={handleCancel}>Cancel</Button>
-        <Button type="submit">Save</Button>
+        <Button type="button" variant="outline" onClick={handleCancel}>{t("Cancel")}</Button>
+        <Button type="submit">{t("Save")}</Button>
       </div>
     </form>
 
@@ -139,14 +141,15 @@ type EditHabitDialogProps = {
 } & PropsWithChildren & DialogProps
 
 export function EditHabitDialog(props: EditHabitDialogProps) {
+  const { t } = useTranslation()
   const closeDialog = () => props.onOpenChange(false)
   return (
     <Dialog open={props.open} onOpenChange={props.onOpenChange}>
       <DialogContent onOpenAutoFocus={e => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle>Edit Habit</DialogTitle>
+          <DialogTitle>{t("Edit Habit")}</DialogTitle>
           <DialogDescription>
-            View and edit your habit settings.
+            {t("View and edit your habit settings.")}
           </DialogDescription>
         </DialogHeader>
         <EditHabitForm habit={props.habit} onSubmit={closeDialog} onCancel={closeDialog} />

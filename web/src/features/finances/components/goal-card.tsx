@@ -4,11 +4,12 @@ import { formatCurrency } from '@/lib/format'
 import type { Goal } from '../types'
 import { CheckCircle2Icon, CircleIcon, PauseIcon } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 
 const statusConfig = {
-  active: { icon: CircleIcon, color: 'text-blue-600', label: 'Active' },
-  complete: { icon: CheckCircle2Icon, color: 'text-emerald-600', label: 'Complete' },
-  'on-hold': { icon: PauseIcon, color: 'text-gray-500', label: 'On Hold' },
+  active: { icon: CircleIcon, color: 'text-blue-600', labelKey: 'Active' },
+  complete: { icon: CheckCircle2Icon, color: 'text-emerald-600', labelKey: 'Complete' },
+  'on-hold': { icon: PauseIcon, color: 'text-gray-500', labelKey: 'On Hold' },
 }
 
 type GoalCardProps = {
@@ -16,6 +17,7 @@ type GoalCardProps = {
 }
 
 export function GoalCard({ goal }: GoalCardProps) {
+  const { t } = useTranslation()
   const progress = Math.min((goal.totalContributions / goal.amount) * 100, 100)
   const isComplete = progress >= 100
   const remaining = Math.max(goal.amount - goal.totalContributions, 0)
@@ -39,14 +41,14 @@ export function GoalCard({ goal }: GoalCardProps) {
                 <h3 className="font-semibold text-lg">{goal.name}</h3>
                 <div className={`flex items-center gap-1 text-xs ${status.color}`}>
                   <status.icon className="h-3.5 w-3.5" />
-                  <span>{status.label}</span>
+                  <span>{t(status.labelKey)}</span>
                 </div>
               </div>
               <div className="text-sm text-muted-foreground">
-                Monthly commitment:{' '}
+                {t("Monthly commitment:")}{' '}
                 {goal.monthlyCommitment > 0
                   ? formatCurrency(goal.monthlyCommitment)
-                  : 'Not set'}
+                  : t('Not set')}
               </div>
             </div>
           </div>
@@ -54,13 +56,13 @@ export function GoalCard({ goal }: GoalCardProps) {
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">
-                {formatCurrency(goal.totalContributions)} of {formatCurrency(goal.amount)}
+                {t("{{amount}} of {{total}}", { amount: formatCurrency(goal.totalContributions), total: formatCurrency(goal.amount) })}
               </span>
               <span className="font-semibold">{progress.toFixed(1)}%</span>
             </div>
             <Progress value={progress} className="h-2" />
             <div className="text-sm text-muted-foreground">
-              {formatCurrency(remaining)} remaining
+              {t("{{amount}} remaining", { amount: formatCurrency(remaining) })}
             </div>
           </div>
         </CardContent>

@@ -37,12 +37,13 @@ function RouteComponent() {
 }
 
 function HabitsList({ habits }: { habits: HabitWithContributions[] }) {
+  const { t } = useTranslation()
   return (
     <>
       <div className="text-lg font-medium flex items-center">
         <div className="h-px w-4.5 bg-border" />
         <p className="px-2">
-          My Daily Habits
+          {t("My Daily Habits")}
         </p>
         <div className="h-px w-full flex-1 bg-border" />
       </div>
@@ -67,7 +68,7 @@ function Header() {
         {format(new Date(), 'EEEE, MMMM d')}
       </p>
       <Button variant="secondary" className="flex-1 @md:flex-none">
-        <PlusIcon /><span>Routine</span>
+        <PlusIcon /><span>{t("Routine")}</span>
       </Button>
       <Button variant="secondary" className="flex-1 @md:flex-none" onClick={createHabitDialog.handleOpenDialog}>
         <PlusIcon /><span>{t("Habit")}</span>

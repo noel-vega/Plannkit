@@ -2,8 +2,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { CircularProgress } from "@/components/ui/circle-progress";
 import type { HabitWithContributions } from "../types";
 import { getDayOfYear } from "date-fns";
+import { useTranslation } from "react-i18next";
 
 export function TodaysProgress(props: { habits: HabitWithContributions[] }) {
+  const { t } = useTranslation()
   const today = new Date()
   const completedHabits = props.habits.reduce((prev, curr) => {
     const completionsToday = curr.contributions.find(x => getDayOfYear(x.date) === getDayOfYear(today))?.completions ?? 0
@@ -16,8 +18,8 @@ export function TodaysProgress(props: { habits: HabitWithContributions[] }) {
       <CardContent className="flex justify-between items-center" >
         <div className="flex gap-6">
           <div className="">
-            <p>Today's Progress</p>
-            <p className="font-semibold text-lg">{completedHabits} of {props.habits.length} completed</p>
+            <p>{t("Today's Progress")}</p>
+            <p className="font-semibold text-lg">{t("{{completed}} of {{total}} completed", { completed: completedHabits, total: props.habits.length })}</p>
           </div>
         </div>
 

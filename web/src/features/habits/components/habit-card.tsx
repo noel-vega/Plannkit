@@ -18,8 +18,10 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import type { DialogProps } from "@/types";
 import { DynamicIcon } from "@/components/ui/dynamic-icon"
 import { useCreateContribution, useUpdateContribution } from "../hooks";
+import { useTranslation } from "react-i18next";
 
 export function HabitCard(props: { habit: HabitWithContributions }) {
+  const { t } = useTranslation()
   const { habit } = props
   const contributions = new Map(props.habit.contributions.map(contrib => [getDayOfYear(contrib.date), contrib]));
   const todaysContribution = contributions.get(getDayOfYear(new Date()))
@@ -33,7 +35,7 @@ export function HabitCard(props: { habit: HabitWithContributions }) {
           <div className="space-y-2">
             <div className="flex gap-4">
               {todaysContribution?.completions === habit.completionsPerDay && (
-                <Badge className="bg-green-100 border border-green-500 text-green-800" >Complete</Badge>
+                <Badge className="bg-green-100 border border-green-500 text-green-800" >{t("Complete")}</Badge>
 
               )}
 
@@ -120,6 +122,7 @@ function HabitContributionButton(props: { habit: Habit, contributions: Map<numbe
 }
 
 export function CustomContributionCompletionsDialog(props: { date: Date; contribution?: Contribution; habit: Habit; } & DialogProps) {
+  const { t } = useTranslation()
   const [completions, setCompletions] = useState(props.contribution?.completions ?? 0)
   const [incrementBy, setIncremetBy] = useState(1)
 
@@ -163,14 +166,14 @@ export function CustomContributionCompletionsDialog(props: { date: Date; contrib
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             {props.habit.name}
-            {isComplete && <Badge className="bg-green-100 border border-green-500 text-green-800" >Complete</Badge>}
+            {isComplete && <Badge className="bg-green-100 border border-green-500 text-green-800" >{t("Complete")}</Badge>}
           </DialogTitle>
           <DialogDescription className="hidden">
             Todays Completions
           </DialogDescription>
           <Progress className="h-3" value={progress} />
         </DialogHeader>
-        <FieldLabel>Completions</FieldLabel>
+        <FieldLabel>{t("Completions")}</FieldLabel>
 
         <ButtonGroup className="w-full" >
           <Button
@@ -204,8 +207,8 @@ export function CustomContributionCompletionsDialog(props: { date: Date; contrib
         </ToggleGroup>
 
         <DialogFooter>
-          <Button disabled={(props.contribution?.completions ?? 0) === 0} variant="secondary" className="flex-1" onClick={handleReset}>Reset</Button>
-          <Button disabled={isComplete} variant="secondary" className="flex-1" onClick={handleComplete}>Complete</Button>
+          <Button disabled={(props.contribution?.completions ?? 0) === 0} variant="secondary" className="flex-1" onClick={handleReset}>{t("Reset")}</Button>
+          <Button disabled={isComplete} variant="secondary" className="flex-1" onClick={handleComplete}>{t("Complete")}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

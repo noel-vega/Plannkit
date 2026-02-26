@@ -7,6 +7,7 @@ import { createFileRoute, useRouteContext } from '@tanstack/react-router'
 import { getDayOfYear } from 'date-fns/getDayOfYear'
 import { CheckIcon, EditIcon, Trash2Icon } from 'lucide-react'
 import z from 'zod/v3'
+import { useTranslation } from 'react-i18next'
 
 import { Calendar } from '@/components/ui/calendar'
 import { useState } from 'react'
@@ -31,6 +32,7 @@ export const Route = createFileRoute('/_app/habits/$id')({
 
 
 function RouteComponent() {
+  const { t } = useTranslation()
   const routeParams = Route.useParams()
   const initialHabit = Route.useLoaderData()
   const { data: habit } = useQuery({
@@ -44,7 +46,7 @@ function RouteComponent() {
     <Page title="Habits">
       <div className="max-w-5xl">
         <Header habit={habit} />
-        <p>{!habit.description ? "No Description" : habit.description}</p>
+        <p>{!habit.description ? t("No Description") : habit.description}</p>
         <div className="py-4 mb-4 overflow-x-auto">
           <ContributionsGrid habit={habit} contributions={contributions} />
         </div>
@@ -55,6 +57,7 @@ function RouteComponent() {
 }
 
 function Header({ habit }: { habit: HabitWithContributions }) {
+  const { t } = useTranslation()
   const deleteDialog = useDialog()
   const editDialog = useDialog()
   const handleOpenDeleteDialog = () =>
@@ -70,10 +73,10 @@ function Header({ habit }: { habit: HabitWithContributions }) {
         <div className='space-x-2 ml-auto'>
 
           <Button className="ml-auto" onClick={handleOpenEditDialog}>
-            <EditIcon /> <span>Edit</span>
+            <EditIcon /> <span>{t("Edit")}</span>
           </Button>
           <Button variant="secondary" onClick={handleOpenDeleteDialog}>
-            <Trash2Icon /><span>Delete</span>
+            <Trash2Icon /><span>{t("Delete")}</span>
           </Button>
         </div>
       </header>

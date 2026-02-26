@@ -10,12 +10,14 @@ import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import type { DialogProps } from "@/types"
 import { useCreateTodo } from "../hooks"
+import { useTranslation } from "react-i18next"
 
 type Props = {
   status?: TodoStatus
 } & PropsWithChildren & DialogProps
 
 export function CreateTodoDialog({ status = "todo", ...props }: Props) {
+  const { t } = useTranslation()
   const createTodo = useCreateTodo()
 
   const form = useForm({
@@ -42,7 +44,7 @@ export function CreateTodoDialog({ status = "todo", ...props }: Props) {
     <Dialog open={props.open} onOpenChange={props.onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create Todo</DialogTitle>
+          <DialogTitle>{t("Create Todo")}</DialogTitle>
           <DialogDescription className="hidden" />
         </DialogHeader>
         <form onSubmit={handleSubmit}>
@@ -52,7 +54,7 @@ export function CreateTodoDialog({ status = "todo", ...props }: Props) {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>Name</FieldLabel>
+                  <FieldLabel htmlFor={field.name}>{t("Name")}</FieldLabel>
                   <Input
                     {...field}
                     id={field.name}
@@ -60,7 +62,7 @@ export function CreateTodoDialog({ status = "todo", ...props }: Props) {
                     autoComplete="off"
                   />
                   <FieldDescription>
-                    Provide a concise name for your todo.
+                    {t("Provide a concise name for your todo.")}
                   </FieldDescription>
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
@@ -72,10 +74,10 @@ export function CreateTodoDialog({ status = "todo", ...props }: Props) {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>Description</FieldLabel>
+                  <FieldLabel htmlFor={field.name}>{t("Description")}</FieldLabel>
                   <Textarea {...field} />
                   <FieldDescription>
-                    Describe your todo in further detail.
+                    {t("Describe your todo in further detail.")}
                   </FieldDescription>
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
@@ -85,7 +87,7 @@ export function CreateTodoDialog({ status = "todo", ...props }: Props) {
           <DialogFooter>
             <Button type="submit" disabled={createTodo.isPending || form.formState.isSubmitting}>
               {createTodo.isPending && <Spinner />}
-              Submit
+              {t("Submit")}
             </Button>
           </DialogFooter>
         </form>

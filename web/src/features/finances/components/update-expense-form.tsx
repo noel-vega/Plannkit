@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import type { DialogProps } from "@/types";
 import { useDeleteExpense, useUpdateExpense } from "../hooks";
+import { useTranslation } from "react-i18next";
 
 type CreateExpenseFormProps = {
   expense: Expense
@@ -17,6 +18,7 @@ type CreateExpenseFormProps = {
 }
 
 export function UpdateExpenseForm(props: CreateExpenseFormProps) {
+  const { t } = useTranslation()
   const updateExpense = useUpdateExpense()
   const deleteExpense = useDeleteExpense()
 
@@ -53,7 +55,7 @@ export function UpdateExpenseForm(props: CreateExpenseFormProps) {
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor={field.name}>Name</FieldLabel>
+              <FieldLabel htmlFor={field.name}>{t("Name")}</FieldLabel>
               <Input
                 {...field}
                 id={field.name}
@@ -71,7 +73,7 @@ export function UpdateExpenseForm(props: CreateExpenseFormProps) {
             control={form.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>Amount</FieldLabel>
+                <FieldLabel htmlFor={field.name}>{t("Amount")}</FieldLabel>
                 <Input
                   type="number"
                   min={1}
@@ -90,13 +92,13 @@ export function UpdateExpenseForm(props: CreateExpenseFormProps) {
             control={form.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>Category</FieldLabel>
+                <FieldLabel htmlFor={field.name}>{t("Category")}</FieldLabel>
                 <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select option" />
+                    <SelectValue placeholder={t("Select option")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="child-care">Childcare</SelectItem>
+                    <SelectItem value="child-care">{t("Childcare")}</SelectItem>
                   </SelectContent>
                 </Select>
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
@@ -110,17 +112,17 @@ export function UpdateExpenseForm(props: CreateExpenseFormProps) {
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor={field.name}>Description</FieldLabel>
-              <Textarea placeholder="Describe your expense..." value={field.value ?? undefined} onChange={field.onChange} className="h-24 resize-none" />
+              <FieldLabel htmlFor={field.name}>{t("Description")}</FieldLabel>
+              <Textarea placeholder={t("Describe your expense...")} value={field.value ?? undefined} onChange={field.onChange} className="h-24 resize-none" />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}
         />
 
         <Field orientation="horizontal">
-          <Button type="button" variant="outline" disabled={!form.formState.isDirty} onClick={handleReset}>Reset</Button>
-          <Button type="submit" disabled={isDisabled}>Update</Button>
-          <Button type="button" variant="destructive" disabled={deleteExpense.isPending} className="ml-auto" onClick={handleDelete}>Delete</Button>
+          <Button type="button" variant="outline" disabled={!form.formState.isDirty} onClick={handleReset}>{t("Reset")}</Button>
+          <Button type="submit" disabled={isDisabled}>{t("Submit")}</Button>
+          <Button type="button" variant="destructive" disabled={deleteExpense.isPending} className="ml-auto" onClick={handleDelete}>{t("Delete")}</Button>
         </Field>
       </Field>
     </form>
@@ -132,7 +134,7 @@ type Props = {
 } & DialogProps & PropsWithChildren
 
 export function UpdateExpenseDialog({ expense, ...props }: Props) {
-
+  const { t } = useTranslation()
   const handleDelete = () => {
     props.onOpenChange(false)
   }
@@ -143,7 +145,7 @@ export function UpdateExpenseDialog({ expense, ...props }: Props) {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Update Expense</DialogTitle>
+          <DialogTitle>{t("Create Expense")}</DialogTitle>
         </DialogHeader>
         <UpdateExpenseForm expense={expense} onDelete={handleDelete} />
       </DialogContent>

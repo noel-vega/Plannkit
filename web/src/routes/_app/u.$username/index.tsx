@@ -15,6 +15,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { PlusIcon } from 'lucide-react'
 import { type ChangeEvent } from 'react'
 import z from 'zod/v3'
+import { useTranslation } from 'react-i18next'
 
 export const Route = createFileRoute('/_app/u/$username/')({
   beforeLoad: async ({ params: { username } }) => {
@@ -26,6 +27,7 @@ export const Route = createFileRoute('/_app/u/$username/')({
 })
 
 function RouteComponent() {
+  const { t } = useTranslation()
   const routeContext = Route.useRouteContext()
   const { username } = Route.useParams()
   const { data: user } = useUserProfile(username, routeContext.user)
@@ -57,7 +59,7 @@ function RouteComponent() {
             </div>
             <div>
               {!isMe && (
-                <Button className="bg-sky-600 hover:bg-sky-600"><PlusIcon />Follow</Button>
+                <Button className="bg-sky-600 hover:bg-sky-600"><PlusIcon />{t("Follow")}</Button>
               )}
             </div>
           </CardContent>

@@ -44,7 +44,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Network</SidebarGroupLabel>
+          <SidebarGroupLabel>{t("Network")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {communityLinks.map((item) => (
