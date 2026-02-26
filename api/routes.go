@@ -43,15 +43,16 @@ func AddRoutes(router *gin.Engine, db *sqlx.DB, storageService storage.Service) 
 	router.GET("/auth/signout", authHandler.SignOut)
 	router.GET("/auth/me", authHandler.Me)
 
-	router.GET("/users", usersHandler.ListUsers)
-	router.PUT("/users/avatar", usersHandler.UpdateAvatar)
-
 	protected := router.Group("/")
 	protected.Use(Authentication(authService))
 
 	protected.GET("/auth/refresh", authHandler.RefreshAccessToken)
 	protected.GET("/finances/spaces", financesHandler.ListSpaces)
 	protected.POST("/finances/spaces", financesHandler.CreateSpace)
+
+	protected.GET("/users", usersHandler.ListUsers)
+	protected.PUT("/users/avatar", usersHandler.UpdateAvatar)
+	protected.GET("/users/profile/:username", usersHandler.GetUserProfile)
 
 	financeSpace := protected.Group("/finances/spaces/:spaceID").Use(VerifySpaceMembership(financesService))
 	financeSpace.DELETE("", financesHandler.DeleteSpace)

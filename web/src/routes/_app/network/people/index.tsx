@@ -7,12 +7,13 @@ import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { getUseDiscoverUsersQueryOptions, useDiscoverUsersQuery } from '@/features/network/hooks'
 import { queryClient } from '@/lib/react-query'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { GlobeIcon, HandshakeIcon, SpotlightIcon } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { useDebounce } from 'use-debounce'
 
 export const Route = createFileRoute('/_app/network/people/')({
+  head: () => ({ meta: [{ title: "People" }] }),
   beforeLoad: async () => {
     const users = await queryClient.ensureQueryData(getUseDiscoverUsersQueryOptions())
     return { users }
@@ -22,7 +23,7 @@ export const Route = createFileRoute('/_app/network/people/')({
 
 function RouteComponent() {
   return (
-    <Page>
+    <Page title="Network">
       <Container>
         <Tabs defaultValue='discover'>
           <TabsList className="mb-8" variant="line">
@@ -56,22 +57,24 @@ function DiscoverUsers() {
         <FieldLabel htmlFor="search">Search</FieldLabel>
         <Input onInput={handleSearchInput} placeholder="Search users..." />
       </Field>
-      <ul className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <ul className="grid grid-cols-1 lg:grid-cols-5 gap-4">
         {users.data.map(user => (
           <li>
-            <Card>
-              <CardContent className="flex flex-col items-center justify-center">
-                <Avatar className="size-32">
-                  {user.avatar && (
-                    <AvatarImage src={user.avatar} alt="@shadcn" />
-                  )}
-                  <AvatarFallback className="border-2 border-white">{user.firstName[0]} {user.lastName[0]}</AvatarFallback>
-                </Avatar>
-                <p className="font-semibold text-lg">
-                  {user.firstName} {user.lastName}
-                </p>
-              </CardContent>
-            </Card>
+            <Link to="/u/$username" params={{ username: user.username }}>
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center">
+                  <Avatar className="size-28">
+                    {user.avatar && (
+                      <AvatarImage src={user.avatar} alt="@shadcn" />
+                    )}
+                    <AvatarFallback className="border-2 border-white">{user.firstName[0]} {user.lastName[0]}</AvatarFallback>
+                  </Avatar>
+                  <p className="font-semibold text-lg">
+                    {user.firstName} {user.lastName}
+                  </p>
+                </CardContent>
+              </Card>
+            </Link>
           </li>
         ))}
       </ul>

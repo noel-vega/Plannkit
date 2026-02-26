@@ -9,6 +9,7 @@ export type DiscoverUsersParams = z.infer<typeof DiscoverUsersParamsSchema>
 
 export const UserSchema = z.object({
   id: z.number(),
+  username: z.string(),
   firstName: z.string(),
   lastName: z.string(),
   email: z.string(),

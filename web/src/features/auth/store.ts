@@ -10,6 +10,7 @@ export const useAuth = create<AuthStore>(() => ({
   accessToken: "",
   me: {
     id: Infinity,
+    username: "",
     email: "",
     firstName: "",
     lastName: "",

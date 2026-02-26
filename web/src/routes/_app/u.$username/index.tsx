@@ -2,22 +2,36 @@ import { BackButton } from '@/components/back-button'
 import { Container } from '@/components/layout/container'
 import { Page } from '@/components/layout/page'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { useAuth } from '@/features/auth/store'
 import { AvatarSchema } from '@/features/auth/types'
+import { getUseUserProfileQueryOptions, useUserProfile } from '@/features/network/hooks'
 import { pkFetch } from '@/lib/plannkit-api-client'
+import { queryClient } from '@/lib/react-query'
 import { useMutation } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
+import { PlusIcon } from 'lucide-react'
 import { type ChangeEvent } from 'react'
 import z from 'zod/v3'
 
-export const Route = createFileRoute('/_app/me/')({
+export const Route = createFileRoute('/_app/u/$username/')({
+  beforeLoad: async ({ params: { username } }) => {
+    const user = await queryClient.ensureQueryData(getUseUserProfileQueryOptions(username))
+
+    return { user }
+  },
   component: RouteComponent,
 })
 
 function RouteComponent() {
+  const routeContext = Route.useRouteContext()
+  const { username } = Route.useParams()
+  const { data: user } = useUserProfile(username, routeContext.user)
   const { me } = useAuth()
+
+  const isMe = me.id === user.id
   return (
     <Page title="Profile">
       <Container>
@@ -27,10 +41,24 @@ function RouteComponent() {
           <CardHeader className="h-60 bg-blue-500" />
           <CardContent className="pt-0 relative">
             <div className="-mt-24">
-              <MeAvatar />
+              {isMe ? (
+                <MeAvatar />
+              ) : (
+                <Avatar className="size-40 border-2 border-white/50 shadow ">
+                  {user.avatar && (
+                    <AvatarImage src={user.avatar} alt="@shadcn" />
+                  )}
+                  <AvatarFallback className="border-2 border-white">{user.firstName[0]} {user.lastName[0]}</AvatarFallback>
+                </Avatar>
+              )}
             </div>
             <div>
-              <h2 className="text-2xl font-semibold">{me.firstName} {me.lastName}</h2>
+              <h2 className="text-2xl font-semibold">{user.firstName} {user.lastName}</h2>
+            </div>
+            <div>
+              {!isMe && (
+                <Button className="bg-sky-600 hover:bg-sky-600"><PlusIcon />Follow</Button>
+              )}
             </div>
           </CardContent>
           <CardFooter className="p-4"></CardFooter>

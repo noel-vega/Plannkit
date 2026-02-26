@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { Field, FieldError, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field"
+import { Field, FieldError, FieldLabel, FieldSet } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { FormEvent } from "react"
@@ -15,6 +15,7 @@ export function SignUpForm() {
   const form = useForm<SignUpFormData>({
     resolver: zodResolver(SignUpDataSchema),
     defaultValues: {
+      username: "",
       firstName: "",
       lastName: "",
       email: "",
@@ -39,10 +40,24 @@ export function SignUpForm() {
   const isDisabled = !form.formState.isValid || signUp.isPending || signUp.isSuccess
 
   return (
-    <form onSubmit={handleSignUp} className="space-y-6 @container/form">
-      <AuthErrorMessage message={signUp.error?.message} />
-
-      <FieldGroup>
+    <form onSubmit={handleSignUp} className="@container/form">
+      <Field>
+        <AuthErrorMessage message={signUp.error?.message} />
+        <Controller control={form.control} name="username"
+          render={({ field, fieldState }) =>
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor={field.name}>Username</FieldLabel>
+              <Input
+                {...field}
+                placeholder="Username"
+                id={field.name}
+                aria-invalid={fieldState.invalid}
+                autoComplete="off"
+              />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          }
+        />
         <FieldSet className="flex flex-row gap-2">
           <Controller control={form.control} name="firstName"
             render={({ field, fieldState }) =>
@@ -125,9 +140,10 @@ export function SignUpForm() {
             </Field>
           }
         />
-      </FieldGroup>
 
-      <Button className="w-full" disabled={isDisabled}>Sign Up</Button>
+        <Button className="w-full" disabled={isDisabled}>Sign Up</Button>
+
+      </Field>
     </form>
   )
 }

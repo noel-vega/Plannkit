@@ -7,6 +7,7 @@ export const AvatarSchema = z.string().nullable().transform(filename => {
 
 export const MeSchema = z.object({
   id: z.number(),
+  username: z.string(),
   firstName: z.string(),
   lastName: z.string(),
   email: z.string(),
@@ -16,6 +17,7 @@ export const MeSchema = z.object({
 export type Me = z.infer<typeof MeSchema>
 
 export const SignUpParamsSchema = z.object({
+  username: z.string(),
   firstName: z.string(),
   lastName: z.string(),
   email: z.string(),
@@ -41,6 +43,7 @@ export const RefreshTokenResponseSchema = z.object({
 })
 
 export const SignUpDataSchema = z.object({
+  username: z.string(),
   firstName: z.string().min(1, { message: "Required" }),
   lastName: z.string().min(1, { message: "Required" }),
   email: z.string().min(1, { message: "Required" }),

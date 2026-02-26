@@ -72,7 +72,7 @@ export function AppSidebar() {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground border border-border/80 hover:border-border"
             >
-              <Link to="/me">
+              <Link to="/u/$username" params={{ username: me.username }} >
                 <Avatar className="h-8 w-8 border-border border">
                   {me.avatar && (
                     <AvatarImage src={me.avatar} alt="@shadcn" />

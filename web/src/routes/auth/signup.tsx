@@ -9,7 +9,7 @@ export const Route = createFileRoute('/auth/signup')({
 
 function RouteComponent() {
   return (
-    <Container className="max-w-lg w-full space-y-4">
+    <Container className="max-w-lg w-full mx-auto">
       <Header />
       <SignUpForm />
       <SignInCallout />
@@ -20,7 +20,7 @@ function RouteComponent() {
 
 function Header() {
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 mb-4">
       <h1 className="text-2xl font-semibold">Sign Up</h1>
       <p className="text-muted-foreground">Get organized today!</p>
     </div>
@@ -29,7 +29,7 @@ function Header() {
 
 function SignInCallout() {
   return (
-    <div className="text-sm">
+    <div className="text-sm mt-2">
       <span>
         Already have an account?
       </span>

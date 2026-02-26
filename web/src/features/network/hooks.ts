@@ -13,3 +13,15 @@ export function getUseDiscoverUsersQueryOptions(params?: DiscoverUsersParams) {
 export function useDiscoverUsersQuery(params: DiscoverUsersParams, initialData: User[]) {
   return useQuery({ ...getUseDiscoverUsersQueryOptions(params), initialData })
 }
+
+
+export function getUseUserProfileQueryOptions(username: string) {
+  return queryOptions({
+    queryKey: ['profile', username],
+    queryFn: () => network.profile(username)
+  })
+}
+
+export function useUserProfile(username: string, initialData: User) {
+  return useQuery({ ...getUseUserProfileQueryOptions(username), initialData })
+}

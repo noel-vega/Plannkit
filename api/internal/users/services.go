@@ -73,6 +73,10 @@ func (s *Service) GetUserByID(ID int) (*UserNoPassword, error) {
 	return user, nil
 }
 
+func (s *Service) GetUserByUsername(username string) (*UserNoPassword, error) {
+	return s.userRepo.GetUserByUsername(username)
+}
+
 func (s *Service) UpdateAvatar(userID int, ext string, file io.Reader) (string, error) {
 	fileName, err := s.storageService.Put("avatars", ext, file)
 	if err != nil {

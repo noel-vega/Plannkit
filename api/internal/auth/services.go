@@ -24,9 +24,9 @@ func NewService(db *sqlx.DB, jwtSecret string, userService *users.Service) *Serv
 
 func (s *Service) GenerateToken(userID int, duration time.Duration) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user_id": userID,
-		"exp":     time.Now().Add(duration).Unix(),
-		"iat":     time.Now().Unix(),
+		"userID": userID,
+		"exp":    time.Now().Add(duration).Unix(),
+		"iat":    time.Now().Unix(),
 	})
 
 	// TODO: secret key

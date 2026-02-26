@@ -19,7 +19,7 @@ export const Route = createFileRoute('/_app/finances')({
     return { spaces, currentSpace }
   },
   component: () => (
-    <Page title="finances">
+    <Page title="Finances">
       <Outlet />
     </Page>
   ),

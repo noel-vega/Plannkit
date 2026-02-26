@@ -17,8 +17,8 @@ func NewHandler(userService *Service) *Handler {
 	}
 }
 
-func (handler *Handler) UpdateAvatar(c *gin.Context) {
-	userID := c.MustGet("user_id").(int)
+func (h *Handler) UpdateAvatar(c *gin.Context) {
+	userID := c.MustGet("userID").(int)
 	file, header, err := c.Request.FormFile("avatar")
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
@@ -27,7 +27,7 @@ func (handler *Handler) UpdateAvatar(c *gin.Context) {
 	defer file.Close()
 
 	ext := filepath.Ext(header.Filename)
-	filename, err := handler.UserService.UpdateAvatar(userID, ext, file)
+	filename, err := h.UserService.UpdateAvatar(userID, ext, file)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -38,7 +38,7 @@ func (handler *Handler) UpdateAvatar(c *gin.Context) {
 	})
 }
 
-func (handler *Handler) ListUsers(c *gin.Context) {
+func (h *Handler) ListUsers(c *gin.Context) {
 	queryParams := &ListUsersQueryParams{}
 	err := c.BindQuery(queryParams)
 	if err != nil {
@@ -50,10 +50,25 @@ func (handler *Handler) ListUsers(c *gin.Context) {
 		QueryParams: queryParams,
 	}
 
-	users, err := handler.UserService.ListUsers(params)
+	users, err := h.UserService.ListUsers(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 	c.JSON(http.StatusOK, users)
+}
+
+func (h *Handler) GetUserProfile(c *gin.Context) {
+	user, err := h.UserService.GetUserByUsername(c.Param("username"))
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	if user == nil {
+		c.AbortWithStatus(http.StatusNotFound)
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
 }
