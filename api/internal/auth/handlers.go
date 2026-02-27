@@ -136,6 +136,11 @@ func (h *Handler) Me(c *gin.Context) {
 		return
 	}
 
+	if me == nil {
+		c.AbortWithStatus(http.StatusNotFound)
+		return
+	}
+
 	authResponse := AuthResposne{
 		AccessToken: accessToken,
 		Me:          me,

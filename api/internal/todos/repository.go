@@ -55,10 +55,10 @@ func (r *TodosRepo) GetTodo(params *GetTodoParams) (*Todo, error) {
 
 func (r *TodosRepo) List(userID int) ([]Todo, error) {
 	query := `
-		SELECT * FROM todos ORDER BY position ASC
+		SELECT * FROM todos WHERE user_id = $1 ORDER BY position ASC
 	`
 	todos := []Todo{}
-	err := r.DB.Select(&todos, query)
+	err := r.DB.Select(&todos, query, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -103,6 +103,7 @@ func (r *TodosRepo) Update(params UpdateTodoParams) error {
 	query := `
 		UPDATE todos
 	  SET name = :name, status = :status, description = :description, position = :position
+	  WHERE user_id = :user_id AND id = :id
 	`
 	_, err := r.DB.NamedExec(query, params)
 	if err != nil {

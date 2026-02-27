@@ -64,6 +64,9 @@ func (r *Repository) GetByID(ID int) (*UserNoPassword, error) {
 	query := `SELECT id, username, first_name, last_name, email, created_at, updated_at, avatar FROM users WHERE id = $1`
 	err := r.db.Get(user, query, ID)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
 		return nil, err
 	}
 
@@ -75,6 +78,9 @@ func (r *Repository) GetByEmail(email string) (*UserNoPassword, error) {
 	query := `SELECT id, username, first_name, last_name, email, created_at, updated_at FROM users WHERE email = $1`
 	err := r.db.Get(user, query, email)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
 		return nil, err
 	}
 
@@ -86,6 +92,9 @@ func (r *Repository) GetByEmailWithPassword(email string) (*User, error) {
 	query := `SELECT * FROM users WHERE email = $1`
 	err := r.db.Get(user, query, email)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
 		return nil, err
 	}
 	return user, nil

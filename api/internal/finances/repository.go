@@ -76,21 +76,18 @@ func (r *Repository) ListSpaceMemberships(userID int) ([]SpaceMember, error) {
 }
 
 func (r *Repository) ListSpaces(userID int) ([]Space, error) {
-	memberships, err := r.ListSpaceMemberships(userID)
+	spaces := []Space{}
+	query := `
+	SELECT s.* 
+	FROM finance_spaces s
+	JOIN finance_spaces_members m ON m.finance_space_id = s.id
+	WHERE m.user_id = $1`
+
+	err := r.db.Select(&spaces, query, userID)
 	if err != nil {
 		return nil, err
 	}
 
-	spaces := []Space{}
-	for _, membership := range memberships {
-		space := Space{}
-		query := `SELECT * FROM finance_spaces WHERE user_id = $1 AND id = $2`
-		err := r.db.Get(&space, query, userID, membership.SpaceID)
-		if err != nil {
-			return nil, err
-		}
-		spaces = append(spaces, space)
-	}
 	return spaces, nil
 }
 

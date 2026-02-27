@@ -37,19 +37,25 @@ func (h *Handler) Discover(c *gin.Context) {
 	c.JSON(http.StatusOK, users)
 }
 
-func (h *Handler) GetProfile(c *gin.Context) {
-	user, err := h.service.GetProfile(c.Param("username"))
+func (h *Handler) GetUserProfile(c *gin.Context) {
+	username := c.Param("username")
+
+	params := &GetUserProfileParams{
+		UserID:   c.MustGet("userID").(int),
+		Username: username,
+	}
+	profile, err := h.service.GetUserProfile(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
-	if user == nil {
+	if profile == nil {
 		c.AbortWithStatus(http.StatusNotFound)
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, profile)
 }
 
 func (h *Handler) Follow(c *gin.Context)       {}
