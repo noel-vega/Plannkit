@@ -51,3 +51,7 @@ func (h *Handler) GetProfile(c *gin.Context) {
 
 	c.JSON(http.StatusOK, user)
 }
+
+func (h *Handler) Follow(c *gin.Context)       {}
+func (h *Handler) UnFollow(c *gin.Context)     {}
+func (h *Handler) AcceptFollow(c *gin.Context) {}
