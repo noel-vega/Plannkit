@@ -13,6 +13,8 @@ export const UserSchema = z.object({
   firstName: z.string(),
   lastName: z.string(),
   email: z.string(),
-  avatar: AvatarSchema
+  avatar: AvatarSchema,
+  isPrivate: z.boolean()
+
 })
 export type User = z.infer<typeof UserSchema>

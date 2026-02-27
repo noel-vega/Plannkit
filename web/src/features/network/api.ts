@@ -15,5 +15,14 @@ export const network = {
     const response = await pkFetch("/network/discover?" + searchParams)
     const data = await response.json()
     return UserSchema.array().parse(data)
+  },
+  follow: async (userId: number) => {
+    await pkFetch(`/network/follow/${userId}`, { method: "POST" })
+  },
+  unfollow: async (userId: number) => {
+    await pkFetch(`/network/follow/${userId}`, { method: "DELETE" })
+  },
+  acceptFollow: async (userId: number) => {
+    await pkFetch(`/network/follow/${userId}`, { method: "PATCH" })
   }
 }

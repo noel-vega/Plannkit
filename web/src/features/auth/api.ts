@@ -36,7 +36,6 @@ export const auth = {
     if (!response.ok) return { success: false } as const
 
     const data = AuthenticationResponseSchema.parse(await response.json())
-    console.log(data)
     return { success: true, data } as const
   },
   signOut: async () => pkFetch("/auth/signout")
