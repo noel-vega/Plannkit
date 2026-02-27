@@ -6,16 +6,16 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/jmoiron/sqlx"
-	"github.com/noel-vega/habits/api/internal/users"
+	"github.com/noel-vega/habits/api/internal/user"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type Service struct {
 	jwtSecret   string
-	userService *users.Service
+	userService *user.Service
 }
 
-func NewService(db *sqlx.DB, jwtSecret string, userService *users.Service) *Service {
+func NewService(db *sqlx.DB, jwtSecret string, userService *user.Service) *Service {
 	return &Service{
 		userService: userService,
 		jwtSecret:   jwtSecret,
@@ -53,7 +53,7 @@ func (s *Service) GenerateRefreshToken(userID int) (string, error) {
 	return token, nil
 }
 
-func (s *Service) SignUp(params users.CreateUserParams) (*TokenPair, *users.UserNoPassword, error) {
+func (s *Service) SignUp(params user.CreateUserParams) (*TokenPair, *user.UserNoPassword, error) {
 	hashBytes, err := bcrypt.GenerateFromPassword([]byte(params.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, nil, err
@@ -61,41 +61,41 @@ func (s *Service) SignUp(params users.CreateUserParams) (*TokenPair, *users.User
 	hashedPassword := string(hashBytes)
 	params.Password = hashedPassword
 
-	user, err := s.userService.CreateUser(params)
+	u, err := s.userService.CreateUser(params)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	tokenPair, err := s.GenerateTokenPair(user.ID)
+	tokenPair, err := s.GenerateTokenPair(u.ID)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	return tokenPair, user, nil
+	return tokenPair, u, nil
 }
 
-func (s *Service) SignIn(params *SignInParams) (*TokenPair, *users.UserNoPassword, error) {
-	user, err := s.userService.GetUserByEmailWithPassword(params.Email)
+func (s *Service) SignIn(params *SignInParams) (*TokenPair, *user.UserNoPassword, error) {
+	u, err := s.userService.GetUserByEmailWithPassword(params.Email)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(params.Password))
+	err = bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(params.Password))
 	if err != nil {
 		return nil, nil, ErrInvalidCredentials
 	}
-	tokenPair, err := s.GenerateTokenPair(user.ID)
+	tokenPair, err := s.GenerateTokenPair(u.ID)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	userNoPassword := &users.UserNoPassword{
-		ID:        user.ID,
-		FirstName: user.FirstName,
-		LastName:  user.LastName,
-		Email:     user.Email,
-		CreatedAt: user.CreatedAt,
-		UpdatedAt: user.UpdatedAt,
+	userNoPassword := &user.UserNoPassword{
+		ID:        u.ID,
+		FirstName: u.FirstName,
+		LastName:  u.LastName,
+		Email:     u.Email,
+		CreatedAt: u.CreatedAt,
+		UpdatedAt: u.UpdatedAt,
 	}
 	return tokenPair, userNoPassword, nil
 }

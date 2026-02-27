@@ -3,7 +3,7 @@ import { UserSchema, type DiscoverUsersParams } from "./types"
 
 export const network = {
   profile: async (username: string) => {
-    const response = await pkFetch(`/users/profile/${username}`)
+    const response = await pkFetch(`/network/profile/${username}`)
     const data = await response.json()
     return UserSchema.parse(data)
   },
@@ -12,7 +12,7 @@ export const network = {
     if (params?.search) {
       searchParams.set("search", params.search)
     }
-    const response = await pkFetch("/users?" + searchParams)
+    const response = await pkFetch("/network/discover?" + searchParams)
     const data = await response.json()
     return UserSchema.array().parse(data)
   }

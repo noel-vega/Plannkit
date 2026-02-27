@@ -10,9 +10,10 @@ import (
 	"github.com/noel-vega/habits/api/internal/finances"
 	"github.com/noel-vega/habits/api/internal/habits"
 	"github.com/noel-vega/habits/api/internal/mail"
+	"github.com/noel-vega/habits/api/internal/network"
 	"github.com/noel-vega/habits/api/internal/storage"
 	"github.com/noel-vega/habits/api/internal/todos"
-	"github.com/noel-vega/habits/api/internal/users"
+	"github.com/noel-vega/habits/api/internal/user"
 )
 
 func AddRoutes(router *gin.Engine, db *sqlx.DB, storageService storage.Service) *gin.Engine {
@@ -27,13 +28,15 @@ func AddRoutes(router *gin.Engine, db *sqlx.DB, storageService storage.Service) 
 	jwtSecret := os.Getenv("JWT_SECRET")
 
 	financesService := finances.NewService(db)
-	usersService := users.NewUserService(db, storageService, financesService)
-	authService := auth.NewService(db, jwtSecret, usersService)
+	userService := user.NewUserService(db, storageService, financesService)
+	authService := auth.NewService(db, jwtSecret, userService)
 
 	authHandler := auth.NewHandler(authService)
 	habitsHandler := habits.NewHandler(db)
 	todosHandler := todos.NewHandler(db)
-	usersHandler := users.NewHandler(usersService)
+	usersHandler := user.NewHandler(userService)
+	networkService := network.NewService(userService)
+	networkHandler := network.NewHandler(networkService)
 	financesHandler := finances.NewHandler(financesService)
 
 	router.GET("/flags", FlagsHandler)
@@ -50,9 +53,10 @@ func AddRoutes(router *gin.Engine, db *sqlx.DB, storageService storage.Service) 
 	protected.GET("/finances/spaces", financesHandler.ListSpaces)
 	protected.POST("/finances/spaces", financesHandler.CreateSpace)
 
-	protected.GET("/users", usersHandler.ListUsers)
-	protected.PUT("/users/avatar", usersHandler.UpdateAvatar)
-	protected.GET("/users/profile/:username", usersHandler.GetUserProfile)
+	protected.GET("/network/discover", networkHandler.Discover)
+	protected.GET("/network/profile/:username", networkHandler.GetProfile)
+
+	protected.PUT("/user/avatar", usersHandler.UpdateAvatar)
 
 	financeSpace := protected.Group("/finances/spaces/:spaceID").Use(VerifySpaceMembership(financesService))
 	financeSpace.DELETE("", financesHandler.DeleteSpace)

@@ -1,4 +1,4 @@
-package users
+package user
 
 import (
 	"database/sql"
@@ -17,11 +17,11 @@ type Service struct {
 	storageService  storage.Service
 }
 
-func NewUserService(db *sqlx.DB, storageService storage.Service, finfinancesService *finances.Service) *Service {
+func NewUserService(db *sqlx.DB, storageService storage.Service, financesService *finances.Service) *Service {
 	return &Service{
 		userRepo:        NewRepository(db),
 		storageService:  storageService,
-		financesService: finfinancesService,
+		financesService: financesService,
 	}
 }
 
@@ -61,7 +61,7 @@ func (s *Service) GetUserByEmailWithPassword(email string) (*User, error) {
 	return user, nil
 }
 
-func (s *Service) ListUsers(params *ListUsersParams) (*[]UserNoPassword, error) {
+func (s *Service) ListUsers(params *ListUsersParams) ([]UserNoPassword, error) {
 	return s.userRepo.ListUsers(params)
 }
 

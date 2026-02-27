@@ -60,7 +60,7 @@ function DiscoverUsers() {
         <FieldLabel htmlFor="search">{t("Search")}</FieldLabel>
         <Input onInput={handleSearchInput} placeholder={t("Search users...")} />
       </Field>
-      <ul className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+      <ul className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         {users.data.map(user => (
           <li>
             <Link to="/u/$username" params={{ username: user.username }}>

@@ -1,9 +1,8 @@
-package users
+package user
 
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/jmoiron/sqlx"
@@ -42,7 +41,7 @@ func (r *Repository) Create(params CreateUserParams) (*UserNoPassword, error) {
 	return user, nil
 }
 
-func (r *Repository) ListUsers(params *ListUsersParams) (*[]UserNoPassword, error) {
+func (r *Repository) ListUsers(params *ListUsersParams) ([]UserNoPassword, error) {
 	qb := sq.Select("id, username, first_name, last_name, email, avatar, created_at, updated_at").From("users")
 
 	if params.QueryParams.Search != "" {
@@ -52,8 +51,8 @@ func (r *Repository) ListUsers(params *ListUsersParams) (*[]UserNoPassword, erro
 	if err != nil {
 		return nil, err
 	}
-	data := &[]UserNoPassword{}
-	err = r.db.Select(data, query, args...)
+	data := []UserNoPassword{}
+	err = r.db.Select(&data, query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +92,6 @@ func (r *Repository) GetByEmailWithPassword(email string) (*User, error) {
 }
 
 func (r *Repository) GetUserByUsername(username string) (*UserNoPassword, error) {
-	fmt.Printf("username: %+v", username)
 	user := &UserNoPassword{}
 	query := `SELECT id, username, first_name, last_name, email, created_at, updated_at, avatar FROM users WHERE username = $1`
 	err := r.db.Get(user, query, username)
@@ -107,7 +105,6 @@ func (r *Repository) GetUserByUsername(username string) (*UserNoPassword, error)
 }
 
 func (r *Repository) UpdateAvatar(userID int, filename string) error {
-	fmt.Printf("Update Avatar | UserID: %v", userID)
 	query := `UPDATE users SET avatar = $1 WHERE id = $2`
 	_, err := r.db.Exec(query, filename, userID)
 	if err != nil {

@@ -4,12 +4,12 @@ import (
 	"errors"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/noel-vega/habits/api/internal/users"
+	"github.com/noel-vega/habits/api/internal/user"
 )
 
 type AuthResposne struct {
 	AccessToken string                `json:"accessToken"`
-	Me          *users.UserNoPassword `json:"me"`
+	Me          *user.UserNoPassword `json:"me"`
 }
 
 type TokenPair struct {

@@ -1,5 +1,5 @@
 import z from "zod/v3";
-import { AvatarSchema } from "../auth/types";
+import { AvatarSchema } from "../user/types";
 
 export const DiscoverUsersParamsSchema = z.object({
   search: z.string().trim().nullable()

@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/noel-vega/habits/api/internal/users"
+	"github.com/noel-vega/habits/api/internal/user"
 )
 
 const (
@@ -38,16 +38,16 @@ func (h *Handler) SetCookieRefreshToken(c *gin.Context, refreshToken string, max
 }
 
 func (h *Handler) SignUp(c *gin.Context) {
-	data := users.CreateUserParams{}
+	data := user.CreateUserParams{}
 	err := c.Bind(&data)
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	tokens, user, err := h.AuthService.SignUp(data)
+	tokens, me, err := h.AuthService.SignUp(data)
 	if err != nil {
-		if errors.Is(err, users.ErrEmailExists) {
+		if errors.Is(err, user.ErrEmailExists) {
 			c.AbortWithError(http.StatusConflict, err)
 			return
 		}
@@ -59,7 +59,7 @@ func (h *Handler) SignUp(c *gin.Context) {
 
 	authResponse := AuthResposne{
 		AccessToken: tokens.AccessToken,
-		Me:          user,
+		Me:          me,
 	}
 
 	c.JSON(http.StatusOK, authResponse)
@@ -68,7 +68,7 @@ func (h *Handler) SignUp(c *gin.Context) {
 func (h *Handler) SignIn(c *gin.Context) {
 	data := &SignInParams{}
 	c.Bind(data)
-	tokens, user, err := h.AuthService.SignIn(data)
+	tokens, me, err := h.AuthService.SignIn(data)
 
 	if errors.Is(err, ErrInvalidCredentials) {
 		c.AbortWithStatus(http.StatusUnauthorized)
@@ -83,7 +83,7 @@ func (h *Handler) SignIn(c *gin.Context) {
 
 	authResponse := AuthResposne{
 		AccessToken: tokens.AccessToken,
-		Me:          user,
+		Me:          me,
 	}
 
 	c.JSON(http.StatusOK, authResponse)
@@ -130,7 +130,7 @@ func (h *Handler) Me(c *gin.Context) {
 		return
 	}
 
-	user, err := h.AuthService.userService.GetUserByID(refreshTokenClaims.UserID)
+	me, err := h.AuthService.userService.GetUserByID(refreshTokenClaims.UserID)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -138,7 +138,7 @@ func (h *Handler) Me(c *gin.Context) {
 
 	authResponse := AuthResposne{
 		AccessToken: accessToken,
-		Me:          user,
+		Me:          me,
 	}
 
 	c.JSON(http.StatusOK, authResponse)

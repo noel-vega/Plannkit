@@ -1,9 +1,7 @@
 import z from "zod/v3"
+import { AvatarSchema } from "../user/types"
 
 
-export const AvatarSchema = z.string().nullable().transform(filename => {
-  return filename ? `${import.meta.env.VITE_PLANNKIT_API_URL}/public/avatars/${filename}` : null
-})
 
 export const MeSchema = z.object({
   id: z.number(),

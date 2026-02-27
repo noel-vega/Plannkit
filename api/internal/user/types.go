@@ -1,5 +1,5 @@
-// Package users
-package users
+// Package user
+package user
 
 import "time"
 

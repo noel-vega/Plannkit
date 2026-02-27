@@ -6,16 +6,13 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { useAuth } from '@/features/auth/store'
-import { AvatarSchema } from '@/features/auth/types'
 import { getUseUserProfileQueryOptions, useUserProfile } from '@/features/network/hooks'
-import { pkFetch } from '@/lib/plannkit-api-client'
 import { queryClient } from '@/lib/react-query'
-import { useMutation } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { PlusIcon } from 'lucide-react'
 import { type ChangeEvent } from 'react'
-import z from 'zod/v3'
 import { useTranslation } from 'react-i18next'
+import { useUpdateAvatarMutation } from '@/features/user/hooks'
 
 export const Route = createFileRoute('/_app/u/$username/')({
   beforeLoad: async ({ params: { username } }) => {
@@ -70,32 +67,19 @@ function RouteComponent() {
   )
 }
 
-async function updateAvatar(file: File) {
-  const formData = new FormData()
-  formData.append("avatar", file)
-  const response = await pkFetch("/users/avatar", {
-    method: "PUT",
-    body: formData
-  }, false)
-
-  return z.object({ avatar: AvatarSchema }).parse(await response.json())
-}
-
 function MeAvatar() {
   const { me } = useAuth()
 
-  const updateAvatarMtn = useMutation({
-    mutationFn: updateAvatar,
-    onSuccess: ({ avatar }) => {
-      useAuth.setState({ me: { ...useAuth.getState().me, avatar } })
-    }
-
-  })
+  const updateAvatar = useUpdateAvatarMutation()
 
   const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.currentTarget.files?.[0]
     if (!file) return
-    updateAvatarMtn.mutate(file)
+    updateAvatar.mutate(file, {
+      onSuccess: ({ avatar }) => {
+        useAuth.setState({ me: { ...useAuth.getState().me, avatar } })
+      }
+    })
   }
 
   return (
