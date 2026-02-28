@@ -9,17 +9,17 @@ import (
 )
 
 type Handler struct {
-	TodosRepo *TodosRepo
+	repository *Repository
 }
 
 func NewHandler(db *sqlx.DB) *Handler {
 	return &Handler{
-		TodosRepo: NewTodosRepo(db),
+		repository: NewRepository(db),
 	}
 }
 
 func (handler *Handler) ListTodos(c *gin.Context) {
-	todos, err := handler.TodosRepo.List(c.MustGet("userID").(int))
+	todos, err := handler.repository.List(c.MustGet("userID").(int))
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -28,7 +28,7 @@ func (handler *Handler) ListTodos(c *gin.Context) {
 }
 
 func (handler *Handler) GetTodosBoard(c *gin.Context) {
-	t, err := handler.TodosRepo.List(c.MustGet("userID").(int))
+	t, err := handler.repository.List(c.MustGet("userID").(int))
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -64,7 +64,7 @@ func (handler *Handler) CreateTodo(c *gin.Context) {
 		Status:      body.Status,
 		Position:    body.Position,
 	}
-	err = handler.TodosRepo.Create(params)
+	err = handler.repository.Create(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -92,7 +92,7 @@ func (handler *Handler) UpdateTodoPosition(c *gin.Context) {
 		AfterPosition:  body.AfterPosition,
 		BeforePosition: body.BeforePosition,
 	}
-	err = handler.TodosRepo.UpdatePosition(params)
+	err = handler.repository.UpdatePosition(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -110,7 +110,7 @@ func (handler *Handler) DeleteTodo(c *gin.Context) {
 		ID:     id,
 		UserID: c.MustGet("userID").(int),
 	}
-	err = handler.TodosRepo.Delete(params)
+	err = handler.repository.Delete(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -129,7 +129,7 @@ func (handler *Handler) GetTodo(c *gin.Context) {
 		ID:     todoID,
 		UserID: c.MustGet("userID").(int),
 	}
-	todo, err := handler.TodosRepo.GetTodo(params)
+	todo, err := handler.repository.GetTodo(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return

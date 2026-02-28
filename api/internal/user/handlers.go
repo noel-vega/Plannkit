@@ -3,6 +3,7 @@ package user
 import (
 	"net/http"
 	"path/filepath"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -26,7 +27,13 @@ func (h *Handler) UpdateAvatar(c *gin.Context) {
 	}
 	defer file.Close()
 
+	allowed := map[string]bool{".jpg": true, ".jpeg": true, ".png": true, ".webp": true}
 	ext := filepath.Ext(header.Filename)
+	if !allowed[strings.ToLower(ext)] {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
 	filename, err := h.UserService.UpdateAvatar(userID, ext, file)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
