@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/noel-vega/habits/api/internal/apperrors"
 	"roci.dev/fracdex"
 )
 
@@ -29,6 +30,9 @@ func (r *Repository) GetLast(params GetLastParams) (*Todo, error) {
 	todo := &Todo{}
 	err := r.db.Get(todo, query, params.Status)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, apperrors.ErrNotFound
+		}
 		return nil, err
 	}
 
@@ -70,7 +74,7 @@ func (r *Repository) Create(params *CreateTodoParams) error {
 		Status: params.Status,
 	})
 	if err != nil {
-		if !errors.Is(err, sql.ErrNoRows) {
+		if !errors.Is(err, apperrors.ErrNotFound) {
 			return err
 		}
 	}
