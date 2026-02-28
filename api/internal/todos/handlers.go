@@ -18,6 +18,30 @@ func NewHandler(db *sqlx.DB) *Handler {
 	}
 }
 
+func (handler *Handler) CreateTodo(c *gin.Context) {
+	userID := c.MustGet("userID").(int)
+
+	body := &CreateTodoBody{}
+	err := c.Bind(&body)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	params := &CreateTodoParams{
+		UserID:      userID,
+		Name:        body.Name,
+		Description: body.Description,
+		Status:      body.Status,
+		Position:    body.Position,
+	}
+	err = handler.repository.Create(params)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+}
+
 func (handler *Handler) ListTodos(c *gin.Context) {
 	todos, err := handler.repository.List(c.MustGet("userID").(int))
 	if err != nil {
@@ -45,30 +69,6 @@ func (handler *Handler) GetTodosBoard(c *gin.Context) {
 		}
 	}
 	c.JSON(http.StatusOK, board)
-}
-
-func (handler *Handler) CreateTodo(c *gin.Context) {
-	userID := c.MustGet("userID").(int)
-
-	body := &CreateTodoBody{}
-	err := c.Bind(&body)
-	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
-
-	params := &CreateTodoParams{
-		UserID:      userID,
-		Name:        body.Name,
-		Description: body.Description,
-		Status:      body.Status,
-		Position:    body.Position,
-	}
-	err = handler.repository.Create(params)
-	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
-	}
 }
 
 func (handler *Handler) UpdateTodoPosition(c *gin.Context) {

@@ -20,6 +20,41 @@ func NewHandler(db *sqlx.DB) *Handler {
 	}
 }
 
+func (handler *Handler) CreateHabit(c *gin.Context) {
+	body := &CreateHabitBody{}
+	err := c.Bind(body)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	params := &CreateHabitParams{
+		UserID:            c.MustGet("userID").(int),
+		Icon:              body.Icon,
+		Name:              body.Name,
+		Description:       body.Description,
+		CompletionType:    body.CompletionType,
+		UnitOfMeasurement: body.UnitOfMeasurement,
+		CompletionsPerDay: body.CompletionsPerDay,
+	}
+
+	h, err := handler.HabitRepo.CreateHabit(params)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, HabitWithContributions{
+		ID:                h.ID,
+		Name:              h.Name,
+		Icon:              h.Icon,
+		Description:       h.Description,
+		CompletionType:    h.CompletionType,
+		CompletionsPerDay: h.CompletionsPerDay,
+		Contributions:     []Contribution{},
+	})
+}
+
 func (handler *Handler) GetHabit(c *gin.Context) {
 	userID := c.MustGet("userID").(int)
 	habitID, err := strconv.Atoi(c.Param("habitID"))
@@ -115,41 +150,6 @@ func (handler *Handler) UpdateHabit(c *gin.Context) {
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 	}
-}
-
-func (handler *Handler) CreateHabit(c *gin.Context) {
-	body := &CreateHabitBody{}
-	err := c.Bind(body)
-	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
-
-	params := &CreateHabitParams{
-		UserID:            c.MustGet("userID").(int),
-		Icon:              body.Icon,
-		Name:              body.Name,
-		Description:       body.Description,
-		CompletionType:    body.CompletionType,
-		UnitOfMeasurement: body.UnitOfMeasurement,
-		CompletionsPerDay: body.CompletionsPerDay,
-	}
-
-	h, err := handler.HabitRepo.CreateHabit(params)
-	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
-	}
-
-	c.JSON(http.StatusOK, HabitWithContributions{
-		ID:                h.ID,
-		Name:              h.Name,
-		Icon:              h.Icon,
-		Description:       h.Description,
-		CompletionType:    h.CompletionType,
-		CompletionsPerDay: h.CompletionsPerDay,
-		Contributions:     []Contribution{},
-	})
 }
 
 func (handler *Handler) DeleteHabit(c *gin.Context) {
