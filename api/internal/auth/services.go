@@ -106,7 +106,7 @@ func (s *Service) GenerateTokenPair(userID int) (*TokenPair, error) {
 		return nil, err
 	}
 
-	refreshToken, err := s.GenerateToken(userID, 1*time.Hour)
+	refreshToken, err := s.GenerateRefreshToken(userID)
 	if err != nil {
 		return nil, err
 	}
