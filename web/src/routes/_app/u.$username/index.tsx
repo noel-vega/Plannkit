@@ -9,25 +9,24 @@ import { useAuth } from '@/features/auth/store'
 import { getUseUserProfileQueryOptions, useUserProfile } from '@/features/network/hooks'
 import { queryClient } from '@/lib/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { PlusIcon } from 'lucide-react'
+import { MinusIcon, PlusIcon } from 'lucide-react'
 import { type ChangeEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useUpdateAvatarMutation } from '@/features/user/hooks'
 
 export const Route = createFileRoute('/_app/u/$username/')({
   beforeLoad: async ({ params: { username } }) => {
-    const user = await queryClient.ensureQueryData(getUseUserProfileQueryOptions(username))
+    const profile = await queryClient.ensureQueryData(getUseUserProfileQueryOptions(username))
 
-    return { user }
+    return { profile }
   },
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const { t } = useTranslation()
   const routeContext = Route.useRouteContext()
   const { username } = Route.useParams()
-  const { data: user } = useUserProfile(username, routeContext.user)
+  const { data: { user, isFollowing } } = useUserProfile(username, routeContext.profile)
   const { me } = useAuth()
 
   const isMe = me.id === user.id
@@ -55,9 +54,7 @@ function RouteComponent() {
               <h2 className="text-2xl font-semibold">{user.firstName} {user.lastName}</h2>
             </div>
             <div>
-              {!isMe && (
-                <Button className="bg-sky-600 hover:bg-sky-600"><PlusIcon />{t("Follow")}</Button>
-              )}
+              <FollowButton username={user.username} isFollowing={isFollowing} />
             </div>
           </CardContent>
           <CardFooter className="p-4"></CardFooter>
@@ -65,6 +62,15 @@ function RouteComponent() {
       </Container>
     </Page>
   )
+}
+
+function FollowButton(props: { username: string; isFollowing: boolean }) {
+  const { t } = useTranslation()
+  const { me } = useAuth()
+  if (me.username === props.username) return
+  return props.isFollowing ?
+    <Button variant="secondary"><MinusIcon />{t("UnFollow")}</Button>
+    : <Button variant="secondary"><PlusIcon />{t("Follow")}</Button>
 }
 
 function MeAvatar() {

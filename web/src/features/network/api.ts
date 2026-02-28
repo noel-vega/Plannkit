@@ -1,11 +1,11 @@
 import { pkFetch } from "@/lib/plannkit-api-client"
-import { UserSchema, type DiscoverUsersParams } from "./types"
+import { UserProfileSchema, UserSchema, type DiscoverUsersParams } from "./types"
 
 export const network = {
   profile: async (username: string) => {
     const response = await pkFetch(`/network/profile/${username}`)
     const data = await response.json()
-    return UserSchema.parse(data)
+    return UserProfileSchema.parse(data)
   },
   discover: async (params?: DiscoverUsersParams) => {
     const searchParams = new URLSearchParams()

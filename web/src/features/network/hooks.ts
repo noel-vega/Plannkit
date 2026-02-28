@@ -1,5 +1,5 @@
 import { queryOptions, useQuery } from "@tanstack/react-query";
-import type { DiscoverUsersParams, User } from "./types";
+import type { DiscoverUsersParams, User, UserProfile } from "./types";
 import { network } from "./api";
 
 
@@ -22,6 +22,6 @@ export function getUseUserProfileQueryOptions(username: string) {
   })
 }
 
-export function useUserProfile(username: string, initialData: User) {
+export function useUserProfile(username: string, initialData: UserProfile) {
   return useQuery({ ...getUseUserProfileQueryOptions(username), initialData })
 }

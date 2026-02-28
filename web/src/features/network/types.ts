@@ -18,3 +18,9 @@ export const UserSchema = z.object({
 
 })
 export type User = z.infer<typeof UserSchema>
+
+export const UserProfileSchema = z.object({
+  user: UserSchema,
+  isFollowing: z.boolean()
+})
+export type UserProfile = z.infer<typeof UserProfileSchema>

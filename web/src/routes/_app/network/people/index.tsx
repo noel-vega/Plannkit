@@ -62,7 +62,7 @@ function DiscoverUsers() {
       </Field>
       <ul className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         {users.data.map(user => (
-          <li>
+          <li key={user.id}>
             <Link to="/u/$username" params={{ username: user.username }}>
               <Card>
                 <CardContent className="flex flex-col items-center justify-center">

@@ -9,6 +9,7 @@ type AuthStore = {
 export const useAuth = create<AuthStore>(() => ({
   accessToken: "",
   me: {
+    isPrivate: false,
     id: Infinity,
     username: "",
     email: "",
