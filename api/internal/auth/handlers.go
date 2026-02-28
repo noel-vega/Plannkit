@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/noel-vega/habits/api/internal/apperrors"
 	"github.com/noel-vega/habits/api/internal/user"
 )
 
@@ -111,7 +112,7 @@ func (h *Handler) RefreshAccessToken(c *gin.Context) {
 	})
 }
 
-func (h *Handler) Me(c *gin.Context) {
+func (h *Handler) GetMe(c *gin.Context) {
 	refreshTokenStr, err := c.Cookie("refresh_token")
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid refresh token: " + err.Error()})
@@ -132,12 +133,11 @@ func (h *Handler) Me(c *gin.Context) {
 
 	me, err := h.AuthService.userService.GetUserByID(refreshTokenClaims.UserID)
 	if err != nil {
+		if errors.Is(err, apperrors.ErrNotFound) {
+			c.AbortWithStatus(http.StatusNotFound)
+			return
+		}
 		c.AbortWithError(http.StatusInternalServerError, err)
-		return
-	}
-
-	if me == nil {
-		c.AbortWithStatus(http.StatusNotFound)
 		return
 	}
 

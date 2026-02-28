@@ -3,7 +3,10 @@ package network
 // TODO: add operations for followeing and making connections with other users
 //
 import (
+	"errors"
+
 	"github.com/jmoiron/sqlx"
+	"github.com/noel-vega/habits/api/internal/apperrors"
 	"github.com/noel-vega/habits/api/internal/user"
 )
 
@@ -24,13 +27,12 @@ func (s *Service) Discover(params *user.ListUsersParams) ([]user.UserNoPassword,
 }
 
 func (s *Service) IsFollowing(params *GetFollowerParams) (bool, error) {
-	follower, err := s.repository.GetFollower(params)
+	_, err := s.repository.GetFollower(params)
 	if err != nil {
+		if errors.Is(err, apperrors.ErrNotFound) {
+			return false, nil
+		}
 		return false, err
-	}
-
-	if follower == nil {
-		return false, nil
 	}
 
 	return true, nil
@@ -40,10 +42,6 @@ func (s *Service) GetUserProfile(params *GetUserProfileParams) (*UserProfile, er
 	user, err := s.userService.GetUserByUsername(params.Username)
 	if err != nil {
 		return nil, err
-	}
-
-	if user == nil {
-		return nil, nil
 	}
 
 	isFollowing, err := s.IsFollowing(&GetFollowerParams{

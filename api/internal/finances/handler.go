@@ -1,12 +1,12 @@
 package finances
 
 import (
-	"database/sql"
 	"errors"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/noel-vega/habits/api/internal/apperrors"
 )
 
 type Handler struct {
@@ -119,7 +119,7 @@ func (h *Handler) GetGoal(c *gin.Context) {
 
 	goal, err := h.service.GetGoal(params)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, apperrors.ErrNotFound) {
 			c.AbortWithStatus(http.StatusNotFound)
 			return
 		}

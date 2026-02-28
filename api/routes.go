@@ -44,7 +44,7 @@ func AddRoutes(router *gin.Engine, db *sqlx.DB, storageService storage.Service) 
 	router.POST("/auth/signup", authHandler.SignUp)
 	router.POST("/auth/signin", authHandler.SignIn)
 	router.GET("/auth/signout", authHandler.SignOut)
-	router.GET("/auth/me", authHandler.Me)
+	router.GET("/auth/me", authHandler.GetMe)
 
 	protected := router.Group("/")
 	protected.Use(Authentication(authService))

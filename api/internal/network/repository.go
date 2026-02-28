@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/noel-vega/habits/api/internal/apperrors"
 )
 
 // TODO: add operations for followeing and making connections with other users
@@ -35,7 +36,7 @@ func (r *Repository) GetFollower(params *GetFollowerParams) (*Follower, error) {
 	err = r.db.Get(follower, query, args...)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, nil
+			return nil, apperrors.ErrNotFound
 		}
 		return nil, err
 	}

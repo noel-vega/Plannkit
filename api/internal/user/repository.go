@@ -6,6 +6,7 @@ import (
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/jmoiron/sqlx"
+	"github.com/noel-vega/habits/api/internal/apperrors"
 )
 
 type Repository struct {
@@ -65,7 +66,7 @@ func (r *Repository) GetByID(ID int) (*UserNoPassword, error) {
 	err := r.db.Get(user, query, ID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, nil
+			return nil, apperrors.ErrNotFound
 		}
 		return nil, err
 	}
@@ -79,7 +80,7 @@ func (r *Repository) GetByEmail(email string) (*UserNoPassword, error) {
 	err := r.db.Get(user, query, email)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, nil
+			return nil, apperrors.ErrNotFound
 		}
 		return nil, err
 	}
@@ -93,7 +94,7 @@ func (r *Repository) GetByEmailWithPassword(email string) (*User, error) {
 	err := r.db.Get(user, query, email)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, nil
+			return nil, apperrors.ErrNotFound
 		}
 		return nil, err
 	}
@@ -106,7 +107,7 @@ func (r *Repository) GetUserByUsername(username string) (*UserNoPassword, error)
 	err := r.db.Get(user, query, username)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, nil
+			return nil, apperrors.ErrNotFound
 		}
 		return nil, err
 	}

@@ -1,9 +1,11 @@
 package network
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/noel-vega/habits/api/internal/apperrors"
 	"github.com/noel-vega/habits/api/internal/user"
 )
 
@@ -46,12 +48,11 @@ func (h *Handler) GetUserProfile(c *gin.Context) {
 	}
 	profile, err := h.service.GetUserProfile(params)
 	if err != nil {
+		if errors.Is(err, apperrors.ErrNotFound) {
+			c.AbortWithStatus(http.StatusNotFound)
+			return
+		}
 		c.AbortWithError(http.StatusInternalServerError, err)
-		return
-	}
-
-	if profile == nil {
-		c.AbortWithStatus(http.StatusNotFound)
 		return
 	}
 

@@ -1,10 +1,10 @@
 package finances
 
 import (
-	"database/sql"
 	"errors"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/noel-vega/habits/api/internal/apperrors"
 )
 
 type Service struct {
@@ -32,7 +32,7 @@ func (s *Service) CreateSpace(params *CreateSpaceParams) (*Space, error) {
 func (s *Service) SpaceMembershipExists(userID, spaceID int) (bool, error) {
 	_, err := s.repository.GetSpaceMembership(userID, spaceID)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, apperrors.ErrNotFound) {
 			return false, nil
 		}
 		return false, err

@@ -1,12 +1,11 @@
 package user
 
 import (
-	"database/sql"
 	"errors"
-	"fmt"
 	"io"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/noel-vega/habits/api/internal/apperrors"
 	"github.com/noel-vega/habits/api/internal/finances"
 	"github.com/noel-vega/habits/api/internal/storage"
 )
@@ -26,15 +25,15 @@ func NewUserService(db *sqlx.DB, storageService storage.Service, financesService
 }
 
 func (s *Service) CreateUser(params CreateUserParams) (*UserNoPassword, error) {
-	existingUser, err := s.userRepo.GetByEmail(params.Email)
+	user, err := s.userRepo.GetByEmail(params.Email)
 	if err != nil {
-		if !errors.Is(err, sql.ErrNoRows) {
+		if !errors.Is(err, apperrors.ErrNotFound) {
 			return nil, err
 		}
 	}
 
-	if existingUser != nil {
-		return nil, fmt.Errorf("%s:%w", params.Email, ErrEmailExists)
+	if user != nil {
+		return nil, ErrEmailExists
 	}
 
 	newUser, err := s.userRepo.Create(params)

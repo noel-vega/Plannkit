@@ -1,7 +1,11 @@
 package finances
 
 import (
+	"database/sql"
+	"errors"
+
 	"github.com/jmoiron/sqlx"
+	"github.com/noel-vega/habits/api/internal/apperrors"
 )
 
 type Repository struct {
@@ -58,6 +62,9 @@ func (r *Repository) GetSpaceMembership(userID, spaceID int) (*SpaceMember, erro
 	data := &SpaceMember{}
 	err := r.db.Get(data, query, userID, spaceID)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, apperrors.ErrNotFound
+		}
 		return nil, err
 	}
 	return data, nil
