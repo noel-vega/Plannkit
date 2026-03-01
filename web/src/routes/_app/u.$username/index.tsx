@@ -6,10 +6,10 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { useAuth } from '@/features/auth/store'
-import { getUseUserProfileQueryOptions, useUserProfile } from '@/features/network/hooks'
+import { getUseUserProfileQueryOptions, useFollowMutation, useUnFollowMutation, useUserProfile } from '@/features/network/hooks'
 import { queryClient } from '@/lib/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { MinusIcon, PlusIcon } from 'lucide-react'
+import { CheckIcon, PlusIcon } from 'lucide-react'
 import { type ChangeEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useUpdateAvatarMutation } from '@/features/user/hooks'
@@ -38,7 +38,7 @@ function RouteComponent() {
         <Card className="p-0 overflow-clip gap-0">
           <CardHeader className="h-60 bg-blue-500" />
           <CardContent className="pt-0 relative">
-            <div className="-mt-24">
+            <div className="-mt-24 mb-6">
               {isMe ? (
                 <MeAvatar />
               ) : (
@@ -50,11 +50,11 @@ function RouteComponent() {
                 </Avatar>
               )}
             </div>
-            <div>
+            <div className="mb-2">
               <h2 className="text-2xl font-semibold">{user.firstName} {user.lastName}</h2>
             </div>
             <div>
-              <FollowButton username={user.username} isFollowing={isFollowing} />
+              <FollowButton userId={user.id} username={user.username} isFollowing={isFollowing} />
             </div>
           </CardContent>
           <CardFooter className="p-4"></CardFooter>
@@ -64,13 +64,26 @@ function RouteComponent() {
   )
 }
 
-function FollowButton(props: { username: string; isFollowing: boolean }) {
+function FollowButton(props: { userId: number, username: string; isFollowing: boolean }) {
   const { t } = useTranslation()
   const { me } = useAuth()
+  const follow = useFollowMutation(props.username)
+  const handleFollow = () => {
+    follow.mutate(props.userId)
+  }
+
+  const unfollow = useUnFollowMutation(props.username)
+  const handleUnFollow = () => {
+    unfollow.mutate(props.userId)
+  }
   if (me.username === props.username) return
   return props.isFollowing ?
-    <Button variant="secondary"><MinusIcon />{t("UnFollow")}</Button>
-    : <Button variant="secondary"><PlusIcon />{t("Follow")}</Button>
+    <Button variant="secondary" onClick={handleUnFollow} disabled={unfollow.isPending}>
+      <CheckIcon />{t("Following")}
+    </Button>
+    : <Button variant="secondary" onClick={handleFollow} disabled={follow.isPending}>
+      <PlusIcon />{t("Follow")}
+    </Button>
 }
 
 function MeAvatar() {

@@ -1,6 +1,7 @@
-import { queryOptions, useQuery } from "@tanstack/react-query";
+import { queryOptions, useMutation, useQuery } from "@tanstack/react-query";
 import type { DiscoverUsersParams, User, UserProfile } from "./types";
 import { network } from "./api";
+import { queryClient } from "@/lib/react-query";
 
 
 export function getUseDiscoverUsersQueryOptions(params?: DiscoverUsersParams) {
@@ -24,4 +25,23 @@ export function getUseUserProfileQueryOptions(username: string) {
 
 export function useUserProfile(username: string, initialData: UserProfile) {
   return useQuery({ ...getUseUserProfileQueryOptions(username), initialData })
+}
+
+export function useFollowMutation(username: string) {
+  return useMutation({
+    mutationFn: network.follow,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries(getUseUserProfileQueryOptions(username))
+    }
+  })
+}
+
+
+export function useUnFollowMutation(username: string) {
+  return useMutation({
+    mutationFn: network.unfollow,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries(getUseUserProfileQueryOptions(username))
+    }
+  })
 }

@@ -27,7 +27,7 @@ export function FinanceSpaceSwitcher(props: Props) {
           className="h-9  w-full justify-start gap-2 border-border bg-background px-3 text-sm font-medium text-foreground shadow-sm text-left"
         >
           <WalletIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
-          <span className="truncate max-w-[180px]">
+          <span className="truncate max-w-45">
             {props.currentSpace.name ?? t("Select space")}
           </span>
           <ChevronsUpDownIcon className=" h-3.5 w-3.5 shrink-0 text-muted-foreground ml-auto" />
