@@ -59,3 +59,46 @@ func (s *Service) GetUserProfile(params *GetUserProfileParams) (*UserProfile, er
 
 	return profile, nil
 }
+
+func (s *Service) FollowUser(params *FollowUserParams) error {
+	if params.UserID == params.FollowingUserID {
+		return ErrFollowSelf
+	}
+
+	followingUser, err := s.userService.GetUserByID(params.FollowingUserID)
+	if err != nil {
+		return err
+	}
+
+	var status string
+	if followingUser.IsPrivate {
+		status = "pending"
+	} else {
+		status = "accepted"
+	}
+
+	return s.repository.InsertFollow(&InsertFollowParams{
+		UserID:          params.UserID,
+		FollowingUserID: followingUser.ID,
+		Status:          status,
+	})
+}
+
+func (s *Service) UnFollowUser(params *DeleteFollowParams) error {
+	if params.UserID == params.FollowingUserID {
+		return ErrUnFollowSelf
+	}
+
+	isFollowing, err := s.IsFollowing(&GetFollowerParams{
+		UserID:          params.UserID,
+		FollowingUserID: params.FollowingUserID,
+	})
+	if err != nil {
+		return err
+	}
+
+	if !isFollowing {
+		return ErrFollowNotFound
+	}
+	return s.repository.DeleteFollow(params)
+}

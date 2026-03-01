@@ -22,6 +22,11 @@ type InsertFollowParams struct {
 	Status          string `json:"status" db:"status"`
 }
 
+type FollowUserParams struct {
+	UserID          int `json:"userId" db:"user_id"`
+	FollowingUserID int `json:"followingUserId" db:"following_user_id"`
+}
+
 type DeleteFollowParams struct {
 	UserID          int `json:"userId" db:"user_id"`
 	FollowingUserID int `json:"followingUserId" db:"following_user_id"`

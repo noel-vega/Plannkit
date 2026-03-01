@@ -8,9 +8,6 @@ import (
 	"github.com/noel-vega/habits/api/internal/apperrors"
 )
 
-// TODO: add operations for followeing and making connections with other users
-//
-
 type Repository struct {
 	db *sqlx.DB
 }
@@ -44,20 +41,29 @@ func (r *Repository) GetFollower(params *GetFollowerParams) (*Follower, error) {
 	return follower, err
 }
 
-func (r *Repository) InsertFollow(params InsertFollowParams) error {
+func (r *Repository) InsertFollow(params *InsertFollowParams) error {
 	query := `
 		INSERT INTO 
 	  followers (user_id, following_user_id, status)
 	  VALUES(:user_id, :following_user_id, :status)
+	  ON CONFLICT(user_id, following_user_id) DO NOTHING
 	`
-	_, err := r.db.NamedExec(query, params)
+	result, err := r.db.NamedExec(query, params)
 	if err != nil {
 		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rows == 0 {
+		return ErrFollowExists
 	}
 	return nil
 }
 
-func (r *Repository) DeleteFollow(params DeleteFollowParams) error {
+func (r *Repository) DeleteFollow(params *DeleteFollowParams) error {
 	query := `
 	DELETE FROM followers
 	WHERE user_id = :user_id AND following_user_id = :following_user_id
