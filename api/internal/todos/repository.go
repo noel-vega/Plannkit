@@ -57,7 +57,7 @@ func (r *Repository) GetTodo(params *GetTodoParams) (*Todo, error) {
 	return todo, nil
 }
 
-func (r *Repository) List(userID int) ([]Todo, error) {
+func (r *Repository) ListTodos(userID int) ([]Todo, error) {
 	query := `
 		SELECT * FROM todos WHERE user_id = $1 ORDER BY position ASC
 	`
@@ -69,7 +69,7 @@ func (r *Repository) List(userID int) ([]Todo, error) {
 	return todos, nil
 }
 
-func (r *Repository) Create(params *CreateTodoParams) error {
+func (r *Repository) CreateTodo(params *CreateTodoParams) error {
 	lastTodo, err := r.GetLast(GetLastParams{
 		Status: params.Status,
 	})
@@ -134,7 +134,7 @@ func (r *Repository) UpdatePosition(params *UpdatePositionParams) error {
 	return nil
 }
 
-func (r *Repository) Delete(params *DeleteTodoParams) error {
+func (r *Repository) DeleteTodo(params *DeleteTodoParams) error {
 	query := `DELETE FROM todos WHERE id = :id and user_id = :user_id`
 	_, err := r.db.NamedExec(query, params)
 	if err != nil {

@@ -5,20 +5,19 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jmoiron/sqlx"
 )
 
 type Handler struct {
-	repository *Repository
+	todosService *Service
 }
 
-func NewHandler(db *sqlx.DB) *Handler {
+func NewHandler(todoService *Service) *Handler {
 	return &Handler{
-		repository: NewRepository(db),
+		todosService: todoService,
 	}
 }
 
-func (handler *Handler) CreateTodo(c *gin.Context) {
+func (h *Handler) CreateTodo(c *gin.Context) {
 	userID := c.MustGet("userID").(int)
 
 	body := &CreateTodoBody{}
@@ -35,15 +34,15 @@ func (handler *Handler) CreateTodo(c *gin.Context) {
 		Status:      body.Status,
 		Position:    body.Position,
 	}
-	err = handler.repository.Create(params)
+	err = h.todosService.CreateTodo(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 }
 
-func (handler *Handler) ListTodos(c *gin.Context) {
-	todos, err := handler.repository.List(c.MustGet("userID").(int))
+func (h *Handler) ListTodos(c *gin.Context) {
+	todos, err := h.todosService.ListTodos(c.MustGet("userID").(int))
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -51,8 +50,8 @@ func (handler *Handler) ListTodos(c *gin.Context) {
 	c.JSON(http.StatusOK, todos)
 }
 
-func (handler *Handler) GetTodosBoard(c *gin.Context) {
-	t, err := handler.repository.List(c.MustGet("userID").(int))
+func (h *Handler) GetTodosBoard(c *gin.Context) {
+	t, err := h.todosService.ListTodos(c.MustGet("userID").(int))
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -71,7 +70,7 @@ func (handler *Handler) GetTodosBoard(c *gin.Context) {
 	c.JSON(http.StatusOK, board)
 }
 
-func (handler *Handler) UpdateTodoPosition(c *gin.Context) {
+func (h *Handler) UpdateTodoPosition(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("todoID"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -92,14 +91,14 @@ func (handler *Handler) UpdateTodoPosition(c *gin.Context) {
 		AfterPosition:  body.AfterPosition,
 		BeforePosition: body.BeforePosition,
 	}
-	err = handler.repository.UpdatePosition(params)
+	err = h.todosService.UpdateTodoPosition(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 }
 
-func (handler *Handler) DeleteTodo(c *gin.Context) {
+func (h *Handler) DeleteTodo(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("todoID"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -110,7 +109,7 @@ func (handler *Handler) DeleteTodo(c *gin.Context) {
 		ID:     id,
 		UserID: c.MustGet("userID").(int),
 	}
-	err = handler.repository.Delete(params)
+	err = h.todosService.DeleteTodo(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -118,7 +117,7 @@ func (handler *Handler) DeleteTodo(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
-func (handler *Handler) GetTodo(c *gin.Context) {
+func (h *Handler) GetTodo(c *gin.Context) {
 	todoID, err := strconv.Atoi(c.Param("todoID"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -129,7 +128,7 @@ func (handler *Handler) GetTodo(c *gin.Context) {
 		ID:     todoID,
 		UserID: c.MustGet("userID").(int),
 	}
-	todo, err := handler.repository.GetTodo(params)
+	todo, err := h.todosService.GetTodo(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return

@@ -5,18 +5,15 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jmoiron/sqlx"
 )
 
 type Handler struct {
-	HabitRepo   HabitRepo
-	ContribRepo ContributionsRepo
+	habitsService *Service
 }
 
-func NewHandler(db *sqlx.DB) *Handler {
+func NewHandler(habitsService *Service) *Handler {
 	return &Handler{
-		HabitRepo:   *NewHabitRepo(db),
-		ContribRepo: *NewContributionsRepo(db),
+		habitsService: habitsService,
 	}
 }
 
@@ -38,7 +35,7 @@ func (handler *Handler) CreateHabit(c *gin.Context) {
 		CompletionsPerDay: body.CompletionsPerDay,
 	}
 
-	h, err := handler.HabitRepo.CreateHabit(params)
+	h, err := handler.habitsService.CreateHabit(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -68,13 +65,13 @@ func (handler *Handler) GetHabit(c *gin.Context) {
 		UserID: userID,
 	}
 
-	h, err := handler.HabitRepo.GetHabit(params)
+	h, err := handler.habitsService.GetHabit(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
-	contributions, err := handler.ContribRepo.List(params)
+	contributions, err := handler.habitsService.ListContributions(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -92,7 +89,7 @@ func (handler *Handler) GetHabit(c *gin.Context) {
 }
 
 func (handler *Handler) ListHabits(c *gin.Context) {
-	habits, err := handler.HabitRepo.ListHabits(c.MustGet("userID").(int))
+	habits, err := handler.habitsService.ListHabits(c.MustGet("userID").(int))
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -104,7 +101,7 @@ func (handler *Handler) ListHabits(c *gin.Context) {
 			UserID: h.UserID,
 			ID:     h.ID,
 		}
-		contributions, err := handler.ContribRepo.List(params)
+		contributions, err := handler.habitsService.ListContributions(params)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
@@ -146,7 +143,7 @@ func (handler *Handler) UpdateHabit(c *gin.Context) {
 		CompletionType:    body.CompletionType,
 		CompletionsPerDay: body.CompletionsPerDay,
 	}
-	err = handler.HabitRepo.UpdateHabit(params)
+	err = handler.habitsService.UpdateHabit(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 	}
@@ -164,7 +161,7 @@ func (handler *Handler) DeleteHabit(c *gin.Context) {
 		UserID: c.MustGet("userID").(int),
 	}
 
-	err = handler.HabitRepo.DeleteHabit(params)
+	err = handler.habitsService.DeleteHabit(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -193,7 +190,7 @@ func (handler *Handler) CreateHabitContribution(c *gin.Context) {
 		Date:        body.Date,
 	}
 
-	err = handler.ContribRepo.Create(params)
+	err = handler.habitsService.CreateContribution(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -216,13 +213,13 @@ func (handler *Handler) UpdateHabitContribution(c *gin.Context) {
 		return
 	}
 
-	params := UpdateCompletionsParams{
+	params := &UpdateContributionCompletionsParams{
 		ID:          contributionID,
 		UserID:      c.MustGet("userID").(int),
 		Completions: body.Completions,
 	}
 
-	if err := handler.ContribRepo.UpdateCompletions(params); err != nil {
+	if err := handler.habitsService.UpdateContributionCompletions(params); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
@@ -246,7 +243,7 @@ func (handler *Handler) DeleteHabitContribution(c *gin.Context) {
 		HabitID: habitID,
 		UserID:  c.MustGet("userID").(int),
 	}
-	err = handler.ContribRepo.Delete(params)
+	err = handler.habitsService.DeleteContribution(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return

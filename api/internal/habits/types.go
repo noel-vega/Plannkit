@@ -1,3 +1,4 @@
+// Package habits
 package habits
 
 import "time"
@@ -102,7 +103,7 @@ type UpdateCompletionsBody struct {
 	Completions int `json:"completions"`
 }
 
-type UpdateCompletionsParams struct {
+type UpdateContributionCompletionsParams struct {
 	ID          int `json:"id" db:"id"`
 	UserID      int `json:"userId" db:"user_id"`
 	Completions int `json:"completions" db:"completions"`
