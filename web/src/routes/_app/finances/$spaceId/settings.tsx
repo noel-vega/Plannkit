@@ -1,5 +1,5 @@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from '@/components/ui/item'
 import { useDeleteSpace } from '@/features/finances/hooks'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
@@ -59,7 +59,7 @@ function DeleteSpaceAlertDialog(props: { spaceId: number; } & PropsWithChildren)
           <AlertDialogCancel>
             {t("Cancel")}
           </AlertDialogCancel>
-          <AlertDialogAction onClick={handleConfirm}>
+          <AlertDialogAction onClick={handleConfirm} className={buttonVariants({ variant: "destructive" })}>
             {t("Delete")}
           </AlertDialogAction>
         </AlertDialogFooter>
