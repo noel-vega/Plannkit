@@ -97,6 +97,8 @@ func (h *Handler) UpdateTodoPosition(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
+
+	c.Status(http.StatusNoContent)
 }
 
 func (h *Handler) DeleteTodo(c *gin.Context) {
