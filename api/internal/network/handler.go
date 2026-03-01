@@ -72,19 +72,16 @@ func (h *Handler) FollowUser(c *gin.Context) {
 		FollowingUserID: followingUserID,
 	})
 	if err != nil {
-		if errors.Is(err, apperrors.ErrNotFound) {
+		switch {
+		case errors.Is(err, apperrors.ErrNotFound):
 			c.AbortWithError(http.StatusNotFound, err)
-			return
-		}
-		if errors.Is(err, ErrFollowExists) {
+		case errors.Is(err, ErrFollowExists):
 			c.AbortWithError(http.StatusBadRequest, err)
-			return
-		}
-		if errors.Is(err, ErrFollowSelf) {
+		case errors.Is(err, ErrFollowSelf):
 			c.AbortWithError(http.StatusBadRequest, err)
-			return
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
 		}
-		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
@@ -103,15 +100,14 @@ func (h *Handler) UnFollowUser(c *gin.Context) {
 		FollowingUserID: followingUserID,
 	})
 	if err != nil {
-		if errors.Is(err, ErrUnFollowSelf) {
+		switch {
+		case errors.Is(err, ErrUnFollowSelf):
 			c.AbortWithError(http.StatusBadRequest, err)
-			return
-		}
-		if errors.Is(err, ErrFollowNotFound) {
+		case errors.Is(err, ErrFollowNotFound):
 			c.AbortWithError(http.StatusNotFound, err)
-			return
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
 		}
-		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 	c.Status(http.StatusNoContent)
