@@ -41,7 +41,7 @@ func (handler *Handler) CreateHabit(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, HabitWithContributions{
+	c.JSON(http.StatusCreated, HabitWithContributions{
 		ID:                h.ID,
 		Name:              h.Name,
 		Icon:              h.Icon,
@@ -147,6 +147,8 @@ func (handler *Handler) UpdateHabit(c *gin.Context) {
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 	}
+
+	c.Status(http.StatusNoContent)
 }
 
 func (handler *Handler) DeleteHabit(c *gin.Context) {
@@ -223,6 +225,8 @@ func (handler *Handler) UpdateHabitContribution(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
+
+	c.Status(http.StatusNoContent)
 }
 
 func (handler *Handler) DeleteHabitContribution(c *gin.Context) {

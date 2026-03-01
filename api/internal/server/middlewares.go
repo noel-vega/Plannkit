@@ -1,12 +1,10 @@
-// Package middlewares
-package main
+package server
 
 import (
 	"errors"
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -32,7 +30,7 @@ func Authentication(authService *auth.Service) gin.HandlerFunc {
 		accessTokenClaims, err := authService.ValidateToken(accessTokenStr)
 		if err != nil {
 			if errors.Is(err, jwt.ErrTokenExpired) {
-				newAccessToken, err := authService.GenerateToken(refreshTokenClaims.UserID, 1*time.Minute)
+				newAccessToken, err := authService.GenerateAccessToken(refreshTokenClaims.UserID)
 				if err != nil {
 					c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid token: " + err.Error()})
 					return

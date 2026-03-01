@@ -32,7 +32,7 @@ dev:
 # Run API server
 api:
 	@echo "Starting API server..."
-	cd api && air 
+	cd api/cmd/server && air 
 
 # Run Web dev server
 web:

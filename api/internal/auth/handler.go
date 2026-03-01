@@ -68,7 +68,11 @@ func (h *Handler) SignUp(c *gin.Context) {
 
 func (h *Handler) SignIn(c *gin.Context) {
 	data := &SignInParams{}
-	c.Bind(data)
+	err := c.Bind(data)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
 	tokens, me, err := h.AuthService.SignIn(data)
 
 	if errors.Is(err, ErrInvalidCredentials) {

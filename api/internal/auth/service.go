@@ -5,9 +5,13 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/jmoiron/sqlx"
 	"github.com/noel-vega/habits/api/internal/user"
 	"golang.org/x/crypto/bcrypt"
+)
+
+const (
+	accessTokenDuration  = 1 * time.Minute
+	refreshTokenDuration = 1 * time.Hour
 )
 
 type Service struct {
@@ -15,7 +19,7 @@ type Service struct {
 	userService *user.Service
 }
 
-func NewService(db *sqlx.DB, jwtSecret string, userService *user.Service) *Service {
+func NewService(jwtSecret string, userService *user.Service) *Service {
 	return &Service{
 		userService: userService,
 		jwtSecret:   jwtSecret,
@@ -38,7 +42,7 @@ func (s *Service) GenerateToken(userID int, duration time.Duration) (string, err
 }
 
 func (s *Service) GenerateAccessToken(userID int) (string, error) {
-	token, err := s.GenerateToken(userID, 1*time.Minute)
+	token, err := s.GenerateToken(userID, accessTokenDuration)
 	if err != nil {
 		return "", err
 	}
@@ -46,7 +50,7 @@ func (s *Service) GenerateAccessToken(userID int) (string, error) {
 }
 
 func (s *Service) GenerateRefreshToken(userID int) (string, error) {
-	token, err := s.GenerateToken(userID, 1*time.Hour)
+	token, err := s.GenerateToken(userID, refreshTokenDuration)
 	if err != nil {
 		return "", err
 	}

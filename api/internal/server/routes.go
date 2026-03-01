@@ -1,4 +1,5 @@
-package main
+// Package server
+package server
 
 import (
 	"net/http"
@@ -29,7 +30,7 @@ func AddRoutes(router *gin.Engine, db *sqlx.DB, storageService storage.Service) 
 
 	financesService := finances.NewService(db)
 	userService := user.NewUserService(db, storageService, financesService)
-	authService := auth.NewService(db, jwtSecret, userService)
+	authService := auth.NewService(jwtSecret, userService)
 	todosService := todos.NewService(db)
 	habitsService := habits.NewService(db)
 	networkService := network.NewService(db, userService)

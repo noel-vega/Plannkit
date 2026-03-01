@@ -39,6 +39,7 @@ func (h *Handler) CreateTodo(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
+	c.Status(http.StatusCreated)
 }
 
 func (h *Handler) ListTodos(c *gin.Context) {

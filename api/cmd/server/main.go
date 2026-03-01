@@ -9,6 +9,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
+	"github.com/noel-vega/habits/api/internal/server"
 	"github.com/noel-vega/habits/api/internal/storage"
 )
 
@@ -27,7 +28,6 @@ func main() {
 
 	router := gin.Default()
 
-	// Serve the avatars directory under /avatars URL path
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{allowOrigin},
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
@@ -39,7 +39,7 @@ func main() {
 	router.Static("/public", storageBasePath)
 	storageService := storage.NewLocalStorage(storageBasePath)
 
-	AddRoutes(router, db, storageService)
+	server.AddRoutes(router, db, storageService)
 
 	if err := router.Run(); err != nil {
 		log.Fatalf("failed to run server: %v", err)
