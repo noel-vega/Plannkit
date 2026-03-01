@@ -13,12 +13,13 @@ func NewRepository(db *sqlx.DB) *Repository {
 }
 
 func (r *Repository) GetHabit(params *GetHabitParams) (*Habit, error) {
-	habit := Habit{}
-	err := r.db.Get(&habit, "SELECT * FROM habits WHERE id=$1 AND user_id = $2", params.ID, params.UserID)
+	habit := &Habit{}
+	err := r.db.Get(habit, "SELECT * FROM habits WHERE id=$1 AND user_id = $2", params.ID, params.UserID)
 	if err != nil {
 		return nil, err
 	}
-	return &habit, nil
+
+	return habit, nil
 }
 
 func (r *Repository) ListHabits(userID int) ([]Habit, error) {
@@ -69,16 +70,7 @@ func (r *Repository) DeleteHabit(params *DeleteHabitParams) error {
 	return nil
 }
 
-func (r *Repository) ListContributions(params *GetHabitParams) ([]Contribution, error) {
-	contributions := []Contribution{}
-	err := r.db.Select(&contributions, "SELECT * FROM habits_contributions WHERE habit_id=$1 AND user_id = $2", params.ID, params.UserID)
-	if err != nil {
-		return nil, err
-	}
-	return contributions, nil
-}
-
-func (r *Repository) CreateContribution(params *CreateContributionParams) error {
+func (r *Repository) CreateHabitContribution(params *CreateContributionParams) error {
 	query := `
 		INSERT INTO 
 		habits_contributions (habit_id, completions, date, user_id) 
@@ -91,7 +83,25 @@ func (r *Repository) CreateContribution(params *CreateContributionParams) error 
 	return nil
 }
 
-func (r *Repository) UpdateContributionCompletions(params *UpdateContributionCompletionsParams) error {
+func (r *Repository) ListContributions(userID int) ([]HabitContribution, error) {
+	contributions := []HabitContribution{}
+	err := r.db.Select(&contributions, "SELECT * FROM habits_contributions WHERE user_id = $1", userID)
+	if err != nil {
+		return nil, err
+	}
+	return contributions, nil
+}
+
+func (r *Repository) ListHabitContributions(params *GetHabitParams) ([]HabitContribution, error) {
+	contributions := []HabitContribution{}
+	err := r.db.Select(&contributions, "SELECT * FROM habits_contributions WHERE habit_id=$1 AND user_id = $2", params.ID, params.UserID)
+	if err != nil {
+		return nil, err
+	}
+	return contributions, nil
+}
+
+func (r *Repository) UpdateHabitContributionCompletions(params *UpdateContributionCompletionsParams) error {
 	query := `
 		UPDATE habits_contributions
 	  SET completions = $1 
@@ -105,7 +115,7 @@ func (r *Repository) UpdateContributionCompletions(params *UpdateContributionCom
 	return nil
 }
 
-func (r *Repository) DeleteContribution(params *DeleteContributionParams) error {
+func (r *Repository) DeleteHabitContribution(params *DeleteContributionParams) error {
 	query := `
 	DELETE FROM habits_contributions 
 	WHERE user_id = :user_id AND habit_id = :habit_id AND id = :id 
@@ -115,4 +125,17 @@ func (r *Repository) DeleteContribution(params *DeleteContributionParams) error 
 		return err
 	}
 	return nil
+}
+
+func (r *Repository) ListHabitsAndContributions(userID int) ([]Habit, []HabitContribution, error) {
+	habits, err := r.ListHabits(userID)
+	if err != nil {
+		return nil, nil, err
+	}
+	contributions, err := r.ListContributions(userID)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return habits, contributions, nil
 }

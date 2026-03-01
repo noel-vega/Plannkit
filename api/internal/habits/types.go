@@ -17,18 +17,18 @@ type Habit struct {
 }
 
 type HabitWithContributions struct {
-	ID                int            `json:"id"`
-	UserID            int            `json:"userId" db:"user_id"`
-	Name              string         `json:"name"`
-	Icon              string         `json:"icon" db:"icon"`
-	UnitOfMeasurement string         `json:"unitOfMeasurement" db:"unit_of_measurement"`
-	Description       string         `json:"description"`
-	CompletionType    string         `json:"completionType" db:"completion_type"`
-	CompletionsPerDay int            `json:"completionsPerDay" db:"completions_per_day"`
-	Contributions     []Contribution `json:"contributions"`
+	ID                int                 `json:"id"`
+	UserID            int                 `json:"userId" db:"user_id"`
+	Name              string              `json:"name"`
+	Icon              string              `json:"icon" db:"icon"`
+	UnitOfMeasurement string              `json:"unitOfMeasurement" db:"unit_of_measurement"`
+	Description       string              `json:"description"`
+	CompletionType    string              `json:"completionType" db:"completion_type"`
+	CompletionsPerDay int                 `json:"completionsPerDay" db:"completions_per_day"`
+	Contributions     []HabitContribution `json:"contributions"`
 }
 
-type Contribution struct {
+type HabitContribution struct {
 	ID          int       `json:"id"`
 	UserID      int       `json:"userId" db:"user_id"`
 	Date        time.Time `json:"date"`

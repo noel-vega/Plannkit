@@ -48,11 +48,11 @@ func (handler *Handler) CreateHabit(c *gin.Context) {
 		Description:       h.Description,
 		CompletionType:    h.CompletionType,
 		CompletionsPerDay: h.CompletionsPerDay,
-		Contributions:     []Contribution{},
+		Contributions:     []HabitContribution{},
 	})
 }
 
-func (handler *Handler) GetHabit(c *gin.Context) {
+func (handler *Handler) GetHabitWithContributions(c *gin.Context) {
 	userID := c.MustGet("userID").(int)
 	habitID, err := strconv.Atoi(c.Param("habitID"))
 	if err != nil {
@@ -65,58 +65,23 @@ func (handler *Handler) GetHabit(c *gin.Context) {
 		UserID: userID,
 	}
 
-	h, err := handler.habitsService.GetHabit(params)
+	habit, err := handler.habitsService.GetHabitWithContributions(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
-	contributions, err := handler.habitsService.ListContributions(params)
-	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
-	}
-	habitWithContributions := HabitWithContributions{
-		ID:                h.ID,
-		Name:              h.Name,
-		Icon:              h.Icon,
-		Description:       h.Description,
-		CompletionType:    h.CompletionType,
-		CompletionsPerDay: h.CompletionsPerDay,
-		Contributions:     contributions,
-	}
-	c.JSON(http.StatusOK, habitWithContributions)
+	c.JSON(http.StatusOK, habit)
 }
 
-func (handler *Handler) ListHabits(c *gin.Context) {
-	habits, err := handler.habitsService.ListHabits(c.MustGet("userID").(int))
+func (handler *Handler) ListHabitsWithContributions(c *gin.Context) {
+	habits, err := handler.habitsService.ListHabitsWithContributions(c.MustGet("userID").(int))
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
-	habitsWithContributions := []HabitWithContributions{}
-	for _, h := range habits {
-		params := &GetHabitParams{
-			UserID: h.UserID,
-			ID:     h.ID,
-		}
-		contributions, err := handler.habitsService.ListContributions(params)
-		if err != nil {
-			c.AbortWithError(http.StatusInternalServerError, err)
-			return
-		}
-		habitsWithContributions = append(habitsWithContributions, HabitWithContributions{
-			ID:                h.ID,
-			Name:              h.Name,
-			Icon:              h.Icon,
-			Description:       h.Description,
-			CompletionType:    h.CompletionType,
-			CompletionsPerDay: h.CompletionsPerDay,
-			Contributions:     contributions,
-		})
-	}
-	c.JSON(http.StatusOK, habitsWithContributions)
+	c.JSON(http.StatusOK, habits)
 }
 
 func (handler *Handler) UpdateHabit(c *gin.Context) {

@@ -20,8 +20,24 @@ func (s *Service) ListHabits(userID int) ([]Habit, error) {
 	return s.repository.ListHabits(userID)
 }
 
-func (s *Service) GetHabit(params *GetHabitParams) (*Habit, error) {
-	return s.repository.GetHabit(params)
+func (s *Service) GetHabitWithContributions(params *GetHabitParams) (*HabitWithContributions, error) {
+	h, err := s.repository.GetHabit(params)
+	if err != nil {
+		return nil, err
+	}
+	contributions, err := s.repository.ListHabitContributions(params)
+	if err != nil {
+		return nil, err
+	}
+	return &HabitWithContributions{
+		ID:                h.ID,
+		Name:              h.Name,
+		Icon:              h.Icon,
+		Description:       h.Description,
+		CompletionType:    h.CompletionType,
+		CompletionsPerDay: h.CompletionsPerDay,
+		Contributions:     contributions,
+	}, nil
 }
 
 func (s *Service) UpdateHabit(params *UpdateHabitParams) error {
@@ -33,17 +49,54 @@ func (s *Service) DeleteHabit(params *DeleteHabitParams) error {
 }
 
 func (s *Service) CreateContribution(params *CreateContributionParams) error {
-	return s.repository.CreateContribution(params)
+	return s.repository.CreateHabitContribution(params)
 }
 
-func (s *Service) ListContributions(params *GetHabitParams) ([]Contribution, error) {
-	return s.repository.ListContributions(params)
+func (s *Service) ListContributions(userID int) ([]HabitContribution, error) {
+	return s.repository.ListContributions(userID)
 }
 
 func (s *Service) UpdateContributionCompletions(params *UpdateContributionCompletionsParams) error {
-	return s.repository.UpdateContributionCompletions(params)
+	return s.repository.UpdateHabitContributionCompletions(params)
 }
 
 func (s *Service) DeleteContribution(params *DeleteContributionParams) error {
-	return s.repository.DeleteContribution(params)
+	return s.repository.DeleteHabitContribution(params)
+}
+
+func (s *Service) ListHabitContributions(params *GetHabitParams) ([]HabitContribution, error) {
+	return s.repository.ListHabitContributions(params)
+}
+
+func (s *Service) ListHabitsWithContributions(userID int) ([]HabitWithContributions, error) {
+	habits, contributions, err := s.repository.ListHabitsAndContributions(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	contributionsByHabit := make(map[int][]HabitContribution)
+
+	for _, c := range contributions {
+		contributionsByHabit[c.HabitID] = append(contributionsByHabit[c.HabitID], c)
+	}
+
+	result := make([]HabitWithContributions, len(habits))
+
+	for i, h := range habits {
+		contribs := contributionsByHabit[h.ID]
+		if contribs == nil {
+			contribs = []HabitContribution{}
+		}
+		result[i] = HabitWithContributions{
+			ID:                h.ID,
+			Name:              h.Name,
+			Icon:              h.Icon,
+			Description:       h.Description,
+			CompletionType:    h.CompletionType,
+			CompletionsPerDay: h.CompletionsPerDay,
+			Contributions:     contribs,
+		}
+	}
+
+	return result, nil
 }
