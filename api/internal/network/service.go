@@ -4,6 +4,7 @@ package network
 //
 import (
 	"errors"
+	"fmt"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/noel-vega/habits/api/internal/apperrors"
@@ -44,23 +45,30 @@ func (s *Service) GetUserProfile(params *GetUserProfileParams) (*UserProfile, er
 		return nil, err
 	}
 
-	isFollowing, err := s.IsFollowing(&GetFollowerParams{
+	follower, err := s.repository.GetFollower(&GetFollowerParams{
 		UserID:          params.UserID,
 		FollowingUserID: user.ID,
 	})
 	if err != nil {
-		return nil, err
+		if !errors.Is(err, apperrors.ErrNotFound) {
+			return nil, err
+		}
 	}
 
 	profile := &UserProfile{
-		User:        user,
-		IsFollowing: isFollowing,
+		User: user,
+	}
+
+	if follower != nil {
+		profile.IsFollowing = true
+		profile.FollowStatus = &follower.Status
 	}
 
 	return profile, nil
 }
 
 func (s *Service) FollowUser(params *FollowUserParams) error {
+	fmt.Println("NETWORK SERVICE: FollowUser")
 	if params.UserID == params.FollowingUserID {
 		return ErrFollowSelf
 	}
@@ -70,10 +78,14 @@ func (s *Service) FollowUser(params *FollowUserParams) error {
 		return err
 	}
 
+	fmt.Printf("%+v\n", followingUser)
+
 	var status string
 	if followingUser.IsPrivate {
 		status = "pending"
+		fmt.Println(" Pending Request")
 	} else {
+		fmt.Println(" Request Auto Accept")
 		status = "accepted"
 	}
 

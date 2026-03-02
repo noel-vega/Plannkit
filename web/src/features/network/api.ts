@@ -24,5 +24,8 @@ export const network = {
   },
   acceptFollow: async (userId: number) => {
     await pkFetch(`/network/follow/${userId}`, { method: "PATCH" })
+  },
+  following: async (userId: number) => {
+
   }
 }

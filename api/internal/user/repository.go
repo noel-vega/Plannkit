@@ -43,7 +43,7 @@ func (r *Repository) Create(params CreateUserParams) (*UserNoPassword, error) {
 }
 
 func (r *Repository) ListUsers(params *ListUsersParams) ([]UserNoPassword, error) {
-	qb := sq.Select("id, username, first_name, last_name, email, avatar, created_at, updated_at").From("users")
+	qb := sq.Select("id, is_private, username, first_name, last_name, email, avatar, created_at, updated_at").From("users")
 
 	if params.QueryParams.Search != "" {
 		qb = qb.Where(sq.Expr("first_name || ' ' || last_name ILIKE ?", "%"+params.QueryParams.Search+"%"))
@@ -62,7 +62,7 @@ func (r *Repository) ListUsers(params *ListUsersParams) ([]UserNoPassword, error
 
 func (r *Repository) GetByID(ID int) (*UserNoPassword, error) {
 	user := &UserNoPassword{}
-	query := `SELECT id, username, first_name, last_name, email, created_at, updated_at, avatar FROM users WHERE id = $1`
+	query := `SELECT id, is_private, username, first_name, last_name, email, created_at, updated_at, avatar FROM users WHERE id = $1`
 	err := r.db.Get(user, query, ID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -76,7 +76,7 @@ func (r *Repository) GetByID(ID int) (*UserNoPassword, error) {
 
 func (r *Repository) GetByEmail(email string) (*UserNoPassword, error) {
 	user := &UserNoPassword{}
-	query := `SELECT id, username, first_name, last_name, email, created_at, updated_at FROM users WHERE email = $1`
+	query := `SELECT id, is_private, username, first_name, last_name, email, created_at, updated_at FROM users WHERE email = $1`
 	err := r.db.Get(user, query, email)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -103,7 +103,7 @@ func (r *Repository) GetByEmailWithPassword(email string) (*User, error) {
 
 func (r *Repository) GetUserByUsername(username string) (*UserNoPassword, error) {
 	user := &UserNoPassword{}
-	query := `SELECT id, username, first_name, last_name, email, created_at, updated_at, avatar FROM users WHERE username = $1`
+	query := `SELECT id, is_private, username, first_name, last_name, email, created_at, updated_at, avatar FROM users WHERE username = $1`
 	err := r.db.Get(user, query, username)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

@@ -48,6 +48,7 @@ type GetUserProfileParams struct {
 }
 
 type UserProfile struct {
-	User        *user.UserNoPassword `json:"user"`
-	IsFollowing bool                 `json:"isFollowing"`
+	User         *user.UserNoPassword `json:"user"`
+	IsFollowing  bool                 `json:"isFollowing"`
+	FollowStatus *string              `json:"followStatus"`
 }

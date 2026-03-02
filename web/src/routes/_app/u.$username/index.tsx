@@ -9,10 +9,11 @@ import { useAuth } from '@/features/auth/store'
 import { getUseUserProfileQueryOptions, useFollowMutation, useUnFollowMutation, useUserProfile } from '@/features/network/hooks'
 import { queryClient } from '@/lib/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { CheckIcon, PlusIcon } from 'lucide-react'
-import { type ChangeEvent } from 'react'
+import { CheckIcon, MinusCircleIcon, PlusIcon } from 'lucide-react'
+import { useState, type ChangeEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useUpdateAvatarMutation } from '@/features/user/hooks'
+import type { UserProfile } from '@/features/network/types'
 
 export const Route = createFileRoute('/_app/u/$username/')({
   beforeLoad: async ({ params: { username } }) => {
@@ -26,10 +27,10 @@ export const Route = createFileRoute('/_app/u/$username/')({
 function RouteComponent() {
   const routeContext = Route.useRouteContext()
   const { username } = Route.useParams()
-  const { data: { user, isFollowing } } = useUserProfile(username, routeContext.profile)
+  const { data: profile } = useUserProfile(username, routeContext.profile)
   const { me } = useAuth()
 
-  const isMe = me.id === user.id
+  const isMe = me.id === profile.user.id
   return (
     <Page title="Profile">
       <Container>
@@ -43,18 +44,18 @@ function RouteComponent() {
                 <MeAvatar />
               ) : (
                 <Avatar className="size-40 border-2 border-white/50 shadow ">
-                  {user.avatar && (
-                    <AvatarImage src={user.avatar} alt="@shadcn" />
+                  {profile.user.avatar && (
+                    <AvatarImage src={profile.user.avatar} alt="@shadcn" />
                   )}
-                  <AvatarFallback className="border-2 border-white">{user.firstName[0]} {user.lastName[0]}</AvatarFallback>
+                  <AvatarFallback className="border-2 border-white">{profile.user.firstName[0]} {profile.user.lastName[0]}</AvatarFallback>
                 </Avatar>
               )}
             </div>
             <div className="mb-2">
-              <h2 className="text-2xl font-semibold">{user.firstName} {user.lastName}</h2>
+              <h2 className="text-2xl font-semibold">{profile.user.firstName} {profile.user.lastName}</h2>
             </div>
             <div>
-              <FollowButton userId={user.id} username={user.username} isFollowing={isFollowing} />
+              <FollowButton profile={profile} />
             </div>
           </CardContent>
           <CardFooter className="p-4"></CardFooter>
@@ -64,26 +65,52 @@ function RouteComponent() {
   )
 }
 
-function FollowButton(props: { userId: number, username: string; isFollowing: boolean }) {
+function FollowButton(props: { profile: UserProfile }) {
+  const [isHovered, setIsHovered] = useState(false)
+  const { user, followStatus, isFollowing } = props.profile
   const { t } = useTranslation()
   const { me } = useAuth()
-  const follow = useFollowMutation(props.username)
-  const handleFollow = () => {
-    follow.mutate(props.userId)
-  }
+  const follow = useFollowMutation(user.username)
+  const unfollow = useUnFollowMutation(user.username)
 
-  const unfollow = useUnFollowMutation(props.username)
-  const handleUnFollow = () => {
-    unfollow.mutate(props.userId)
+  const handleClick = () => {
+    isFollowing ? unfollow.mutate(user.id) : follow.mutate(user.id)
+
   }
-  if (me.username === props.username) return
-  return props.isFollowing ?
-    <Button variant="secondary" onClick={handleUnFollow} disabled={unfollow.isPending}>
-      <CheckIcon />{t("Following")}
-    </Button>
-    : <Button variant="secondary" onClick={handleFollow} disabled={follow.isPending}>
-      <PlusIcon />{t("Follow")}
-    </Button>
+  if (me.username === user.username) return
+  return <Button
+    onMouseEnter={() => setIsHovered(true)}
+    onMouseLeave={() => setIsHovered(false)}
+    variant={"secondary"}
+    onClick={handleClick} disabled={unfollow.isPending} className="min-w-44 transition-none">
+    {isFollowing ? (
+      <>
+        {followStatus === "accepted" ? (
+          <>
+            {isHovered ? (
+              <>
+                <MinusCircleIcon />{t("Unfollow")}
+              </>
+            ) : (
+              <>
+                <CheckIcon />{t("Following")}
+              </>
+            )}
+          </>
+        ) : (
+          <>
+            <MinusCircleIcon />{t("Cancel Request")}
+          </>
+        )
+        }
+      </>
+
+    ) : (
+      <>
+        <PlusIcon /> {user.isPrivate && "Request "}{t("Follow")}
+      </>
+    )}
+  </Button >
 }
 
 function MeAvatar() {

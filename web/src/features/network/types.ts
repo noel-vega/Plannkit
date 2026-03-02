@@ -21,6 +21,7 @@ export type User = z.infer<typeof UserSchema>
 
 export const UserProfileSchema = z.object({
   user: UserSchema,
-  isFollowing: z.boolean()
+  isFollowing: z.boolean(),
+  followStatus: z.literal("pending").or(z.literal("accepted")).nullable()
 })
 export type UserProfile = z.infer<typeof UserProfileSchema>

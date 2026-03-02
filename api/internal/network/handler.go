@@ -61,7 +61,7 @@ func (h *Handler) GetUserProfile(c *gin.Context) {
 }
 
 func (h *Handler) FollowUser(c *gin.Context) {
-	followingUserID, err := strconv.Atoi(c.Param("followingUserID"))
+	followingUserID, err := strconv.Atoi(c.Param("userID"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
@@ -89,7 +89,7 @@ func (h *Handler) FollowUser(c *gin.Context) {
 }
 
 func (h *Handler) UnFollowUser(c *gin.Context) {
-	followingUserID, err := strconv.Atoi(c.Param("followingUserID"))
+	followingUserID, err := strconv.Atoi(c.Param("userID"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return

@@ -55,6 +55,7 @@ export function SignUpForm() {
                 id={field.name}
                 aria-invalid={fieldState.invalid}
                 autoComplete="off"
+                autoFocus
               />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>

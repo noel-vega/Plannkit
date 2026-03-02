@@ -63,6 +63,7 @@ export function SignInForm() {
                   type="email"
                   aria-invalid={fieldState.invalid}
                   autoComplete="off"
+                  autoFocus
                 />
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </Field>
