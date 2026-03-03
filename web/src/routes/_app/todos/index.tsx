@@ -3,6 +3,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Page } from '@/components/layout/page'
 import { getBoardQueryOptions, getListTodosQueryOptions } from '@/features/todos/hooks';
 import { Board } from '@/features/todos/components/board';
+import { Container } from '@/components/layout/container';
 
 export const Route = createFileRoute('/_app/todos/')({
   head: () => ({ meta: [{ title: "Tasks" }] }),
@@ -19,9 +20,9 @@ function RouteComponent() {
   const board = useQuery({ ...getBoardQueryOptions(), initialData: loaderData.board })
   return (
     <Page title="Tasks" className="space-y-4">
-      <div className="max-w-6xl w-full">
+      <Container className="w-full">
         <Board board={board.data} />
-      </div>
+      </Container>
     </Page>
   )
 }

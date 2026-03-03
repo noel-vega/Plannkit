@@ -13,7 +13,7 @@ export function Page(props: PageProps) {
   }, [])
   return (
     <>
-      <div className={cn("p-4 xl:px-8 w-full h-full", props.className)}>
+      <div className={cn("w-full h-full", props.className)}>
         {props.children}
       </div>
     </>

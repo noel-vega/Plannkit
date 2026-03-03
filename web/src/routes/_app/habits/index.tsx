@@ -63,17 +63,19 @@ function Header() {
   const createHabitDialog = useDialog()
   return (
 
-    <header className="flex items-center gap-4 pb-2">
-      <p className="hidden @md:block text-2xl mr-auto font-medium">
-        {format(new Date(), 'EEEE, MMMM d')}
-      </p>
-      <Button variant="secondary" className="flex-1 @md:flex-none">
-        <PlusIcon /><span>{t("Routine")}</span>
-      </Button>
-      <Button variant="secondary" className="flex-1 @md:flex-none" onClick={createHabitDialog.handleOpenDialog}>
-        <PlusIcon /><span>{t("Habit")}</span>
-      </Button>
-      <CreateHabitDialogDrawer {...createHabitDialog} />
+    <header >
+      <div className="flex items-center gap-4 pb-2">
+        <p className="hidden @md:block text-lg mr-auto font-medium">
+          {format(new Date(), 'EEEE, MMMM d')}
+        </p>
+        <Button variant="secondary" className="flex-1 @md:flex-none">
+          <PlusIcon /><span>{t("Routine")}</span>
+        </Button>
+        <Button variant="secondary" className="flex-1 @md:flex-none" onClick={createHabitDialog.handleOpenDialog}>
+          <PlusIcon /><span>{t("Habit")}</span>
+        </Button>
+        <CreateHabitDialogDrawer {...createHabitDialog} />
+      </div>
     </header>
   )
 }

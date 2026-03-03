@@ -1,3 +1,4 @@
+import { Container } from '@/components/layout/container'
 import { Page } from '@/components/layout/page'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
@@ -48,8 +49,7 @@ function RouteComponent() {
 
   return (
     <Page title="Groceries">
-      <div className="max-w-5xl h-full flex flex-col pb-2">
-
+      <Container className="h-full flex flex-col pb-2">
         <div className="flex gap-4">
           <h2 className="text-xl font-medium mb-4">{t("Shopping List")} ({items.length})</h2>
           <Dialog>
@@ -121,7 +121,7 @@ function RouteComponent() {
             </AlertDialogContent>
           </AlertDialog>
         </div>
-      </div>
+      </Container>
     </Page>
   )
 }

@@ -48,7 +48,7 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {links.map((item) => (
-                <FeatureNavLink feature={item} />
+                <FeatureNavLink feature={item} key={item.label} />
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
@@ -59,7 +59,7 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {communityFeatures.map((feature) => (
-                <FeatureNavLink feature={feature} />
+                <FeatureNavLink feature={feature} key={feature.label} />
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
