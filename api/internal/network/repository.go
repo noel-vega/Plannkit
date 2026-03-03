@@ -7,7 +7,6 @@ import (
 	sq "github.com/Masterminds/squirrel"
 	"github.com/jmoiron/sqlx"
 	"github.com/noel-vega/habits/api/internal/apperrors"
-	"github.com/noel-vega/habits/api/internal/user"
 )
 
 type Repository struct {
@@ -20,11 +19,12 @@ func NewRepository(db *sqlx.DB) *Repository {
 	}
 }
 
-func (r *Repository) ListUsers(params *ListUsersParams) ([]user.UserNoPassword, error) {
+func (r *Repository) ListUsers(params *ListUsersParams) ([]NetworkUser, error) {
 	qb := sq.Select(
 		"u.id", "u.username", "u.first_name", "u.last_name", "u.email",
-		"u.avatar", "u.is_private", "u.created_at", "u.updated_at",
+		"u.avatar", "u.is_private", "f.status as follow_status", "u.created_at", "u.updated_at",
 	).From("users u").LeftJoin("followers f ON f.user_id = ? AND f.following_user_id = u.id", params.UserID)
+	qb = qb.Where("u.id != ?", params.UserID)
 
 	if params.QueryParams.Search != "" {
 		qb = qb.Where(sq.Expr("first_name || ' ' || last_name ILIKE ?", "%"+params.QueryParams.Search+"%"))
@@ -33,7 +33,49 @@ func (r *Repository) ListUsers(params *ListUsersParams) ([]user.UserNoPassword, 
 	if err != nil {
 		return nil, err
 	}
-	data := []user.UserNoPassword{}
+	data := []NetworkUser{}
+	err = r.db.Select(&data, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+func (r *Repository) ListFollowers(params *ListUsersParams) ([]NetworkUser, error) {
+	qb := sq.Select(
+		"u.id", "u.username", "u.first_name", "u.last_name", "u.email",
+		"u.avatar", "u.is_private", "f.status as follow_status", "u.created_at", "u.updated_at",
+	).From("users u").InnerJoin("followers f ON f.user_id = u.id AND f.following_user_id = ?", params.UserID)
+
+	if params.QueryParams.Search != "" {
+		qb = qb.Where(sq.Expr("first_name || ' ' || last_name ILIKE ?", "%"+params.QueryParams.Search+"%"))
+	}
+	query, args, err := qb.PlaceholderFormat(sq.Dollar).ToSql()
+	if err != nil {
+		return nil, err
+	}
+	data := []NetworkUser{}
+	err = r.db.Select(&data, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+func (r *Repository) ListFollowing(params *ListUsersParams) ([]NetworkUser, error) {
+	qb := sq.Select(
+		"u.id", "u.username", "u.first_name", "u.last_name", "u.email",
+		"u.avatar", "u.is_private", "f.status as follow_status", "u.created_at", "u.updated_at",
+	).From("users u").InnerJoin("followers f ON f.user_id = ? AND f.following_user_id = u.id", params.UserID)
+
+	if params.QueryParams.Search != "" {
+		qb = qb.Where(sq.Expr("first_name || ' ' || last_name ILIKE ?", "%"+params.QueryParams.Search+"%"))
+	}
+	query, args, err := qb.PlaceholderFormat(sq.Dollar).ToSql()
+	if err != nil {
+		return nil, err
+	}
+	data := []NetworkUser{}
 	err = r.db.Select(&data, query, args...)
 	if err != nil {
 		return nil, err

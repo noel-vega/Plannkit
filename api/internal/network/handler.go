@@ -19,7 +19,7 @@ func NewHandler(service *Service) *Handler {
 	}
 }
 
-func (h *Handler) Discover(c *gin.Context) {
+func (h *Handler) ListUsers(c *gin.Context) {
 	queryParams := &ListUsersQueryParams{}
 	err := c.BindQuery(queryParams)
 	if err != nil {
@@ -28,10 +28,11 @@ func (h *Handler) Discover(c *gin.Context) {
 	}
 
 	params := &ListUsersParams{
+		UserID:      c.MustGet("userID").(int),
 		QueryParams: queryParams,
 	}
 
-	users, err := h.service.Discover(params)
+	users, err := h.service.ListUsers(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -113,9 +114,4 @@ func (h *Handler) UnFollowUser(c *gin.Context) {
 }
 
 func (h *Handler) AcceptFollowRequest(c *gin.Context) {
-}
-
-// TODO: will implement soon
-func (h *Handler) ListFollowers(c *gin.Context) {
-	// h.service.ListFollowers()
 }

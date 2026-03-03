@@ -1,5 +1,5 @@
 import { queryOptions, useMutation, useQuery } from "@tanstack/react-query";
-import type { DiscoverUsersParams, User, UserProfile } from "./types";
+import type { DiscoverUsersParams, NetworkUser, UserProfile } from "./types";
 import { network } from "./api";
 import { queryClient } from "@/lib/react-query";
 
@@ -7,11 +7,11 @@ import { queryClient } from "@/lib/react-query";
 export function getUseDiscoverUsersQueryOptions(params?: DiscoverUsersParams) {
   return queryOptions({
     queryKey: ['discover', params],
-    queryFn: () => network.discover(params)
+    queryFn: () => network.users.list(params)
   })
 }
 
-export function useDiscoverUsersQuery(params: DiscoverUsersParams, initialData: User[]) {
+export function useDiscoverUsersQuery(params: DiscoverUsersParams, initialData: NetworkUser[]) {
   return useQuery({ ...getUseDiscoverUsersQueryOptions(params), initialData })
 }
 

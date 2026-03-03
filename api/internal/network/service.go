@@ -23,8 +23,15 @@ func NewService(db *sqlx.DB, userService *user.Service) *Service {
 	}
 }
 
-func (s *Service) Discover(params *ListUsersParams) ([]user.UserNoPassword, error) {
-	return s.repository.ListUsers(params)
+func (s *Service) ListUsers(params *ListUsersParams) ([]NetworkUser, error) {
+	switch params.QueryParams.Filter {
+	case "followers":
+		return s.repository.ListFollowers(params)
+	case "following":
+		return s.repository.ListFollowing(params)
+	default:
+		return s.repository.ListUsers(params)
+	}
 }
 
 func (s *Service) IsFollowing(params *GetFollowerParams) (bool, error) {
@@ -113,7 +120,4 @@ func (s *Service) UnFollowUser(params *DeleteFollowParams) error {
 		return ErrFollowNotFound
 	}
 	return s.repository.DeleteFollow(params)
-}
-
-func (s *Service) ListFollowers(params *ListFollowersParams) {
 }

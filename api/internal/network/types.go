@@ -7,8 +7,22 @@ import (
 	"github.com/noel-vega/habits/api/internal/user"
 )
 
+type NetworkUser struct {
+	ID           int       `json:"id" db:"id"`
+	Username     string    `json:"username" db:"username"`
+	FirstName    string    `json:"firstName" db:"first_name"`
+	LastName     string    `json:"lastName" db:"last_name"`
+	Email        string    `json:"email" db:"email"`
+	Avatar       *string   `json:"avatar" db:"avatar"`
+	IsPrivate    bool      `json:"isPrivate" db:"is_private"`
+	FollowStatus *string   `json:"followStatus" db:"follow_status"`
+	CreatedAt    time.Time `json:"createdAt" db:"created_at"`
+	UpdatedAt    time.Time `json:"updatedAt" db:"updated_at"`
+}
+
 type ListUsersQueryParams struct {
 	Search string `form:"search"`
+	Filter string `form:"filter"`
 }
 
 type ListUsersParams struct {
@@ -60,8 +74,4 @@ type UserProfile struct {
 	User         *user.UserNoPassword `json:"user"`
 	IsFollowing  bool                 `json:"isFollowing"`
 	FollowStatus *string              `json:"followStatus"`
-}
-
-type ListFollowersParams struct {
-	UserID int `db:"user_id"`
 }

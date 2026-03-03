@@ -57,12 +57,10 @@ func AddRoutes(router *gin.Engine, db *sqlx.DB, storageService storage.Service) 
 	protected.POST("/finances/spaces", financesHandler.CreateSpace)
 
 	protected.GET("/network/profile/:username", networkHandler.GetUserProfile)
-	protected.GET("/network/discover", networkHandler.Discover)
+	protected.GET("/network/users", networkHandler.ListUsers)
 	protected.POST("/network/users/:userID/follow", networkHandler.FollowUser)
 	protected.DELETE("/network/users/:userID/follow", networkHandler.UnFollowUser)
 	protected.PATCH("/network/users/:userID/follow", networkHandler.AcceptFollowRequest)
-	protected.GET("/network/users/:userID/followers", networkHandler.ListFollowers)
-	// protected.GET("/network/following/:userID", networkHandler.ListFollowing)
 
 	protected.PUT("/user/avatar", usersHandler.UpdateAvatar)
 
