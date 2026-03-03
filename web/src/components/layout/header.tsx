@@ -30,9 +30,6 @@ export function Header() {
   const canGoBack = useCanGoBack()
   const canGoForward = useCanGoForward()
 
-  console.log("Can go forward", canGoForward)
-
-
   const handleBackClick = () => canGoBack && router.history.back()
   const handleForwardClick = () => canGoForward && router.history.go(1)
 

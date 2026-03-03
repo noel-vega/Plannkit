@@ -30,7 +30,6 @@ export function CreateGoalForm(props: CreateGoalFormProps) {
 
   const handleSubmit = (e: FormEvent) => {
     form.handleSubmit(data => {
-      console.log("submit", data)
       createGoal(data, {
         onSuccess: props.onSubmit
       })
