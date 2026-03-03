@@ -1,10 +1,8 @@
-import { BackButton } from '@/components/back-button'
 import { Container } from '@/components/layout/container'
 import { Page } from '@/components/layout/page'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
 import { useAuth } from '@/features/auth/store'
 import { getUseUserProfileQueryOptions, useFollowMutation, useUnFollowMutation, useUserProfile } from '@/features/network/hooks'
 import { queryClient } from '@/lib/react-query'
@@ -34,8 +32,6 @@ function RouteComponent() {
   return (
     <Page title="Profile">
       <Container className="max-w-5xl">
-        <BackButton />
-        <Separator className="my-2 bg-transparent" />
         <Card className="p-0 overflow-clip gap-0">
           <CardHeader className="h-60 bg-blue-500" />
           <CardContent className="pt-0 relative">

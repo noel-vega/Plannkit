@@ -16,8 +16,6 @@ export function BackButton({ to }: { to?: string }) {
     } else {
       router.navigate({ to: "/dashboard" })
     }
-
-
   }
 
   return (

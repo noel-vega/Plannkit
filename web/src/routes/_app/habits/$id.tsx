@@ -1,4 +1,3 @@
-import { BackButton } from '@/components/back-button'
 import { ContributionsGrid } from '@/features/habits/components/contributions-grid'
 import { EditHabitDialog } from '@/features/habits/components/edit-habit-form'
 import { Button } from '@/components/ui/button'
@@ -68,7 +67,6 @@ function Header({ habit }: { habit: HabitWithContributions }) {
   return (
     <>
       <header className="flex gap-8 items-center mb-8">
-        <BackButton to="/habits" />
         <h2 className="text-2xl font-semibold">{habit.name}</h2>
         <div className='space-x-2 ml-auto'>
 

@@ -1,4 +1,3 @@
-import { BackButton } from '@/components/back-button'
 import { Container } from '@/components/layout/container'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -120,7 +119,6 @@ function GoalHeader(props: { goal: Goal; contributions: GoalContribution[] }) {
       : statusConfig['on-hold']
   return (
     <header className="flex gap-4 items-center mb-8">
-      <BackButton to={`/finances/${props.goal.spaceId}/#goals`} />
       <div>
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-1">{t("Goal")}</p>
         <div className="flex items-center gap-2">

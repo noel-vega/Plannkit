@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { getUseDiscoverUsersQueryOptions, useDiscoverUsersQuery } from '@/features/network/hooks'
 import { queryClient } from '@/lib/react-query'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { GlobeIcon, HandshakeIcon, SpotlightIcon, UsersIcon } from 'lucide-react'
+import { GlobeIcon, HandshakeIcon, SearchIcon, SpotlightIcon, UsersIcon } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { useDebounce } from 'use-debounce'
 import { useTranslation } from 'react-i18next'
@@ -64,7 +64,7 @@ function DiscoverUsers() {
   return (
     <>
       <Field className="mb-4">
-        <Input onInput={handleSearchInput} placeholder={t("Search users...")} />
+        <Input icon={SearchIcon} onInput={handleSearchInput} placeholder={t("Search users...")} />
       </Field>
       <ul className="divide-y">
         {users.data.map(user => (
@@ -106,7 +106,7 @@ function Following() {
   return (
     <>
       <Field className="mb-4">
-        <Input onInput={handleSearchInput} placeholder={t("Search users...")} />
+        <Input icon={SearchIcon} onInput={handleSearchInput} placeholder={t("Search following...")} />
       </Field>
       <ul className="divide-y">
         {users.data.map(user => (
@@ -129,9 +129,7 @@ function Following() {
           </li>
         ))}
       </ul>
-
     </>
-
   )
 }
 
@@ -148,7 +146,7 @@ function Follwers() {
   return (
     <>
       <Field className="mb-4">
-        <Input onInput={handleSearchInput} placeholder={t("Search users...")} />
+        <Input icon={SearchIcon} onInput={handleSearchInput} placeholder={t("Search followers...")} />
       </Field>
       <ul className="divide-y">
         {users.data.map(user => (
