@@ -59,7 +59,7 @@ function RouteComponent() {
   return (
     <div className="@container">
       <Container>
-        <div className="mb-4 grid grid-cols-1 @7xl:grid-cols-3 gap-4">
+        <div className="mb-4 grid grid-cols-1 @3xl:grid-cols-3 gap-4">
           <FinanceSpaceSwitcher
             currentSpace={rtCtx.currentSpace}
             spaces={spaces.data}
@@ -68,8 +68,6 @@ function RouteComponent() {
             onSettings={handleSettings}
           />
         </div>
-      </Container>
-      <Container>
         <div className="grid grid-cols-1 @3xl:grid-cols-3 gap-3.5 mb-4">
           <MonthlyIncomeCard />
           <MonthlyExpensesCard expenses={expenses.data} />

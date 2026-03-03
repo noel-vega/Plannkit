@@ -9,12 +9,32 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { Link } from "@tanstack/react-router"
+import { Link, useLocation } from "@tanstack/react-router"
 import { useTranslation } from "react-i18next"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { communityLinks, links } from "./links"
+import { communityFeatures, links, type FeatureLink } from "./links"
 import { useAuth } from "@/features/auth/store"
 import { ChevronsUpDownIcon } from "lucide-react"
+
+function FeatureNavLink(props: { feature: FeatureLink }) {
+  const { t } = useTranslation()
+  const { feature } = props
+  const { pathname } = useLocation()
+  const isActive = pathname.startsWith(feature.to as string)
+  return (
+    <SidebarMenuItem key={feature.label} className="relative px-2">
+      {isActive && <div className="h-full w-0.75 bg-blue-500 absolute left-0" />}
+      <SidebarMenuButton asChild>
+        <Link to={feature.to} className="border border-transparent" activeProps={{
+          className: "font-semibold border-border",
+        }}>
+          <feature.icon />
+          <span>{t(feature.label)}</span>
+        </Link>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  )
+}
 
 export function AppSidebar() {
   const { t } = useTranslation()
@@ -23,41 +43,23 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarContent>
-        <SidebarGroup>
+        <SidebarGroup className="px-0">
           <SidebarGroupLabel>Plannkit</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {links.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild className="">
-                    <Link to={item.url} className="border border-transparent" activeProps={{
-                      className: "font-semibold border-border"
-                    }}>
-                      <item.icon />
-                      <span>{t(item.title)}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+                <FeatureNavLink feature={item} />
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup>
+        <SidebarGroup className="px-0">
           <SidebarGroupLabel>{t("Network")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {communityLinks.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild className="">
-                    <Link to={item.url} className="border border-transparent" activeProps={{
-                      className: "font-semibold border-border"
-                    }}>
-                      <item.icon />
-                      <span>{t(item.title)}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+              {communityFeatures.map((feature) => (
+                <FeatureNavLink feature={feature} />
               ))}
             </SidebarMenu>
           </SidebarGroupContent>

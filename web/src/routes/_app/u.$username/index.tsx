@@ -33,7 +33,7 @@ function RouteComponent() {
   const isMe = me.id === profile.user.id
   return (
     <Page title="Profile">
-      <Container>
+      <Container className="max-w-5xl">
         <BackButton />
         <Separator className="my-2 bg-transparent" />
         <Card className="p-0 overflow-clip gap-0">

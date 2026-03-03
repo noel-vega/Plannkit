@@ -1,17 +1,25 @@
-import { SproutIcon, ListIcon, BanknoteIcon, MailIcon, FilesIcon, LayoutDashboard, ShoppingBasketIcon, StickyNoteIcon, ContactIcon } from "lucide-react";
+import type { LinkProps } from "@tanstack/react-router";
+import { SproutIcon, ListIcon, BanknoteIcon, MailIcon, FilesIcon, LayoutDashboard, ShoppingBasketIcon, StickyNoteIcon, ContactIcon, type LucideIcon } from "lucide-react";
 
 const isDev = import.meta.env.DEV
 
-export const communityLinks = [
+export type FeatureLink = {
+  label: string;
+  to: LinkProps["to"];
+  icon: LucideIcon;
+  active: boolean
+}
+
+export const communityFeatures: FeatureLink[] = [
   {
-    title: "Posts",
-    url: "/network/posts",
+    label: "Posts",
+    to: "/network/posts",
     icon: StickyNoteIcon,
     active: isDev,
   },
   {
-    title: "People",
-    url: "/network/people",
+    label: "People",
+    to: "/network/people",
     icon: ContactIcon,
     active: isDev,
   },
@@ -19,51 +27,51 @@ export const communityLinks = [
 
 // TODO: make urls type safe with router
 //
-export const links = [
+export const links: FeatureLink[] = [
   {
-    title: "Dashboard",
-    url: "/dashboard",
+    label: "Dashboard",
+    to: "/dashboard",
     icon: LayoutDashboard,
     active: isDev,
   },
   {
-    title: "Habits",
-    url: "/habits",
+    label: "Habits",
+    to: "/habits",
     icon: SproutIcon,
     active: true,
   },
   {
-    title: "Tasks",
-    url: "/todos",
+    label: "Tasks",
+    to: "/todos",
     icon: ListIcon,
     active: true,
   },
   {
-    title: "Finances",
-    url: "/finances",
+    label: "Finances",
+    to: "/finances",
     icon: BanknoteIcon,
     active: true,
   },
   {
-    title: "Groceries",
-    url: "/groceries",
+    label: "Groceries",
+    to: "/groceries",
     icon: ShoppingBasketIcon,
     active: true,
   },
 ]
 
 
-export const comingSoonLinks = [
+export const comingSoonLinks: FeatureLink[] = [
   {
-    title: "Email",
-    url: "/email",
+    label: "Email",
+    to: "/email",
     icon: MailIcon,
-    active: isDev,
+    active: false,
   },
   {
-    title: "Documents",
-    url: "/documents",
+    label: "Documents",
+    to: "/documents",
     icon: FilesIcon,
-    acitve: isDev,
+    active: false
   },
 ]
