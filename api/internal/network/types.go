@@ -7,6 +7,15 @@ import (
 	"github.com/noel-vega/habits/api/internal/user"
 )
 
+type ListUsersQueryParams struct {
+	Search string `form:"search"`
+}
+
+type ListUsersParams struct {
+	UserID      int `db:"user_id"`
+	QueryParams *ListUsersQueryParams
+}
+
 type Follower struct {
 	ID              int       `json:"id" db:"id"`
 	UserID          int       `json:"userId" db:"user_id"`
@@ -51,4 +60,8 @@ type UserProfile struct {
 	User         *user.UserNoPassword `json:"user"`
 	IsFollowing  bool                 `json:"isFollowing"`
 	FollowStatus *string              `json:"followStatus"`
+}
+
+type ListFollowersParams struct {
+	UserID int `db:"user_id"`
 }

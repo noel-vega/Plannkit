@@ -29,7 +29,7 @@ export function useUserProfile(username: string, initialData: UserProfile) {
 
 export function useFollowMutation(username: string) {
   return useMutation({
-    mutationFn: network.follow,
+    mutationFn: network.users.follow,
     onSuccess: async () => {
       await queryClient.invalidateQueries(getUseUserProfileQueryOptions(username))
     }
@@ -39,7 +39,7 @@ export function useFollowMutation(username: string) {
 
 export function useUnFollowMutation(username: string) {
   return useMutation({
-    mutationFn: network.unfollow,
+    mutationFn: network.users.unfollow,
     onSuccess: async () => {
       await queryClient.invalidateQueries(getUseUserProfileQueryOptions(username))
     }

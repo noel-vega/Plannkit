@@ -4,8 +4,10 @@ import (
 	"database/sql"
 	"errors"
 
+	sq "github.com/Masterminds/squirrel"
 	"github.com/jmoiron/sqlx"
 	"github.com/noel-vega/habits/api/internal/apperrors"
+	"github.com/noel-vega/habits/api/internal/user"
 )
 
 type Repository struct {
@@ -16,6 +18,27 @@ func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
 		db: db,
 	}
+}
+
+func (r *Repository) ListUsers(params *ListUsersParams) ([]user.UserNoPassword, error) {
+	qb := sq.Select(
+		"u.id", "u.username", "u.first_name", "u.last_name", "u.email",
+		"u.avatar", "u.is_private", "u.created_at", "u.updated_at",
+	).From("users u").LeftJoin("followers f ON f.user_id = ? AND f.following_user_id = u.id", params.UserID)
+
+	if params.QueryParams.Search != "" {
+		qb = qb.Where(sq.Expr("first_name || ' ' || last_name ILIKE ?", "%"+params.QueryParams.Search+"%"))
+	}
+	query, args, err := qb.PlaceholderFormat(sq.Dollar).ToSql()
+	if err != nil {
+		return nil, err
+	}
+	data := []user.UserNoPassword{}
+	err = r.db.Select(&data, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
 }
 
 func (r *Repository) GetFollower(params *GetFollowerParams) (*Follower, error) {

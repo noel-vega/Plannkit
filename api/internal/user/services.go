@@ -60,10 +60,6 @@ func (s *Service) GetUserByEmailWithPassword(email string) (*User, error) {
 	return user, nil
 }
 
-func (s *Service) ListUsers(params *ListUsersParams) ([]UserNoPassword, error) {
-	return s.userRepo.ListUsers(params)
-}
-
 func (s *Service) GetUserByID(ID int) (*UserNoPassword, error) {
 	user, err := s.userRepo.GetByID(ID)
 	if err != nil {

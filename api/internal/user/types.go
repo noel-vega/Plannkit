@@ -35,11 +35,3 @@ type CreateUserParams struct {
 	Email     string `json:"email" db:"email"`
 	Password  string `json:"password" db:"password"`
 }
-
-type ListUsersQueryParams struct {
-	Search string `form:"search"`
-}
-
-type ListUsersParams struct {
-	QueryParams *ListUsersQueryParams
-}

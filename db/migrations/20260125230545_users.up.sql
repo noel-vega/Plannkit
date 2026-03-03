@@ -32,3 +32,7 @@ CREATE TABLE IF NOT EXISTS followers (
 
 CREATE INDEX idx_followers_user_id
 ON followers(user_id);
+
+
+CREATE INDEX idx_followers_following_user_id
+ON followers(following_user_id);

@@ -7,7 +7,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/noel-vega/habits/api/internal/apperrors"
-	"github.com/noel-vega/habits/api/internal/user"
 )
 
 type Handler struct {
@@ -21,14 +20,14 @@ func NewHandler(service *Service) *Handler {
 }
 
 func (h *Handler) Discover(c *gin.Context) {
-	queryParams := &user.ListUsersQueryParams{}
+	queryParams := &ListUsersQueryParams{}
 	err := c.BindQuery(queryParams)
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	params := &user.ListUsersParams{
+	params := &ListUsersParams{
 		QueryParams: queryParams,
 	}
 
@@ -114,4 +113,9 @@ func (h *Handler) UnFollowUser(c *gin.Context) {
 }
 
 func (h *Handler) AcceptFollowRequest(c *gin.Context) {
+}
+
+// TODO: will implement soon
+func (h *Handler) ListFollowers(c *gin.Context) {
+	// h.service.ListFollowers()
 }

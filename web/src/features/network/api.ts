@@ -16,16 +16,20 @@ export const network = {
     const data = await response.json()
     return UserSchema.array().parse(data)
   },
-  follow: async (userId: number) => {
-    await pkFetch(`/network/follow/${userId}`, { method: "POST" })
-  },
-  unfollow: async (userId: number) => {
-    await pkFetch(`/network/follow/${userId}`, { method: "DELETE" })
-  },
-  acceptFollow: async (userId: number) => {
-    await pkFetch(`/network/follow/${userId}`, { method: "PATCH" })
-  },
-  following: async (userId: number) => {
-
+  users: {
+    follow: async (userId: number) => {
+      await pkFetch(`/network/users/${userId}/follow`, { method: "POST" })
+    },
+    unfollow: async (userId: number) => {
+      await pkFetch(`/network/users/${userId}/follow`, { method: "DELETE" })
+    },
+    acceptFollow: async (userId: number) => {
+      await pkFetch(`/network/users/${userId}/follow`, { method: "PATCH" })
+    },
+    following: async (userId: number) => {
+      const response = await pkFetch(`/network/users/${userId}/following`)
+      const data = await response.json()
+      return UserSchema.array().parse(data)
+    }
   }
 }
