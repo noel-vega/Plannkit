@@ -13,6 +13,9 @@ export const network = {
       if (params?.search) {
         searchParams.set("search", params.search)
       }
+      if (params?.filter) {
+        searchParams.set("filter", params.filter)
+      }
       const response = await pkFetch("/network/users?" + searchParams)
       const data = await response.json()
       return NetworkUserSchema.array().parse(data)

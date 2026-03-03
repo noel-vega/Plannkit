@@ -2,7 +2,8 @@ import z from "zod/v3";
 import { AvatarSchema } from "../user/types";
 
 export const DiscoverUsersParamsSchema = z.object({
-  search: z.string().trim().nullable()
+  search: z.string().trim().nullable(),
+  filter: z.literal("following").or(z.literal("followers")).or(z.literal("all")).optional()
 })
 
 export type DiscoverUsersParams = z.infer<typeof DiscoverUsersParamsSchema>
