@@ -137,3 +137,34 @@ type DeleteExpenseParams struct {
 	SpaceID int `json:"spaceId" db:"finance_space_id"`
 	UserID  int `json:"userId" db:"user_id"`
 }
+
+type IncomeSource struct {
+	ID        int       `json:"id" db:"id"`
+	SpaceID   int       `json:"spaceId" db:"finance_space_id"`
+	UserID    int       `json:"userId" db:"user_id"`
+	Name      string    `json:"name" db:"name"`
+	Amount    int       `json:"amount" db:"amount"`
+	CreatedAt time.Time `json:"createdAt" db:"created_at"`
+	UpdatedAt time.Time `json:"updatedAt" db:"updated_at"`
+}
+
+type CreateIncomeSourceBody struct {
+	Name   string `json:"name"`
+	Amount int    `json:"amount"`
+}
+
+type InsertIncomeSourceParams struct {
+	SpaceID int    `db:"finance_space_id"`
+	UserID  int    `db:"user_id"`
+	Name    string `db:"name"`
+	Amount  int    `db:"amount"`
+}
+
+type ListIncomeSourcesParams struct {
+	SpaceID int `db:"finance_space_id"`
+}
+
+type DeleteIncomeSourceParams struct {
+	ID      int `db:"id"`
+	SpaceID int `db:"finance_space_id"`
+}

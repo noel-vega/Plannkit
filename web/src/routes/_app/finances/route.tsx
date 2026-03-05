@@ -2,6 +2,7 @@ import { Page } from '@/components/layout/page'
 import { getUseListSpacesOptions } from '@/features/finances/hooks'
 import { queryClient } from '@/lib/react-query'
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
+import { BanknoteIcon } from 'lucide-react'
 import z from 'zod/v3'
 
 export const Route = createFileRoute('/_app/finances')({
@@ -20,6 +21,12 @@ export const Route = createFileRoute('/_app/finances')({
   },
   component: () => {
     return <Page title="Finances">
+      <div className="border-b py-4 px-8">
+        <div className="flex items-center gap-6">
+          <BanknoteIcon />
+          <h2 className="text-2xl font-semibold">Finances</h2>
+        </div>
+      </div>
       <Outlet />
     </Page>
   },

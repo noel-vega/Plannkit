@@ -2,7 +2,7 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { HabitCard } from '@/features/habits/components/habit-card'
 import { CreateHabitDialogDrawer } from '@/features/habits/components/create-habit-form'
 import { Button } from '@/components/ui/button'
-import { PlusIcon } from 'lucide-react'
+import { PlusIcon, SproutIcon } from 'lucide-react'
 import { useDialog } from '@/hooks'
 import { format } from 'date-fns'
 import { TodaysProgress } from '@/features/habits/components/today-progress'
@@ -26,6 +26,12 @@ function RouteComponent() {
   const habits = useListHabits({ initialData: loaderData.habits })
   return (
     <Page title="Habits">
+      <div className="border-b py-4 px-8">
+        <div className="flex items-center gap-6">
+          <SproutIcon />
+          <h2 className="text-2xl font-semibold">Habits</h2>
+        </div>
+      </div>
       <Container className="space-y-6">
         <Header />
         <WeekDayIndicator habits={habits.data} />

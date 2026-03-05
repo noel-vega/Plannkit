@@ -1,14 +1,14 @@
 import { SidebarTrigger } from "../ui/sidebar"
 import { ArrowLeftIcon, ArrowRightIcon, LogOutIcon, SearchIcon, SettingsIcon } from "lucide-react"
 import { Button } from "../ui/button"
-import { Link, useCanGoBack, useNavigate, useRouter } from "@tanstack/react-router"
+import { Link, useNavigate } from "@tanstack/react-router"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog"
 import { useSignOut } from "@/features/auth/hooks"
 import { queryClient } from "@/lib/react-query"
 import { Input } from "../ui/input"
 import { ButtonGroup } from "../ui/button-group"
-import { useCanGoForward } from "@/hooks/use-can-go-forward"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip"
+import { useNavigation } from "@/hooks/use-navigation"
 
 
 export function Header() {
@@ -25,22 +25,16 @@ export function Header() {
     })
   }
 
-  const router = useRouter()
-
-  const canGoBack = useCanGoBack()
-  const canGoForward = useCanGoForward()
-
-  const handleBackClick = () => canGoBack && router.history.back()
-  const handleForwardClick = () => canGoForward && router.history.go(1)
+  const { canGoBack, canGoForward, goBack, goForward } = useNavigation()
 
   return (
     <div className="h-12 border-b flex items-center px-4 xl:px-6 gap-4 bg-sidebar">
       <SidebarTrigger />
       <ButtonGroup>
-        <Button variant="ghost" size="sm" disabled={!canGoBack} onClick={handleBackClick} >
+        <Button variant="ghost" size="sm" disabled={!canGoBack} onClick={goBack} >
           <ArrowLeftIcon />
         </Button>
-        <Button variant="ghost" size="sm" disabled={!canGoForward} onClick={handleForwardClick}>
+        <Button variant="ghost" size="sm" disabled={!canGoForward} onClick={goForward}>
           <ArrowRightIcon />
         </Button>
       </ButtonGroup>

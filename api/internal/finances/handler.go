@@ -268,3 +268,60 @@ func (h *Handler) DeleteExpense(c *gin.Context) {
 
 	c.Status(http.StatusNoContent)
 }
+
+func (h *Handler) CreateIncomeSource(c *gin.Context) {
+	body := &CreateIncomeSourceBody{}
+	err := c.Bind(body)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	params := &InsertIncomeSourceParams{
+		SpaceID: c.MustGet("spaceID").(int),
+		UserID:  c.MustGet("userID").(int),
+		Amount:  body.Amount,
+		Name:    body.Name,
+	}
+
+	incomeSource, err := h.service.CreateIncomeSource(params)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusCreated, incomeSource)
+}
+
+func (h *Handler) ListIncomes(c *gin.Context) {
+	params := &ListIncomeSourcesParams{
+		SpaceID: c.MustGet("spaceID").(int),
+	}
+	incomeSources, err := h.service.ListIncomeSources(params)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, incomeSources)
+}
+
+func (h *Handler) DeleteIncome(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("incomeSourceID"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+	params := &DeleteIncomeSourceParams{
+		ID:      id,
+		SpaceID: c.MustGet("spaceID").(int),
+	}
+
+	err = h.service.DeleteIncomeSource(params)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.Status(http.StatusNoContent)
+}

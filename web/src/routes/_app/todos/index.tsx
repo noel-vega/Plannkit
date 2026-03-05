@@ -4,6 +4,7 @@ import { Page } from '@/components/layout/page'
 import { getBoardQueryOptions, getListTodosQueryOptions } from '@/features/todos/hooks';
 import { Board } from '@/features/todos/components/board';
 import { Container } from '@/components/layout/container';
+import { ListIcon } from 'lucide-react';
 
 export const Route = createFileRoute('/_app/todos/')({
   head: () => ({ meta: [{ title: "Tasks" }] }),
@@ -20,6 +21,12 @@ function RouteComponent() {
   const board = useQuery({ ...getBoardQueryOptions(), initialData: loaderData.board })
   return (
     <Page title="Tasks" className="space-y-4">
+      <div className="border-b py-4 px-8">
+        <div className="flex items-center gap-6">
+          <ListIcon />
+          <h2 className="text-2xl font-semibold">Tasks</h2>
+        </div>
+      </div>
       <Container className="w-full">
         <Board board={board.data} />
       </Container>

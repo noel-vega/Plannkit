@@ -87,3 +87,15 @@ func (s *Service) ListExpenses(params *ListExpensesParams) ([]Expense, error) {
 func (s *Service) DeleteExpense(params *DeleteExpenseParams) error {
 	return s.repository.DeleteExpense(params)
 }
+
+func (s *Service) CreateIncomeSource(params *InsertIncomeSourceParams) (*IncomeSource, error) {
+	return s.repository.InsertIncomeSource(params)
+}
+
+func (s *Service) ListIncomeSources(params *ListIncomeSourcesParams) ([]IncomeSource, error) {
+	return s.repository.ListIncomeSources(params)
+}
+
+func (s *Service) DeleteIncomeSource(params *DeleteIncomeSourceParams) error {
+	return s.repository.DeleteIncomeSource(params)
+}

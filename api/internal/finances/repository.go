@@ -119,11 +119,6 @@ func (r *Repository) GetSpaceByID(userID, spaceID int) (*Space, error) {
 	return data, nil
 }
 
-func (r *Repository) CreateIncomeSource()     {}
-func (r *Repository) ListIncomeSources()      {}
-func (r *Repository) DeleteIncomeSourceByID() {}
-func (r *Repository) GetIncomeSourceByID()    {}
-
 func (r *Repository) CreateGoal(params *CreateGoalParams) (*Goal, error) {
 	query := `
 		INSERT INTO 
@@ -299,6 +294,62 @@ func (r *Repository) DeleteExpense(params *DeleteExpenseParams) error {
 	  WHERE id = :id 
 	  AND user_id = :user_id
 	  AND finance_space_id = :finance_space_id
+	`
+	_, err := r.db.NamedExec(query, params)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// CREATE TABLE IF NOT EXISTS finance_spaces_income_sources (
+//   id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+//   finance_space_id INT NOT NULL REFERENCES finance_spaces(id) ON DELETE CASCADE,
+//   user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+//   name TEXT NOT NULL,
+//   amount INT NOT NULL,
+//   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+//   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+// );
+
+func (r *Repository) InsertIncomeSource(params *InsertIncomeSourceParams) (*IncomeSource, error) {
+	query := `
+		INSERT INTO 
+	  finance_spaces_income_sources (finance_space_id, user_id, name, amount)
+	  VALUES (:finance_space_id, :user_id, :name, :amount)
+	  RETURNING *
+	`
+	query, args, err := sqlx.Named(query, params)
+	if err != nil {
+		return nil, err
+	}
+	incomeSource := &IncomeSource{}
+	err = r.db.Get(incomeSource, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	return incomeSource, nil
+}
+
+func (r *Repository) ListIncomeSources(params *ListIncomeSourcesParams) ([]IncomeSource, error) {
+	query := `
+		SELECT * 
+	  FROM finance_spaces_income_sources 
+	  WHERE finance_space_id = $1
+	`
+	incomeSources := []IncomeSource{}
+	err := r.db.Select(&incomeSources, query, params.SpaceID)
+	if err != nil {
+		return nil, err
+	}
+
+	return incomeSources, nil
+}
+
+func (r *Repository) DeleteIncomeSource(params *DeleteIncomeSourceParams) error {
+	query := `
+		DELETE FROM finance_spaces_income_sources
+	  WHERE id = :id AND finance_space_id = :finance_space_id
 	`
 	_, err := r.db.NamedExec(query, params)
 	if err != nil {

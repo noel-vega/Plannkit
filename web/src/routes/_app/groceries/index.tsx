@@ -7,7 +7,7 @@ import { AddItemForm, type AddItemFormData } from '@/features/groceries/componen
 import { GroceryListitem } from '@/features/groceries/components/grocery-list-item'
 import type { GroceryListItem } from '@/features/groceries/types'
 import { createFileRoute } from '@tanstack/react-router'
-import { BookTextIcon, PlusIcon } from 'lucide-react'
+import { BookTextIcon, PlusIcon, ShoppingBasketIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -49,6 +49,12 @@ function RouteComponent() {
 
   return (
     <Page title="Groceries">
+      <div className="border-b py-4 px-8">
+        <div className="flex items-center gap-6">
+          <ShoppingBasketIcon />
+          <h2 className="text-2xl font-semibold">Groceries</h2>
+        </div>
+      </div>
       <Container className="h-full flex flex-col pb-2">
         <div className="flex gap-4">
           <h2 className="text-xl font-medium mb-4">{t("Shopping List")} ({items.length})</h2>
