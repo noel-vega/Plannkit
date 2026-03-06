@@ -323,6 +323,7 @@ func (r *Repository) InsertIncomeSource(params *InsertIncomeSourceParams) (*Inco
 	if err != nil {
 		return nil, err
 	}
+	query = r.db.Rebind(query)
 	incomeSource := &IncomeSource{}
 	err = r.db.Get(incomeSource, query, args...)
 	if err != nil {
