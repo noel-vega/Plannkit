@@ -91,7 +91,7 @@ export const IncomeSourceSchema = z.object({
   spaceId: z.number(),
   userId: z.number(),
   name: z.string(),
-  amount: z.number(),
+  amount: z.coerce.number(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date()
 })
