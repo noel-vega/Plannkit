@@ -26,7 +26,7 @@ export function ManageIncomesSheet({ spaceId, ...props }: { spaceId: number } & 
             {t("Monthly Income Breakdown")}
           </SheetTitle>
           <SheetDescription>
-            {t("Manage your household income sources")}
+            {t("Manage your income sources")}
           </SheetDescription>
         </SheetHeader>
 
