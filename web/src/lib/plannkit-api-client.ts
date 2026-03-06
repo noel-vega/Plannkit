@@ -2,6 +2,14 @@ import { useAuth } from "@/features/auth/store"
 
 type Method = "GET" | "POST" | "PATCH" | "DELETE"
 
+function parseBodyData(data?: unknown) {
+  if (data instanceof FormData) {
+    return data
+  } else {
+    return JSON.stringify(data)
+  }
+}
+
 export async function pkFetch(baseURL: string, path: string, options?: RequestInit & { method: Method }, json: boolean = true) {
   const { accessToken } = useAuth.getState()
   const url = new URL(path, baseURL)
@@ -31,19 +39,15 @@ class Client {
   }
   PATCH(path: string, data?: unknown) {
     let options = {}
-    if (data instanceof FormData) {
-      options = { body: data }
-    } else if (data !== undefined) {
-      options = { body: JSON.stringify(data) }
+    if (data !== undefined) {
+      options = { body: parseBodyData(data) }
     }
     return pkFetch(this.baseURL, path, { ...options, method: "PATCH", })
   }
   POST(path: string, data?: unknown) {
     let options = {}
-    if (data instanceof FormData) {
-      options = { body: data }
-    } else if (data !== undefined) {
-      options = { body: JSON.stringify(data) }
+    if (data !== undefined) {
+      options = { body: parseBodyData(data) }
     }
     return pkFetch(this.baseURL, path, { ...options, method: "POST" })
   }
@@ -52,10 +56,8 @@ class Client {
   }
   PUT(path: string, data?: unknown) {
     let options = {}
-    if (data instanceof FormData) {
-      options = { body: data }
-    } else if (data !== undefined) {
-      options = { body: JSON.stringify(data) }
+    if (data !== undefined) {
+      options = { body: parseBodyData(data) }
     }
     return pkFetch(this.baseURL, path, { ...options, method: "PATCH" })
   }
