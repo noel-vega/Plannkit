@@ -1,6 +1,6 @@
 import { queryOptions, useMutation, useQuery } from "@tanstack/react-query";
 import { finances } from "./api";
-import type { Expense, FinanceSpace, Goal, GoalContribution, GoalIdent, SpaceIdent } from "./types";
+import type { Expense, FinanceSpace, Goal, GoalContribution, GoalIdent, IncomeSource, SpaceIdent } from "./types";
 import { queryClient } from "@/lib/react-query";
 
 
@@ -59,7 +59,7 @@ export async function invalidateUseListExpenses(params: SpaceIdent) {
   return queryClient.invalidateQueries(getUseListExpensesOptions(params))
 }
 
-export function useListExpenses({ spaceId, initialData }: SpaceIdent & { initialData: Expense[] }) {
+export function useListExpenses({ spaceId, initialData }: SpaceIdent & { initialData?: Expense[] }) {
   return useQuery({ ...getUseListExpensesOptions({ spaceId }), initialData })
 }
 
@@ -95,7 +95,7 @@ export async function invalidateUseListGoals(params: SpaceIdent) {
   return queryClient.invalidateQueries(getUseListGoalsOptions(params))
 }
 
-export function useListGoals({ spaceId, initialData }: { spaceId: number, initialData: Goal[] }) {
+export function useListGoals({ spaceId, initialData }: { spaceId: number, initialData?: Goal[] }) {
   return useQuery({ ...getUseListGoalsOptions({ spaceId }), initialData })
 }
 
@@ -152,6 +152,40 @@ export function useDeleteExpense() {
     mutationFn: finances.expenses.delete,
     onSuccess: (_, { spaceId }) => {
       invalidateUseListExpenses({ spaceId })
+    }
+  })
+}
+
+// Income Sources
+export function getUseListIncomeSourcesOptions(params: SpaceIdent) {
+  return queryOptions({
+    queryKey: ["income-sources", params.spaceId],
+    queryFn: () => finances.incomeSources.list(params)
+  })
+}
+
+export async function invalidateUseListIncomeSources(params: SpaceIdent) {
+  return queryClient.invalidateQueries(getUseListIncomeSourcesOptions(params))
+}
+
+export function useListIncomeSources({ spaceId, initialData }: SpaceIdent & { initialData?: IncomeSource[] }) {
+  return useQuery({ ...getUseListIncomeSourcesOptions({ spaceId }), initialData })
+}
+
+export function useCreateIncomeSource() {
+  return useMutation({
+    mutationFn: finances.incomeSources.create,
+    onSuccess: (_, { spaceId }) => {
+      invalidateUseListIncomeSources({ spaceId })
+    }
+  })
+}
+
+export function useDeleteIncomeSource() {
+  return useMutation({
+    mutationFn: finances.incomeSources.delete,
+    onSuccess: (_, { spaceId }) => {
+      invalidateUseListIncomeSources({ spaceId })
     }
   })
 }

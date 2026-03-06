@@ -23,7 +23,7 @@ function FeatureNavLink(props: { feature: FeatureLink }) {
   const isActive = pathname.startsWith(feature.to as string)
   return (
     <SidebarMenuItem key={feature.label} className="relative px-2">
-      {isActive && <div className="h-full w-0.75 bg-blue-500 absolute left-0" />}
+      {isActive && <div className="h-full w-0.75 bg-orange-500 absolute left-0" />}
       <SidebarMenuButton asChild>
         <Link to={feature.to} className="border border-transparent" activeProps={{
           className: "font-semibold border-border",

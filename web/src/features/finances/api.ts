@@ -1,6 +1,6 @@
 import { pkFetch } from "@/lib/plannkit-api-client"
 import type { ByIdParams } from "../habits/types"
-import { ExpenseSchema, FinanceSpaceSchema, GoalContributionSchema, GoalSchema, type CreateExpenseParams, type CreateFinanceSpaceParams, type CreateGoalContributionParams, type CreateGoalParams, type Expense, type ExpenseIdent, type GoalIdent, type SpaceIdent } from "./types"
+import { ExpenseSchema, FinanceSpaceSchema, GoalContributionSchema, GoalSchema, IncomeSourceSchema, type CreateExpenseParams, type CreateFinanceSpaceParams, type CreateGoalContributionParams, type CreateGoalParams, type CreateIncomeSourceParams, type Expense, type ExpenseIdent, type GoalIdent, type SpaceIdent } from "./types"
 
 export const finances = {
   spaces: {
@@ -88,6 +88,26 @@ export const finances = {
     },
     delete: async (params: ExpenseIdent) => {
       return await pkFetch(`/finances/spaces/${params.spaceId}/expenses/${params.expenseId}`, {
+        method: "DELETE",
+      })
+    }
+  },
+  incomeSources: {
+    list: async (params: SpaceIdent) => {
+      const response = await pkFetch(`/finances/spaces/${params.spaceId}/incomes`)
+      const data = await response.json()
+      return IncomeSourceSchema.array().parse(data)
+    },
+    create: async (params: CreateIncomeSourceParams) => {
+      const response = await pkFetch(`/finances/spaces/${params.spaceId}/incomes`, {
+        method: "POST",
+        body: JSON.stringify(params)
+      })
+      const data = await response.json()
+      return IncomeSourceSchema.parse(data)
+    },
+    delete: async (params: SpaceIdent & { incomeSourceId: number }) => {
+      return await pkFetch(`/finances/spaces/${params.spaceId}/incomes/${params.incomeSourceId}`, {
         method: "DELETE",
       })
     }

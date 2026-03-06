@@ -1,13 +1,22 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/format";
 import { DollarSignIcon } from "lucide-react";
-import { data } from "../dummy-data";
 import { useTranslation } from "react-i18next";
+import { useListIncomeSources } from "../hooks";
+import type { IncomeSource } from "../types";
 
-export function MonthlyIncomeCard() {
-  const { t } = useTranslation()
+type MonthlyIncomeCardProps = {
+  spaceId: number;
+  incomeSources: IncomeSource[];
+};
+
+export function MonthlyIncomeCard({ spaceId, incomeSources: initialData }: MonthlyIncomeCardProps) {
+  const { t } = useTranslation();
+  const incomeSources = useListIncomeSources({ spaceId, initialData });
+  const totalIncome = incomeSources.data?.reduce((sum, s) => sum + s.amount, 0) ?? 0;
+
   return (
-    <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
+    <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">
           {t("Monthly Income")}
@@ -16,13 +25,13 @@ export function MonthlyIncomeCard() {
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">
-          {formatCurrency(data.monthlyIncome)}
+          {formatCurrency(totalIncome)}
         </div>
         <p className="text-xs text-muted-foreground mt-1">
-          0 {t("income sources")}{" "}
-          {t("sources • Click to manage")}
+          {incomeSources.data?.length} {t("sources")} &middot; {t("Click to manage")}
         </p>
       </CardContent>
     </Card>
-  )
+  );
 }
+

@@ -6,6 +6,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import type { PropsWithChildren } from 'react'
 import z from 'zod/v3'
 import { useTranslation } from 'react-i18next'
+import { Container } from '@/components/layout/container'
 
 export const Route = createFileRoute('/_app/finances/$spaceId/settings')({
   params: {
@@ -18,7 +19,7 @@ function RouteComponent() {
   const { t } = useTranslation()
   const params = Route.useParams()
   return (
-    <>
+    <Container>
       <Item variant="outline">
         <ItemContent>
           <ItemTitle>{t("Delete this space")}</ItemTitle>
@@ -33,7 +34,7 @@ function RouteComponent() {
           </DeleteSpaceAlertDialog>
         </ItemActions>
       </Item>
-    </>
+    </Container>
   )
 }
 

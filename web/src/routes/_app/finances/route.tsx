@@ -21,10 +21,9 @@ export const Route = createFileRoute('/_app/finances')({
   },
   component: () => {
     return <Page title="Finances">
-      <div className="border-b py-4 px-8">
+      <div className="border-b py-2 px-8">
         <div className="flex items-center gap-6">
-          <BanknoteIcon />
-          <h2 className="text-2xl font-semibold">Finances</h2>
+          <h2 className="font-semibold">Finances</h2>
         </div>
       </div>
       <Outlet />

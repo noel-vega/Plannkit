@@ -1,10 +1,18 @@
 import { formatCurrency } from "@/lib/format"
 import { data } from "../dummy-data"
 import { useTranslation } from "react-i18next"
+import { useListExpenses, useListGoals } from "../hooks"
 
-export function MarginStatusBanner() {
+export function MarginStatusBanner({ spaceId }: { spaceId: number }) {
   const { t } = useTranslation()
-  const monthlyRemaining = data.monthlyIncome - (data.monthlyExpenses + data.monthlyGoalCommitments)
+  const expenses = useListExpenses({ spaceId })
+  const goals = useListGoals({ spaceId })
+  const monthlyGoalCommitments = goals.data?.reduce((total, curr) => total + curr.monthlyCommitment, 0) ?? 0
+  const monthlyExpenses = expenses.data?.reduce((total, curr) => total + curr.amount, 0) ?? 0
+
+  console.log(monthlyGoalCommitments, monthlyExpenses)
+  const monthlyRemaining = data.monthlyIncome - (monthlyExpenses + monthlyGoalCommitments)
+
   return (
     <>
       {monthlyRemaining < 0 ? (

@@ -26,12 +26,12 @@ function RouteComponent() {
   const habits = useListHabits({ initialData: loaderData.habits })
   return (
     <Page title="Habits">
-      <div className="border-b py-4 px-8">
+      <div className="border-b py-2 px-8">
         <div className="flex items-center gap-6">
-          <SproutIcon />
-          <h2 className="text-2xl font-semibold">Habits</h2>
+          <h2 className="font-semibold">Habits</h2>
         </div>
       </div>
+
       <Container className="space-y-6">
         <Header />
         <WeekDayIndicator habits={habits.data} />

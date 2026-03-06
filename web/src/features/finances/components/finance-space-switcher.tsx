@@ -6,6 +6,7 @@ import type { FinanceSpace } from "../types";
 import { CreateSpaceDialog } from "./create-finance-space-form";
 import { useDialog } from "@/hooks";
 import { useTranslation } from "react-i18next";
+import { ManageIncomesSheet } from "./manage-incomes-sheet";
 
 type Props = {
   currentSpace: FinanceSpace,
@@ -18,56 +19,68 @@ type Props = {
 export function FinanceSpaceSwitcher(props: Props) {
   const { t } = useTranslation()
   const createSpaceDialog = useDialog()
+  const incomeSourcesSheet = useDialog()
   const popover = useDialog()
   return (
-    <Popover {...popover}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          className="h-9  max-w-96 w-full justify-start gap-2 border-border bg-background px-3 text-sm font-medium text-foreground shadow-sm text-left"
-        >
-          <WalletIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
-          <span className="truncate max-w-45">
-            {props.currentSpace.name ?? t("Select space")}
-          </span>
-          <ChevronsUpDownIcon className=" h-3.5 w-3.5 shrink-0 text-muted-foreground ml-auto" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="p-0" align="start" style={{ width: "var(--radix-popover-trigger-width)" }} >
-        <Command className="w-full rounded-lg border" onSelect={() => {
-          popover.onOpenChange(false)
-        }}>
-          <CommandInput placeholder={t("Type a command or search...")} />
-          <CommandList>
-            <CommandEmpty>{t("No results found.")}</CommandEmpty>
+    <>
+      <Popover {...popover}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            className="h-9  max-w-96 w-full justify-start gap-2 border-border bg-background px-3 text-sm font-medium text-foreground shadow-sm text-left"
+          >
+            <WalletIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
+            <span className="truncate max-w-45">
+              {props.currentSpace.name ?? t("Select space")}
+            </span>
+            <ChevronsUpDownIcon className=" h-3.5 w-3.5 shrink-0 text-muted-foreground ml-auto" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="p-0" align="start" style={{ width: "var(--radix-popover-trigger-width)" }} >
+          <Command className="w-full rounded-lg border" onSelect={() => {
+            popover.onOpenChange(false)
+          }}>
+            <CommandInput placeholder={t("Type a command or search...")} />
+            <CommandList>
+              <CommandEmpty>{t("No results found.")}</CommandEmpty>
 
-            <CommandGroup heading={props.currentSpace.name}>
-              <CommandItem
-                onSelect={() => {
-                  props.onSettings(props.currentSpace)
-                  popover.close()
-                }}>
-                {t("Settings")}
-              </CommandItem>
-            </CommandGroup>
-            <CommandGroup heading={t("Spaces")}>
-              {props.spaces.map(space => (
+              <CommandGroup heading={props.currentSpace.name}>
                 <CommandItem
-                  key={space.id}
                   onSelect={() => {
-                    props.onSpaceSelect(space)
+                    popover.close()
+                    incomeSourcesSheet.handleOpenDialog()
+                  }}>
+                  {t("Income Sources")}
+                </CommandItem>
+                <CommandItem
+                  onSelect={() => {
+                    props.onSettings(props.currentSpace)
                     popover.close()
                   }}>
-                  <WalletIcon />{space.name}
+                  {t("Settings")}
                 </CommandItem>
-              ))}
-              <CommandItem onSelect={createSpaceDialog.handleOpenDialog}><PlusIcon />{t("Create Space")}</CommandItem>
-            </CommandGroup>
-            <CommandSeparator />
-          </CommandList>
-        </Command>
-      </PopoverContent>
-      <CreateSpaceDialog {...createSpaceDialog} onSuccess={props.onCreate} />
-    </Popover>
+              </CommandGroup>
+              <CommandGroup heading={t("Spaces")}>
+                {props.spaces.map(space => (
+                  <CommandItem
+                    key={space.id}
+                    onSelect={() => {
+                      props.onSpaceSelect(space)
+                      popover.close()
+                    }}>
+                    <WalletIcon />{space.name}
+                  </CommandItem>
+                ))}
+                <CommandItem onSelect={createSpaceDialog.handleOpenDialog}><PlusIcon />{t("Create Space")}</CommandItem>
+              </CommandGroup>
+              <CommandSeparator />
+            </CommandList>
+          </Command>
+        </PopoverContent>
+        <CreateSpaceDialog {...createSpaceDialog} onSuccess={props.onCreate} />
+      </Popover>
+
+      <ManageIncomesSheet spaceId={props.currentSpace.id} {...incomeSourcesSheet} />
+    </>
   )
 }

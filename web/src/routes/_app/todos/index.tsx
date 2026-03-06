@@ -21,10 +21,9 @@ function RouteComponent() {
   const board = useQuery({ ...getBoardQueryOptions(), initialData: loaderData.board })
   return (
     <Page title="Tasks" className="space-y-4">
-      <div className="border-b py-4 px-8">
+      <div className="border-b py-2 px-8">
         <div className="flex items-center gap-6">
-          <ListIcon />
-          <h2 className="text-2xl font-semibold">Tasks</h2>
+          <h2 className="font-semibold">Tasks</h2>
         </div>
       </div>
       <Container className="w-full">

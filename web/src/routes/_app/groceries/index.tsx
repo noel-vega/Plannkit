@@ -49,10 +49,9 @@ function RouteComponent() {
 
   return (
     <Page title="Groceries">
-      <div className="border-b py-4 px-8">
+      <div className="border-b py-2 px-8">
         <div className="flex items-center gap-6">
-          <ShoppingBasketIcon />
-          <h2 className="text-2xl font-semibold">Groceries</h2>
+          <h2 className="font-semibold">Groceries</h2>
         </div>
       </div>
       <Container className="h-full flex flex-col pb-2">

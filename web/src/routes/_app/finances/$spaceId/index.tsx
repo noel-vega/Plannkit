@@ -12,8 +12,8 @@ import { MonthlyGoalCommitmentsCard } from '@/features/finances/components/month
 import { MonthlyIncomeCard } from '@/features/finances/components/monthly-income-card'
 import { CreateExpenseDialog } from '@/features/finances/components/create-expense-form'
 import { FinanceSpaceSwitcher } from '@/features/finances/components/finance-space-switcher'
-import { getUseListExpensesOptions, getUseListGoalsOptions, useListExpenses, useListGoals, useListSpaces } from '@/features/finances/hooks'
-import type { FinanceSpace } from '@/features/finances/types'
+import { getUseListExpensesOptions, getUseListGoalsOptions, getUseListIncomeSourcesOptions, useListExpenses, useListGoals, useListSpaces } from '@/features/finances/hooks'
+import type { Expense, FinanceSpace, Goal } from '@/features/finances/types'
 import { GoalCard } from '@/features/finances/components/goal-card'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { PlusIcon, TargetIcon } from 'lucide-react'
@@ -25,11 +25,12 @@ import { useTranslation } from 'react-i18next'
 
 export const Route = createFileRoute('/_app/finances/$spaceId/')({
   beforeLoad: async ({ params }) => {
-    const [expenses, goals] = await Promise.all([
+    const [expenses, goals, incomeSources] = await Promise.all([
       queryClient.ensureQueryData(getUseListExpensesOptions(params)),
-      queryClient.ensureQueryData(getUseListGoalsOptions(params))
+      queryClient.ensureQueryData(getUseListGoalsOptions(params)),
+      queryClient.ensureQueryData(getUseListIncomeSourcesOptions(params))
     ])
-    return { expenses, goals }
+    return { expenses, goals, incomeSources }
   },
   params: {
     parse: z.object({ spaceId: z.coerce.number() }).parse
@@ -69,16 +70,14 @@ function RouteComponent() {
           />
         </div>
         <div className="grid grid-cols-1 @3xl:grid-cols-3 gap-3.5 mb-4">
-          <MonthlyIncomeCard />
-          <MonthlyExpensesCard expenses={expenses.data} />
-          <MonthlyGoalCommitmentsCard goals={goals.data} />
+          <MonthlyIncomeCard spaceId={spaceId} incomeSources={rtCtx.incomeSources} />
+          <MonthlyExpensesCard expenses={expenses.data ?? []} />
+          <MonthlyGoalCommitmentsCard goals={goals.data ?? []} />
         </div>
         <div className="mb-4">
-          <MarginStatusBanner />
+          <MarginStatusBanner spaceId={spaceId} />
         </div>
-      </Container>
 
-      <Container>
         <Tabs defaultValue='goals'>
           <TabsList className="w-full">
             <TabsTrigger value="goals">{t("Goals")}</TabsTrigger>
@@ -86,73 +85,89 @@ function RouteComponent() {
           </TabsList>
           <Separator className="my-2 bg-transparent" />
           <TabsContent value="goals" id="goals">
-            <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <h2 className="text-2xl font-bold">{t("Goals")}</h2>
-                <p className="text-muted-foreground">
-                  {t("Track your progress towards financial goals.")}
-                </p>
-              </div>
-              <CreateGoalDialog spaceId={spaceId}>
-                <Button><PlusIcon />{t("Add Goal")}</Button>
-              </CreateGoalDialog>
-            </div>
-
-            {goals.data.length === 0 && (
-              <Card>
-                <CardContent className="grid place-content-center place-items-center gap-4 h-52">
-                  <TargetIcon size={52} className="text-muted-foreground" />
-                  <p>{t('No goals set yet. Click "Add Goal" to get started.')}</p>
-                </CardContent>
-              </Card>
-            )}
-
-            <div className="grid-cols-1 grid @6xl:grid-cols-2 gap-4">
-              {goals.data.map((goal) => (
-                <GoalCard key={goal.id} goal={goal} />
-              ))}
-            </div>
+            <Goals spaceId={spaceId} goals={goals.data ?? []} />
           </TabsContent>
           <TabsContent value="expenses">
-            <div className="flex items-end mb-4">
-              <div>
-                <h2 className="text-2xl font-semibold">{t("Expenses")}</h2>
-                <p className="text-muted-foreground">
-                  {t("Track and organize your monthly expenses.")}
-                </p>
-              </div>
-
-              <CreateExpenseDialog spaceId={spaceId}>
-                <Button className="ml-auto">
-                  <PlusIcon /> {t("Add Expense")}
-                </Button>
-              </CreateExpenseDialog>
-            </div>
-
-            <div className="flex gap-3 items-end mb-4">
-              <Field className="w-full">
-                <FieldLabel>{t("Search")}</FieldLabel>
-                <Input className="w-full" placeholder={t("Search expenses...")} />
-              </Field>
-              <Select>
-                <SelectTrigger className="w-full max-w-52">
-                  <SelectValue placeholder={t("Select a category")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="en">{t("Childcare")}</SelectItem>
-                    <SelectItem value="es">{t("Housing")}</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <ExpensesTable spaceId={spaceId} expenses={expenses.data ?? []} />
+            <Expenses spaceId={spaceId} expenses={expenses.data ?? []} />
           </TabsContent>
         </Tabs>
       </Container>
-
-
     </div>
+  )
+}
+
+function Goals(props: { goals: Goal[], spaceId: number }) {
+  const { t } = useTranslation()
+  return (
+    <>
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 className="text-2xl font-bold">{t("Goals")}</h2>
+          <p className="text-muted-foreground">
+            {t("Track your progress towards financial goals.")}
+          </p>
+        </div>
+        <CreateGoalDialog spaceId={props.spaceId}>
+          <Button><PlusIcon />{t("Add Goal")}</Button>
+        </CreateGoalDialog>
+      </div>
+      {/* Goals Here */}
+      {props.goals.length === 0 && (
+        <Card>
+          <CardContent className="grid place-content-center place-items-center gap-4 h-52">
+            <TargetIcon size={52} className="text-muted-foreground" />
+            <p>{t('No goals set yet. Click "Add Goal" to get started.')}</p>
+          </CardContent>
+        </Card>
+      )}
+
+      <div className="grid-cols-1 grid @6xl:grid-cols-2 gap-4">
+        {props.goals.map((goal) => (
+          <GoalCard key={goal.id} goal={goal} />
+        ))}
+      </div>
+    </>
+  )
+}
+
+function Expenses(props: { expenses: Expense[], spaceId: number }) {
+  const { t } = useTranslation()
+  return (
+    <>
+      <div className="flex items-end mb-4">
+        <div>
+          <h2 className="text-2xl font-semibold">{t("Expenses")}</h2>
+          <p className="text-muted-foreground">
+            {t("Track and organize your monthly expenses.")}
+          </p>
+        </div>
+
+        <CreateExpenseDialog spaceId={props.spaceId}>
+          <Button className="ml-auto">
+            <PlusIcon /> {t("Add Expense")}
+          </Button>
+        </CreateExpenseDialog>
+      </div>
+
+      <div className="flex gap-3 items-end mb-4">
+        <Field className="w-full">
+          <FieldLabel>{t("Search")}</FieldLabel>
+          <Input className="w-full" placeholder={t("Search expenses...")} />
+        </Field>
+        <Select>
+          <SelectTrigger className="w-full max-w-52">
+            <SelectValue placeholder={t("Select a category")} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value="en">{t("Childcare")}</SelectItem>
+              <SelectItem value="es">{t("Housing")}</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <ExpensesTable spaceId={props.spaceId} expenses={props.expenses} />
+    </>
   )
 }
