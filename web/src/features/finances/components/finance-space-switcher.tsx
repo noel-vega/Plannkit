@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ChevronsUpDownIcon, PlusIcon, WalletIcon } from "lucide-react";
+import { ChevronsUpDownIcon, DollarSignIcon, PlusIcon, SettingsIcon, UsersIcon, WalletIcon } from "lucide-react";
 import type { FinanceSpace } from "../types";
 import { CreateSpaceDialog } from "./create-finance-space-form";
 import { useDialog } from "@/hooks";
@@ -45,19 +45,27 @@ export function FinanceSpaceSwitcher(props: Props) {
               <CommandEmpty>{t("No results found.")}</CommandEmpty>
 
               <CommandGroup heading={props.currentSpace.name}>
-                <CommandItem
-                  onSelect={() => {
-                    popover.close()
-                    incomeSourcesSheet.handleOpenDialog()
-                  }}>
-                  {t("Income Sources")}
-                </CommandItem>
+
                 <CommandItem
                   onSelect={() => {
                     props.onSettings(props.currentSpace)
                     popover.close()
                   }}>
-                  {t("Settings")}
+                  <SettingsIcon />{t("Settings")}
+                </CommandItem>
+                <CommandItem
+                  onSelect={() => {
+                    popover.close()
+                    incomeSourcesSheet.handleOpenDialog()
+                  }}>
+                  <DollarSignIcon />{t("Manage Incomes")}
+                </CommandItem>
+                <CommandItem
+                  onSelect={() => {
+                    popover.close()
+                    incomeSourcesSheet.handleOpenDialog()
+                  }}>
+                  <UsersIcon />{t("Manage Members")}
                 </CommandItem>
               </CommandGroup>
               <CommandGroup heading={t("Spaces")}>
