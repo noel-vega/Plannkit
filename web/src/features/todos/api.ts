@@ -1,39 +1,31 @@
 import { BoardSchema, TodoSchema, type CreateTodoParams, type MoveTodoParams } from "./types"
-import { pkFetch } from "@/lib/plannkit-api-client"
+import { api } from "@/lib/plannkit-api-client"
 import type { ByIdParams } from "../habits/types"
 
 export const tasks = {
   create: async (params: CreateTodoParams) => {
-    await pkFetch("/todos", {
-      method: "POST",
-      body: JSON.stringify(params),
-    })
+    return await api.POST("/todos", params)
   },
   getBoard: async () => {
-    const response = await pkFetch("/todos/board")
+    const response = await api.GET("/todos/board")
     const json = await response.json()
     return BoardSchema.parse(json)
   },
   getById: async (id: number) => {
-    const response = await pkFetch(`/todos/${id}`)
+    const response = await api.GET(`/todos/${id}`)
     const json = await response.json()
     return TodoSchema.parse(json)
   },
   list: async () => {
-    const response = await pkFetch("/todos")
+    const response = await api.GET("/todos")
     const json = await response.json()
     return TodoSchema.array().parse(json)
   },
   delete: async (params: ByIdParams) => {
-    await pkFetch(`/todos/${params.id}`, {
-      method: "DELETE",
-    })
+    return await api.DELETE(`/todos/${params.id}`)
   },
   move: async (params: MoveTodoParams) => {
-    const { id, targetIndex, ...rest } = params
-    await pkFetch(`/todos/${id}/position`, {
-      method: "PATCH",
-      body: JSON.stringify(rest), // Don't send targetIndex to server
-    })
+    const { id, targetIndex, ...data } = params
+    return await api.PATCH(`/todos/${id}/position`, data)
   }
 }

@@ -1,36 +1,28 @@
 import { HabitWithContributionsSchema, type ByIdParams, type CreateContributionParams, type CreateHabitParams, type Habit, type UpdateContributionParams } from "./types"
-import { pkFetch } from "@/lib/plannkit-api-client"
+import { api } from "@/lib/plannkit-api-client"
 
 export const habits = {
   create: async (params: CreateHabitParams) => {
-    const response = await pkFetch("/habits", {
-      method: "POST",
-      body: JSON.stringify(params),
-    })
+    const response = await api.POST("/habits", params)
     const data = await response.json()
     return HabitWithContributionsSchema.parse(data)
   },
   list: async () => {
-    const response = await pkFetch("/habits")
+    const response = await api.GET("/habits")
     const data = await response.json()
     return HabitWithContributionsSchema.array().parse(data)
   },
   getById: async (params: ByIdParams) => {
-    const response = await pkFetch(`/habits/${params.id}`)
+    const response = await api.GET(`/habits/${params.id}`)
     const data = await response.json()
     return HabitWithContributionsSchema.parse(data)
   },
   update: async (params: Habit) => {
     const { id, ...body } = params
-    await pkFetch(`/habits/${id}`, {
-      method: "PATCH",
-      body: JSON.stringify(body),
-    })
+    return await api.PATCH(`/habits/${id}`, body)
   },
   delete: async (params: ByIdParams) => {
-    await pkFetch(`/habits/${params.id}`, {
-      method: "DELETE",
-    })
+    await api.DELETE(`/habits/${params.id}`)
     // TODO: return id from api
     return params
   }
@@ -38,23 +30,17 @@ export const habits = {
 
 export const contributions = {
   create: async (params: CreateContributionParams) => {
-    await pkFetch(`/habits/${params.habitId}/contributions`, {
-      method: "POST",
-      body: JSON.stringify({
-        date: params.date.toISOString(),
-        completions: params.completions
-      }),
+    return await api.POST(`/habits/${params.habitId}/contributions`, {
+      date: params.date.toISOString(),
+      completions: params.completions
     })
   },
   update: async (params: UpdateContributionParams) => {
-    await pkFetch(`/habits/contributions/${params.contributionId}`, {
-      method: "PATCH",
-      body: JSON.stringify({ completions: params.completions }),
+    return await api.PATCH(`/habits/contributions/${params.contributionId}`, {
+      completions: params.completions
     })
   },
   delete: async (params: ByIdParams) => {
-    await pkFetch(`/api/contributions/${params.id}`, {
-      method: "DELETE",
-    })
+    return await api.DELETE(`/api/contributions/${params.id}`)
   },
 }

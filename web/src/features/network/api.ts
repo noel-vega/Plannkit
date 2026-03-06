@@ -1,9 +1,9 @@
-import { pkFetch } from "@/lib/plannkit-api-client"
+import { api } from "@/lib/plannkit-api-client"
 import { NetworkUserSchema, UserProfileSchema, type DiscoverUsersParams } from "./types"
 
 export const network = {
   profile: async (username: string) => {
-    const response = await pkFetch(`/network/profile/${username}`)
+    const response = await api.GET(`/network/profile/${username}`)
     const data = await response.json()
     return UserProfileSchema.parse(data)
   },
@@ -16,18 +16,27 @@ export const network = {
       if (params?.filter) {
         searchParams.set("filter", params.filter)
       }
-      const response = await pkFetch("/network/users?" + searchParams)
+      const response = await api.GET("/network/users?" + searchParams)
       const data = await response.json()
       return NetworkUserSchema.array().parse(data)
     },
-    follow: async (userId: number) => {
-      await pkFetch(`/network/users/${userId}/follow`, { method: "POST" })
+    requestFollow: async (userId: number) => {
+      await api.POST(`/network/users/${userId}/follow`)
     },
-    unfollow: async (userId: number) => {
-      await pkFetch(`/network/users/${userId}/follow`, { method: "DELETE" })
+    removeFollow: async (userId: number) => {
+      await api.DELETE(`/network/users/${userId}/follow`)
     },
     acceptFollow: async (userId: number) => {
-      await pkFetch(`/network/users/${userId}/follow`, { method: "PATCH" })
-    }
+      await api.PATCH(`/network/users/${userId}/follow`)
+    },
+    requestConnection: async (userId: number) => {
+      await api.POST(`/network/users/${userId}/connect`)
+    },
+    removeConnection: async (userId: number) => {
+      await api.DELETE(`/network/users/${userId}/connections`)
+    },
+    acceptConnection: async (userId: number) => {
+      await api.PATCH(`/network/users/${userId}/connections`)
+    },
   }
 }

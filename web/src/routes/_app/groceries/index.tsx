@@ -7,7 +7,7 @@ import { AddItemForm, type AddItemFormData } from '@/features/groceries/componen
 import { GroceryListitem } from '@/features/groceries/components/grocery-list-item'
 import type { GroceryListItem } from '@/features/groceries/types'
 import { createFileRoute } from '@tanstack/react-router'
-import { BookTextIcon, PlusIcon, ShoppingBasketIcon } from 'lucide-react'
+import { BookTextIcon, PlusIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 

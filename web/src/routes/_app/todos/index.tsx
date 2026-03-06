@@ -4,7 +4,6 @@ import { Page } from '@/components/layout/page'
 import { getBoardQueryOptions, getListTodosQueryOptions } from '@/features/todos/hooks';
 import { Board } from '@/features/todos/components/board';
 import { Container } from '@/components/layout/container';
-import { ListIcon } from 'lucide-react';
 
 export const Route = createFileRoute('/_app/todos/')({
   head: () => ({ meta: [{ title: "Tasks" }] }),
