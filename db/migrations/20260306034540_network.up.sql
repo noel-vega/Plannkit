@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS followers (
+CREATE TABLE IF NOT EXISTS network_followers (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     follower_user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     following_user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -16,7 +16,7 @@ ON followers(follower_user_id);
 CREATE INDEX idx_followers_following_user_id
 ON followers(following_user_id);
 
-CREATE TABLE IF NOT EXISTS connections (
+CREATE TABLE IF NOT EXISTS network_connections (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     connection_user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
