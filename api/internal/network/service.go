@@ -53,7 +53,7 @@ func (s *Service) GetUserProfile(params *GetUserProfileParams) (*UserProfile, er
 	}
 
 	follower, err := s.repository.GetFollower(&GetFollowerParams{
-		UserID:          params.UserID,
+		FollowerUserID:  params.UserID,
 		FollowingUserID: user.ID,
 	})
 	if err != nil {
@@ -76,7 +76,7 @@ func (s *Service) GetUserProfile(params *GetUserProfileParams) (*UserProfile, er
 
 func (s *Service) FollowUser(params *FollowUserParams) error {
 	fmt.Println("NETWORK SERVICE: FollowUser")
-	if params.UserID == params.FollowingUserID {
+	if params.FollowerUserID == params.FollowingUserID {
 		return ErrFollowSelf
 	}
 
@@ -97,19 +97,19 @@ func (s *Service) FollowUser(params *FollowUserParams) error {
 	}
 
 	return s.repository.InsertFollow(&InsertFollowParams{
-		UserID:          params.UserID,
+		FollowerUserID:  params.FollowerUserID,
 		FollowingUserID: followingUser.ID,
 		Status:          status,
 	})
 }
 
 func (s *Service) UnFollowUser(params *DeleteFollowParams) error {
-	if params.UserID == params.FollowingUserID {
+	if params.FollowerUserID == params.FollowingUserID {
 		return ErrUnFollowSelf
 	}
 
 	isFollowing, err := s.IsFollowing(&GetFollowerParams{
-		UserID:          params.UserID,
+		FollowerUserID:  params.FollowerUserID,
 		FollowingUserID: params.FollowingUserID,
 	})
 	if err != nil {

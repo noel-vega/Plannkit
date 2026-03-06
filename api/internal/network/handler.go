@@ -68,7 +68,7 @@ func (h *Handler) FollowUser(c *gin.Context) {
 	}
 
 	err = h.service.FollowUser(&FollowUserParams{
-		UserID:          c.MustGet("userID").(int),
+		FollowerUserID:  c.MustGet("userID").(int),
 		FollowingUserID: followingUserID,
 	})
 	if err != nil {
@@ -96,7 +96,7 @@ func (h *Handler) UnFollowUser(c *gin.Context) {
 	}
 
 	err = h.service.UnFollowUser(&DeleteFollowParams{
-		UserID:          c.MustGet("userID").(int),
+		FollowerUserID:  c.MustGet("userID").(int),
 		FollowingUserID: followingUserID,
 	})
 	if err != nil {
