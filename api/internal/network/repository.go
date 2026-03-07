@@ -23,7 +23,7 @@ func (r *Repository) ListUsers(params *ListUsersParams) ([]NetworkUser, error) {
 	qb := sq.Select(
 		"u.id", "u.username", "u.first_name", "u.last_name", "u.email",
 		"u.avatar", "u.is_private", "f.status as follow_status", "u.created_at", "u.updated_at",
-	).From("users u").LeftJoin("followers f ON f.follower_user_id = ? AND f.following_user_id = u.id", params.UserID)
+	).From("users u").LeftJoin("network_followers f ON f.follower_user_id = ? AND f.following_user_id = u.id", params.UserID)
 	qb = qb.Where("u.id != ?", params.UserID)
 
 	if params.QueryParams.Search != "" {
@@ -45,7 +45,7 @@ func (r *Repository) ListFollowers(params *ListUsersParams) ([]NetworkUser, erro
 	qb := sq.Select(
 		"u.id", "u.username", "u.first_name", "u.last_name", "u.email",
 		"u.avatar", "u.is_private", "f.status as follow_status", "u.created_at", "u.updated_at",
-	).From("users u").InnerJoin("followers f ON f.follower_user_id = u.id AND f.following_user_id = ?", params.UserID)
+	).From("users u").InnerJoin("network_followers f ON f.follower_user_id = u.id AND f.following_user_id = ?", params.UserID)
 
 	if params.QueryParams.Search != "" {
 		qb = qb.Where(sq.Expr("first_name || ' ' || last_name ILIKE ?", "%"+params.QueryParams.Search+"%"))
@@ -66,7 +66,7 @@ func (r *Repository) ListFollowing(params *ListUsersParams) ([]NetworkUser, erro
 	qb := sq.Select(
 		"u.id", "u.username", "u.first_name", "u.last_name", "u.email",
 		"u.avatar", "u.is_private", "f.status as follow_status", "u.created_at", "u.updated_at",
-	).From("users u").InnerJoin("followers f ON f.follower_user_id = ? AND f.following_user_id = u.id", params.UserID)
+	).From("users u").InnerJoin("network_followers f ON f.follower_user_id = ? AND f.following_user_id = u.id", params.UserID)
 
 	if params.QueryParams.Search != "" {
 		qb = qb.Where(sq.Expr("first_name || ' ' || last_name ILIKE ?", "%"+params.QueryParams.Search+"%"))
@@ -85,7 +85,7 @@ func (r *Repository) ListFollowing(params *ListUsersParams) ([]NetworkUser, erro
 
 func (r *Repository) GetFollower(params *GetFollowerParams) (*Follower, error) {
 	query := `
-	SELECT * FROM followers 
+	SELECT * FROM network_followers 
 	WHERE follower_user_id = :follower_user_id AND following_user_id = :following_user_id
 	`
 	query, args, err := sqlx.Named(query, params)
@@ -109,7 +109,7 @@ func (r *Repository) GetFollower(params *GetFollowerParams) (*Follower, error) {
 func (r *Repository) InsertFollow(params *InsertFollowParams) error {
 	query := `
 		INSERT INTO 
-	  followers (user_id, following_user_id, status)
+	  network_followers (follower_user_id, following_user_id, status)
 	  VALUES(:follower_user_id, :following_user_id, :status)
 	  ON CONFLICT(follower_user_id, following_user_id) DO NOTHING
 	`
@@ -130,7 +130,7 @@ func (r *Repository) InsertFollow(params *InsertFollowParams) error {
 
 func (r *Repository) DeleteFollow(params *DeleteFollowParams) error {
 	query := `
-	DELETE FROM followers
+	DELETE FROM network_followers
 	WHERE follower_user_id = :follower_user_id AND following_user_id = :following_user_id
 	`
 	_, err := r.db.NamedExec(query, params)
@@ -142,7 +142,7 @@ func (r *Repository) DeleteFollow(params *DeleteFollowParams) error {
 
 func (r *Repository) AcceptFollow(params AcceptFollowParams) error {
 	query := `
-	UPDATE followers
+	UPDATE network_followers
 	SET status = :status 
 	WHERE follower_user_id = :follower_user_id AND following_user_id = :following_user_id 
 	`

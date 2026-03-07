@@ -32,7 +32,7 @@ type ListUsersParams struct {
 
 type Follower struct {
 	ID              int       `json:"id" db:"id"`
-	UserID          int       `json:"userId" db:"user_id"`
+	FollowerUserID  int       `json:"followerUserId" db:"follower_user_id"`
 	FollowingUserID int       `json:"followingUserId" db:"following_user_id"`
 	Status          string    `json:"status" db:"status"`
 	CreatedAt       time.Time `json:"createdAt" db:"created_at"`

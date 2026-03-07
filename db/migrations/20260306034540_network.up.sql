@@ -10,11 +10,11 @@ CREATE TABLE IF NOT EXISTS network_followers (
     CHECK (status IN ('pending', 'accepted'))
 );
 
-CREATE INDEX idx_followers_follower_user_id
-ON followers(follower_user_id);
+CREATE INDEX idx_network_followers_follower_user_id
+ON network_followers(follower_user_id);
 
 CREATE INDEX idx_followers_following_user_id
-ON followers(following_user_id);
+ON network_followers(following_user_id);
 
 CREATE TABLE IF NOT EXISTS network_connections (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -28,8 +28,8 @@ CREATE TABLE IF NOT EXISTS network_connections (
     CHECK (status IN ('pending', 'accepted'))
 );
 
-CREATE INDEX idx_connections_user_id
-ON connections(user_id);
+CREATE INDEX idx_network_connections_user_id
+ON network_connections(user_id);
 
-CREATE INDEX idx_connections_connection_user_id
-ON connections(connection_user_id);
+CREATE INDEX idx_network_connections_connection_user_id
+ON network_connections(connection_user_id);

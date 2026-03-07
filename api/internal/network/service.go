@@ -75,7 +75,6 @@ func (s *Service) GetUserProfile(params *GetUserProfileParams) (*UserProfile, er
 }
 
 func (s *Service) FollowUser(params *FollowUserParams) error {
-	fmt.Println("NETWORK SERVICE: FollowUser")
 	if params.FollowerUserID == params.FollowingUserID {
 		return ErrFollowSelf
 	}
@@ -84,8 +83,6 @@ func (s *Service) FollowUser(params *FollowUserParams) error {
 	if err != nil {
 		return err
 	}
-
-	fmt.Printf("%+v\n", followingUser)
 
 	var status string
 	if followingUser.IsPrivate {
