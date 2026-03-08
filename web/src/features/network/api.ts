@@ -30,13 +30,13 @@ export const network = {
       await api.PATCH(`/network/users/${userId}/follow`)
     },
     requestConnection: async (userId: number) => {
-      await api.POST(`/network/users/${userId}/connect`)
+      await api.POST(`/network/users/${userId}/connection`)
     },
     removeConnection: async (userId: number) => {
-      await api.DELETE(`/network/users/${userId}/connections`)
+      await api.DELETE(`/network/users/${userId}/connection`)
     },
     acceptConnection: async (userId: number) => {
-      await api.PATCH(`/network/users/${userId}/connections`)
+      await api.PATCH(`/network/users/${userId}/connection`)
     },
   }
 }

@@ -30,7 +30,18 @@ type ListUsersParams struct {
 	QueryParams *ListUsersQueryParams
 }
 
-type Follower struct {
+type GetUserProfileParams struct {
+	UserID   int    `db:"user_id"`
+	Username string `db:"username"`
+}
+
+type UserProfile struct {
+	User       *user.UserNoPassword `json:"user"`
+	Follow     *Follow              `json:"follow"`
+	Connection *Connection          `json:"connection"`
+}
+
+type Follow struct {
 	ID              int       `json:"id" db:"id"`
 	FollowerUserID  int       `json:"followerUserId" db:"follower_user_id"`
 	FollowingUserID int       `json:"followingUserId" db:"following_user_id"`
@@ -45,12 +56,12 @@ type InsertFollowParams struct {
 	Status          string `json:"status" db:"status"`
 }
 
-type FollowUserParams struct {
+type RequestFollowParams struct {
 	FollowerUserID  int `json:"followerUserId" db:"follower_user_id"`
 	FollowingUserID int `json:"followingUserId" db:"following_user_id"`
 }
 
-type DeleteFollowParams struct {
+type RemoveFollowParams struct {
 	FollowerUserID  int `json:"followerUserId" db:"follower_user_id"`
 	FollowingUserID int `json:"followingUserId" db:"following_user_id"`
 }
@@ -65,13 +76,27 @@ type GetFollowerParams struct {
 	FollowingUserID int `json:"followingUserId" db:"following_user_id"`
 }
 
-type GetUserProfileParams struct {
-	UserID   int    `db:"user_id"`
-	Username string `db:"username"`
+type Connection struct {
+	ID                int       `json:"id" db:"id"`
+	User1ID           int       `json:"user1Id" db:"user_1_id"`
+	User2ID           int       `json:"user2Id" db:"user_2_id"`
+	RequestedByUserID int       `json:"requestedByUserId" db:"requested_by_user_id"`
+	Status            string    `json:"status" db:"status"`
+	CreatedAt         time.Time `json:"createdAt" db:"created_at"`
+	UpdatedAt         time.Time `json:"updatedAt" db:"updated_at"`
 }
 
-type UserProfile struct {
-	User         *user.UserNoPassword `json:"user"`
-	IsFollowing  bool                 `json:"isFollowing"`
-	FollowStatus *string              `json:"followStatus"`
+type RequestConnectionParams struct {
+	RequestedByUserID int
+	TargerUserID      int
+}
+
+type InsertConnectionParams struct {
+	User1ID           int `db:"user_1_id"`
+	User2ID           int `db:"user_2_id"`
+	RequestedByUserID int `db:"requested_by_user_id"`
+}
+
+type AcceptConnectionParams struct {
+	ID int `json:"id" db:"id"`
 }

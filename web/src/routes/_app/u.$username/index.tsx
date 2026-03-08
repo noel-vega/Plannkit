@@ -50,9 +50,12 @@ function RouteComponent() {
             <div className="mb-2">
               <h2 className="text-2xl font-semibold">{profile.user.firstName} {profile.user.lastName}</h2>
             </div>
-            <div>
-              <FollowButton profile={profile} />
-            </div>
+            {me.id !== profile.user.id && (
+              <div className="flex gap-2">
+                <FollowButton profile={profile} />
+                <ConnectButton profile={profile} />
+              </div>
+            )}
           </CardContent>
           <CardFooter className="p-4"></CardFooter>
         </Card>
@@ -63,25 +66,26 @@ function RouteComponent() {
 
 function FollowButton(props: { profile: UserProfile }) {
   const [isHovered, setIsHovered] = useState(false)
-  const { user, followStatus, isFollowing } = props.profile
+  const { user, follow } = props.profile
   const { t } = useTranslation()
-  const { me } = useAuth()
-  const follow = useFollowMutation(user.username)
-  const unfollow = useUnFollowMutation(user.username)
+  const requestFollow = useFollowMutation(user.username)
+  const removeFollow = useUnFollowMutation(user.username)
 
   const handleClick = () => {
-    isFollowing ? unfollow.mutate(user.id) : follow.mutate(user.id)
+    follow ? removeFollow.mutate(user.id) : requestFollow.mutate(user.id)
 
   }
-  if (me.username === user.username) return
+
+  const isDisabled = requestFollow.isPending || removeFollow.isPending
+
   return <Button
     onMouseEnter={() => setIsHovered(true)}
     onMouseLeave={() => setIsHovered(false)}
     variant={"secondary"}
-    onClick={handleClick} disabled={unfollow.isPending} className="min-w-44 transition-none">
-    {isFollowing ? (
+    onClick={handleClick} disabled={isDisabled} className="min-w-32 transition-none">
+    {follow ? (
       <>
-        {followStatus === "accepted" ? (
+        {follow.status === "accepted" ? (
           <>
             {isHovered ? (
               <>
@@ -100,13 +104,24 @@ function FollowButton(props: { profile: UserProfile }) {
         )
         }
       </>
-
     ) : (
       <>
         <PlusIcon /> {user.isPrivate && "Request "}{t("Follow")}
       </>
     )}
   </Button >
+}
+
+function ConnectButton(props: { profile: UserProfile }) {
+  const { t } = useTranslation()
+  const { connection } = props.profile
+
+  const isDisabled = true
+  return (
+    <Button disabled={isDisabled} variant="secondary" className="min-w-32 transition-none">
+      <PlusIcon /> {t("Connect")}
+    </Button>
+  )
 }
 
 function MeAvatar() {

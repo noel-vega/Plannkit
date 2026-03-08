@@ -83,7 +83,7 @@ func (r *Repository) ListFollowing(params *ListUsersParams) ([]NetworkUser, erro
 	return data, nil
 }
 
-func (r *Repository) GetFollower(params *GetFollowerParams) (*Follower, error) {
+func (r *Repository) GetFollow(params *GetFollowerParams) (*Follow, error) {
 	query := `
 	SELECT * FROM network_followers 
 	WHERE follower_user_id = :follower_user_id AND following_user_id = :following_user_id
@@ -94,7 +94,7 @@ func (r *Repository) GetFollower(params *GetFollowerParams) (*Follower, error) {
 	}
 	query = r.db.Rebind(query)
 
-	follower := &Follower{}
+	follower := &Follow{}
 	err = r.db.Get(follower, query, args...)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -128,7 +128,7 @@ func (r *Repository) InsertFollow(params *InsertFollowParams) error {
 	return nil
 }
 
-func (r *Repository) DeleteFollow(params *DeleteFollowParams) error {
+func (r *Repository) DeleteFollow(params *RemoveFollowParams) error {
 	query := `
 	DELETE FROM network_followers
 	WHERE follower_user_id = :follower_user_id AND following_user_id = :following_user_id
@@ -140,13 +140,89 @@ func (r *Repository) DeleteFollow(params *DeleteFollowParams) error {
 	return nil
 }
 
-func (r *Repository) AcceptFollow(params AcceptFollowParams) error {
+func (r *Repository) AcceptFollow(params *AcceptFollowParams) error {
 	query := `
 	UPDATE network_followers
 	SET status = :status 
 	WHERE follower_user_id = :follower_user_id AND following_user_id = :following_user_id 
 	`
 	_, err := r.db.NamedExec(query, params)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *Repository) GetConnection(user1ID, user2ID int) (*Connection, error) {
+	query := `
+		SELECT *
+		FROM network_connections
+	  WHERE user_1_ID = $1 AND user_2_ID = $2
+	`
+	connection := &Connection{}
+
+	err := r.db.Get(connection, query, user1ID, user2ID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, apperrors.ErrNotFound
+		}
+		return nil, err
+	}
+
+	return connection, nil
+}
+
+// CREATE TABLE IF NOT EXISTS network_connections (
+//     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+//     user_1_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+//     user_2_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+//     status TEXT NOT NULL DEFAULT 'pending',
+//     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+//     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+//     UNIQUE(user_1_id, user_2_id),
+//     CHECK(user_1_id < user_2_id),
+//     CHECK (status IN ('pending', 'accepted'))
+// );
+
+func (r *Repository) InsertConnection(params *InsertConnectionParams) (*Connection, error) {
+	query := `
+		INSERT INTO 
+	  network_connections(user_1_id, user_2_id)
+	  VALUES(:user_1_id, :user_2_id)
+	  RETURNING *
+	`
+	query, args, err := sqlx.Named(query, params)
+	if err != nil {
+		return nil, err
+	}
+
+	query = r.db.Rebind(query)
+
+	connection := &Connection{}
+	err = r.db.Get(connection, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	return connection, nil
+}
+
+func (r *Repository) AcceptConnection(ID int) error {
+	query := `
+		UPDATE network_connections
+	  SET status = 'accepted'
+	  WHERE id = $1	`
+	_, err := r.db.Exec(query, ID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *Repository) DeleteConnection(ID int) error {
+	query := `
+		DELETE FROM network_connections WHERE id = $1
+	`
+	_, err := r.db.Exec(query, ID)
 	if err != nil {
 		return err
 	}

@@ -60,14 +60,14 @@ func (h *Handler) GetUserProfile(c *gin.Context) {
 	c.JSON(http.StatusOK, profile)
 }
 
-func (h *Handler) FollowUser(c *gin.Context) {
+func (h *Handler) RequestFollow(c *gin.Context) {
 	followingUserID, err := strconv.Atoi(c.Param("userID"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	err = h.service.FollowUser(&FollowUserParams{
+	err = h.service.RequestFollow(&RequestFollowParams{
 		FollowerUserID:  c.MustGet("userID").(int),
 		FollowingUserID: followingUserID,
 	})
@@ -88,14 +88,14 @@ func (h *Handler) FollowUser(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
-func (h *Handler) UnFollowUser(c *gin.Context) {
+func (h *Handler) RemoveFollow(c *gin.Context) {
 	followingUserID, err := strconv.Atoi(c.Param("userID"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	err = h.service.UnFollowUser(&DeleteFollowParams{
+	err = h.service.RemoveFollow(&RemoveFollowParams{
 		FollowerUserID:  c.MustGet("userID").(int),
 		FollowingUserID: followingUserID,
 	})
@@ -103,7 +103,7 @@ func (h *Handler) UnFollowUser(c *gin.Context) {
 		switch {
 		case errors.Is(err, ErrUnFollowSelf):
 			c.AbortWithError(http.StatusBadRequest, err)
-		case errors.Is(err, ErrFollowNotFound):
+		case errors.Is(err, apperrors.ErrNotFound):
 			c.AbortWithError(http.StatusNotFound, err)
 		default:
 			c.AbortWithError(http.StatusInternalServerError, err)
@@ -113,5 +113,73 @@ func (h *Handler) UnFollowUser(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
-func (h *Handler) AcceptFollowRequest(c *gin.Context) {
+func (h *Handler) AcceptFollow(c *gin.Context) {
+}
+
+func (h *Handler) RequestConnection(c *gin.Context) {
+	requestedByUserID := c.MustGet("userID").(int)
+	targetUserID, err := strconv.Atoi(c.Param("userID"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+	connection, err := h.service.RequestConnection(&RequestConnectionParams{
+		RequestedByUserID: requestedByUserID,
+		TargerUserID:      targetUserID,
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, apperrors.ErrNotFound):
+			c.AbortWithError(http.StatusNotFound, err)
+		case errors.Is(err, ErrConnectionRequestExists):
+			c.AbortWithError(http.StatusConflict, err)
+		case errors.Is(err, ErrConnectSelf):
+			c.AbortWithError(http.StatusBadRequest, err)
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
+		return
+	}
+	c.JSON(http.StatusCreated, connection)
+}
+
+func (h *Handler) AcceptConnection(c *gin.Context) {
+	user1ID := c.MustGet("userID").(int)
+	user2ID, err := strconv.Atoi(c.Param("userID"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	err = h.service.AcceptConnection(user1ID, user2ID)
+	if err != nil {
+		if errors.Is(err, apperrors.ErrNotFound) {
+			c.AbortWithError(http.StatusNotFound, err)
+			return
+		}
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+	c.Status(http.StatusNoContent)
+}
+
+func (h *Handler) RemoveConnection(c *gin.Context) {
+	user1ID := c.MustGet("userID").(int)
+	user2ID, err := strconv.Atoi(c.Param("userID"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	err = h.service.RemoveConnection(user1ID, user2ID)
+	if err != nil {
+		if errors.Is(err, apperrors.ErrNotFound) {
+			c.AbortWithError(http.StatusNotFound, err)
+			return
+		}
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.Status(http.StatusNoContent)
 }

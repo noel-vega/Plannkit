@@ -58,9 +58,12 @@ func AddRoutes(router *gin.Engine, db *sqlx.DB, storageService storage.Service) 
 
 	protected.GET("/network/profile/:username", networkHandler.GetUserProfile)
 	protected.GET("/network/users", networkHandler.ListUsers)
-	protected.POST("/network/users/:userID/follow", networkHandler.FollowUser)
-	protected.DELETE("/network/users/:userID/follow", networkHandler.UnFollowUser)
-	protected.PATCH("/network/users/:userID/follow", networkHandler.AcceptFollowRequest)
+	protected.POST("/network/users/:userID/follow", networkHandler.RequestFollow)
+	protected.PATCH("/network/users/:userID/follow", networkHandler.AcceptFollow)
+	protected.DELETE("/network/users/:userID/follow", networkHandler.RemoveFollow)
+	protected.POST("/network/users/:userID/connection", networkHandler.RequestConnection)
+	protected.PATCH("/network/users/:userID/connection", networkHandler.AcceptConnection)
+	protected.DELETE("/network/users/:userID/connection", networkHandler.RemoveConnection)
 
 	protected.PUT("/user/avatar", usersHandler.UpdateAvatar)
 

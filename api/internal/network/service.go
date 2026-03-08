@@ -4,7 +4,6 @@ package network
 //
 import (
 	"errors"
-	"fmt"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/noel-vega/habits/api/internal/apperrors"
@@ -35,7 +34,7 @@ func (s *Service) ListUsers(params *ListUsersParams) ([]NetworkUser, error) {
 }
 
 func (s *Service) IsFollowing(params *GetFollowerParams) (bool, error) {
-	_, err := s.repository.GetFollower(params)
+	_, err := s.repository.GetFollow(params)
 	if err != nil {
 		if errors.Is(err, apperrors.ErrNotFound) {
 			return false, nil
@@ -52,7 +51,7 @@ func (s *Service) GetUserProfile(params *GetUserProfileParams) (*UserProfile, er
 		return nil, err
 	}
 
-	follower, err := s.repository.GetFollower(&GetFollowerParams{
+	follow, err := s.repository.GetFollow(&GetFollowerParams{
 		FollowerUserID:  params.UserID,
 		FollowingUserID: user.ID,
 	})
@@ -62,19 +61,23 @@ func (s *Service) GetUserProfile(params *GetUserProfileParams) (*UserProfile, er
 		}
 	}
 
-	profile := &UserProfile{
-		User: user,
+	connection, err := s.repository.GetConnection(params.UserID, user.ID)
+	if err != nil {
+		if !errors.Is(err, apperrors.ErrNotFound) {
+			return nil, err
+		}
 	}
 
-	if follower != nil {
-		profile.IsFollowing = true
-		profile.FollowStatus = &follower.Status
+	profile := &UserProfile{
+		User:       user,
+		Follow:     follow,
+		Connection: connection,
 	}
 
 	return profile, nil
 }
 
-func (s *Service) FollowUser(params *FollowUserParams) error {
+func (s *Service) RequestFollow(params *RequestFollowParams) error {
 	if params.FollowerUserID == params.FollowingUserID {
 		return ErrFollowSelf
 	}
@@ -87,9 +90,7 @@ func (s *Service) FollowUser(params *FollowUserParams) error {
 	var status string
 	if followingUser.IsPrivate {
 		status = "pending"
-		fmt.Println(" Pending Request")
 	} else {
-		fmt.Println(" Request Auto Accept")
 		status = "accepted"
 	}
 
@@ -100,7 +101,7 @@ func (s *Service) FollowUser(params *FollowUserParams) error {
 	})
 }
 
-func (s *Service) UnFollowUser(params *DeleteFollowParams) error {
+func (s *Service) RemoveFollow(params *RemoveFollowParams) error {
 	if params.FollowerUserID == params.FollowingUserID {
 		return ErrUnFollowSelf
 	}
@@ -114,7 +115,64 @@ func (s *Service) UnFollowUser(params *DeleteFollowParams) error {
 	}
 
 	if !isFollowing {
-		return ErrFollowNotFound
+		return apperrors.ErrNotFound
 	}
 	return s.repository.DeleteFollow(params)
+}
+
+func OrderUserIDs(user1ID, user2ID int) (int, int) {
+	if user1ID > user2ID {
+		temp := user1ID
+		user1ID = user2ID
+		user2ID = temp
+	}
+	return user1ID, user2ID
+}
+
+func (s *Service) GetConnection(user1ID, user2ID int) (*Connection, error) {
+	u1, u2 := OrderUserIDs(user1ID, user2ID)
+	return s.repository.GetConnection(u1, u2)
+}
+
+func (s *Service) RequestConnection(params *RequestConnectionParams) (*Connection, error) {
+	if params.RequestedByUserID == params.TargerUserID {
+		return nil, ErrConnectSelf
+	}
+
+	userID1, userID2 := OrderUserIDs(params.RequestedByUserID, params.TargerUserID)
+
+	connection, err := s.GetConnection(userID1, userID2)
+	if err != nil {
+		if !errors.Is(err, apperrors.ErrNotFound) {
+			return nil, err
+		}
+	}
+
+	if connection != nil {
+		return nil, ErrConnectionRequestExists
+	}
+
+	return s.repository.InsertConnection(&InsertConnectionParams{
+		User1ID:           userID1,
+		User2ID:           userID2,
+		RequestedByUserID: params.RequestedByUserID,
+	})
+}
+
+func (s *Service) AcceptConnection(user1ID, user2ID int) error {
+	connection, err := s.GetConnection(user1ID, user2ID)
+	if err != nil {
+		return err
+	}
+
+	return s.repository.AcceptConnection(connection.ID)
+}
+
+func (s *Service) RemoveConnection(user1ID, user2ID int) error {
+	connection, err := s.GetConnection(user1ID, user2ID)
+	if err != nil {
+		return err
+	}
+
+	return s.repository.DeleteConnection(connection.ID)
 }
