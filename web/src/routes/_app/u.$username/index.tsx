@@ -1,22 +1,19 @@
 import { Container } from '@/components/layout/container'
 import { Page } from '@/components/layout/page'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { useAuth } from '@/features/auth/store'
-import { getUseUserProfileQueryOptions, useFollowMutation, useUnFollowMutation, useUserProfile } from '@/features/network/hooks'
+import { getUseUserProfileQueryOptions, useUserProfile } from '@/features/network/hooks'
 import { queryClient } from '@/lib/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { CheckIcon, MinusCircleIcon, PlusIcon } from 'lucide-react'
-import { useState, type ChangeEvent } from 'react'
-import { useTranslation } from 'react-i18next'
+import { type ChangeEvent } from 'react'
 import { useUpdateAvatarMutation } from '@/features/user/hooks'
-import type { UserProfile } from '@/features/network/types'
+import { FollowButton } from '@/features/network/components/follow-button'
+import { ConnectButton } from '@/features/network/components/connect-button'
 
 export const Route = createFileRoute('/_app/u/$username/')({
   beforeLoad: async ({ params: { username } }) => {
     const profile = await queryClient.ensureQueryData(getUseUserProfileQueryOptions(username))
-
     return { profile }
   },
   component: RouteComponent,
@@ -64,65 +61,8 @@ function RouteComponent() {
   )
 }
 
-function FollowButton(props: { profile: UserProfile }) {
-  const [isHovered, setIsHovered] = useState(false)
-  const { user, follow } = props.profile
-  const { t } = useTranslation()
-  const requestFollow = useFollowMutation(user.username)
-  const removeFollow = useUnFollowMutation(user.username)
 
-  const handleClick = () => {
-    follow ? removeFollow.mutate(user.id) : requestFollow.mutate(user.id)
 
-  }
-
-  const isDisabled = requestFollow.isPending || removeFollow.isPending
-
-  return <Button
-    onMouseEnter={() => setIsHovered(true)}
-    onMouseLeave={() => setIsHovered(false)}
-    variant={"secondary"}
-    onClick={handleClick} disabled={isDisabled} className="min-w-32 transition-none">
-    {follow ? (
-      <>
-        {follow.status === "accepted" ? (
-          <>
-            {isHovered ? (
-              <>
-                <MinusCircleIcon />{t("Unfollow")}
-              </>
-            ) : (
-              <>
-                <CheckIcon />{t("Following")}
-              </>
-            )}
-          </>
-        ) : (
-          <>
-            <MinusCircleIcon />{t("Cancel Request")}
-          </>
-        )
-        }
-      </>
-    ) : (
-      <>
-        <PlusIcon /> {user.isPrivate && "Request "}{t("Follow")}
-      </>
-    )}
-  </Button >
-}
-
-function ConnectButton(props: { profile: UserProfile }) {
-  const { t } = useTranslation()
-  const { connection } = props.profile
-
-  const isDisabled = true
-  return (
-    <Button disabled={isDisabled} variant="secondary" className="min-w-32 transition-none">
-      <PlusIcon /> {t("Connect")}
-    </Button>
-  )
-}
 
 function MeAvatar() {
   const { me } = useAuth()

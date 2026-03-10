@@ -61,7 +61,7 @@ func (s *Service) GetUserProfile(params *GetUserProfileParams) (*UserProfile, er
 		}
 	}
 
-	connection, err := s.repository.GetConnection(params.UserID, user.ID)
+	connection, err := s.GetConnection(params.UserID, user.ID)
 	if err != nil {
 		if !errors.Is(err, apperrors.ErrNotFound) {
 			return nil, err

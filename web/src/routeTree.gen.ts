@@ -26,10 +26,15 @@ import { Route as AppEmailIndexRouteImport } from './routes/_app/email/index'
 import { Route as AppDocumentsIndexRouteImport } from './routes/_app/documents/index'
 import { Route as AppDashboardIndexRouteImport } from './routes/_app/dashboard/index'
 import { Route as AppHabitsIdRouteImport } from './routes/_app/habits/$id'
+import { Route as AppNetworkPeopleRouteRouteImport } from './routes/_app/network/people/route'
 import { Route as AppUUsernameIndexRouteImport } from './routes/_app/u.$username/index'
 import { Route as AppNetworkPostsIndexRouteImport } from './routes/_app/network/posts/index'
 import { Route as AppNetworkPeopleIndexRouteImport } from './routes/_app/network/people/index'
 import { Route as AppFinancesSpaceIdIndexRouteImport } from './routes/_app/finances/$spaceId/index'
+import { Route as AppNetworkPeopleFollowingRouteImport } from './routes/_app/network/people/following'
+import { Route as AppNetworkPeopleFollowersRouteImport } from './routes/_app/network/people/followers'
+import { Route as AppNetworkPeopleDiscoverRouteImport } from './routes/_app/network/people/discover'
+import { Route as AppNetworkPeopleConnectionsRouteImport } from './routes/_app/network/people/connections'
 import { Route as AppFinancesSpaceIdSettingsRouteImport } from './routes/_app/finances/$spaceId/settings'
 import { Route as AppFinancesSpaceIdGoalsGoalIdRouteImport } from './routes/_app/finances/$spaceId/goals.$goalId'
 
@@ -117,6 +122,11 @@ const AppHabitsIdRoute = AppHabitsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => AppHabitsRouteRoute,
 } as any)
+const AppNetworkPeopleRouteRoute = AppNetworkPeopleRouteRouteImport.update({
+  id: '/people',
+  path: '/people',
+  getParentRoute: () => AppNetworkRouteRoute,
+} as any)
 const AppUUsernameIndexRoute = AppUUsernameIndexRouteImport.update({
   id: '/u/$username/',
   path: '/u/$username/',
@@ -128,15 +138,39 @@ const AppNetworkPostsIndexRoute = AppNetworkPostsIndexRouteImport.update({
   getParentRoute: () => AppNetworkRouteRoute,
 } as any)
 const AppNetworkPeopleIndexRoute = AppNetworkPeopleIndexRouteImport.update({
-  id: '/people/',
-  path: '/people/',
-  getParentRoute: () => AppNetworkRouteRoute,
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppNetworkPeopleRouteRoute,
 } as any)
 const AppFinancesSpaceIdIndexRoute = AppFinancesSpaceIdIndexRouteImport.update({
   id: '/$spaceId/',
   path: '/$spaceId/',
   getParentRoute: () => AppFinancesRouteRoute,
 } as any)
+const AppNetworkPeopleFollowingRoute =
+  AppNetworkPeopleFollowingRouteImport.update({
+    id: '/following',
+    path: '/following',
+    getParentRoute: () => AppNetworkPeopleRouteRoute,
+  } as any)
+const AppNetworkPeopleFollowersRoute =
+  AppNetworkPeopleFollowersRouteImport.update({
+    id: '/followers',
+    path: '/followers',
+    getParentRoute: () => AppNetworkPeopleRouteRoute,
+  } as any)
+const AppNetworkPeopleDiscoverRoute =
+  AppNetworkPeopleDiscoverRouteImport.update({
+    id: '/discover',
+    path: '/discover',
+    getParentRoute: () => AppNetworkPeopleRouteRoute,
+  } as any)
+const AppNetworkPeopleConnectionsRoute =
+  AppNetworkPeopleConnectionsRouteImport.update({
+    id: '/connections',
+    path: '/connections',
+    getParentRoute: () => AppNetworkPeopleRouteRoute,
+  } as any)
 const AppFinancesSpaceIdSettingsRoute =
   AppFinancesSpaceIdSettingsRouteImport.update({
     id: '/$spaceId/settings',
@@ -159,6 +193,7 @@ export interface FileRoutesByFullPath {
   '/network': typeof AppNetworkRouteRouteWithChildren
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
+  '/network/people': typeof AppNetworkPeopleRouteRouteWithChildren
   '/habits/$id': typeof AppHabitsIdRoute
   '/dashboard': typeof AppDashboardIndexRoute
   '/documents': typeof AppDocumentsIndexRoute
@@ -168,8 +203,12 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AppSettingsIndexRoute
   '/todos': typeof AppTodosIndexRoute
   '/finances/$spaceId/settings': typeof AppFinancesSpaceIdSettingsRoute
+  '/network/people/connections': typeof AppNetworkPeopleConnectionsRoute
+  '/network/people/discover': typeof AppNetworkPeopleDiscoverRoute
+  '/network/people/followers': typeof AppNetworkPeopleFollowersRoute
+  '/network/people/following': typeof AppNetworkPeopleFollowingRoute
   '/finances/$spaceId': typeof AppFinancesSpaceIdIndexRoute
-  '/network/people': typeof AppNetworkPeopleIndexRoute
+  '/network/people/': typeof AppNetworkPeopleIndexRoute
   '/network/posts': typeof AppNetworkPostsIndexRoute
   '/u/$username': typeof AppUUsernameIndexRoute
   '/finances/$spaceId/goals/$goalId': typeof AppFinancesSpaceIdGoalsGoalIdRoute
@@ -190,6 +229,10 @@ export interface FileRoutesByTo {
   '/settings': typeof AppSettingsIndexRoute
   '/todos': typeof AppTodosIndexRoute
   '/finances/$spaceId/settings': typeof AppFinancesSpaceIdSettingsRoute
+  '/network/people/connections': typeof AppNetworkPeopleConnectionsRoute
+  '/network/people/discover': typeof AppNetworkPeopleDiscoverRoute
+  '/network/people/followers': typeof AppNetworkPeopleFollowersRoute
+  '/network/people/following': typeof AppNetworkPeopleFollowingRoute
   '/finances/$spaceId': typeof AppFinancesSpaceIdIndexRoute
   '/network/people': typeof AppNetworkPeopleIndexRoute
   '/network/posts': typeof AppNetworkPostsIndexRoute
@@ -207,6 +250,7 @@ export interface FileRoutesById {
   '/_app/network': typeof AppNetworkRouteRouteWithChildren
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
+  '/_app/network/people': typeof AppNetworkPeopleRouteRouteWithChildren
   '/_app/habits/$id': typeof AppHabitsIdRoute
   '/_app/dashboard/': typeof AppDashboardIndexRoute
   '/_app/documents/': typeof AppDocumentsIndexRoute
@@ -216,6 +260,10 @@ export interface FileRoutesById {
   '/_app/settings/': typeof AppSettingsIndexRoute
   '/_app/todos/': typeof AppTodosIndexRoute
   '/_app/finances/$spaceId/settings': typeof AppFinancesSpaceIdSettingsRoute
+  '/_app/network/people/connections': typeof AppNetworkPeopleConnectionsRoute
+  '/_app/network/people/discover': typeof AppNetworkPeopleDiscoverRoute
+  '/_app/network/people/followers': typeof AppNetworkPeopleFollowersRoute
+  '/_app/network/people/following': typeof AppNetworkPeopleFollowingRoute
   '/_app/finances/$spaceId/': typeof AppFinancesSpaceIdIndexRoute
   '/_app/network/people/': typeof AppNetworkPeopleIndexRoute
   '/_app/network/posts/': typeof AppNetworkPostsIndexRoute
@@ -233,6 +281,7 @@ export interface FileRouteTypes {
     | '/network'
     | '/auth/signin'
     | '/auth/signup'
+    | '/network/people'
     | '/habits/$id'
     | '/dashboard'
     | '/documents'
@@ -242,8 +291,12 @@ export interface FileRouteTypes {
     | '/settings'
     | '/todos'
     | '/finances/$spaceId/settings'
+    | '/network/people/connections'
+    | '/network/people/discover'
+    | '/network/people/followers'
+    | '/network/people/following'
     | '/finances/$spaceId'
-    | '/network/people'
+    | '/network/people/'
     | '/network/posts'
     | '/u/$username'
     | '/finances/$spaceId/goals/$goalId'
@@ -264,6 +317,10 @@ export interface FileRouteTypes {
     | '/settings'
     | '/todos'
     | '/finances/$spaceId/settings'
+    | '/network/people/connections'
+    | '/network/people/discover'
+    | '/network/people/followers'
+    | '/network/people/following'
     | '/finances/$spaceId'
     | '/network/people'
     | '/network/posts'
@@ -280,6 +337,7 @@ export interface FileRouteTypes {
     | '/_app/network'
     | '/auth/signin'
     | '/auth/signup'
+    | '/_app/network/people'
     | '/_app/habits/$id'
     | '/_app/dashboard/'
     | '/_app/documents/'
@@ -289,6 +347,10 @@ export interface FileRouteTypes {
     | '/_app/settings/'
     | '/_app/todos/'
     | '/_app/finances/$spaceId/settings'
+    | '/_app/network/people/connections'
+    | '/_app/network/people/discover'
+    | '/_app/network/people/followers'
+    | '/_app/network/people/following'
     | '/_app/finances/$spaceId/'
     | '/_app/network/people/'
     | '/_app/network/posts/'
@@ -423,6 +485,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppHabitsIdRouteImport
       parentRoute: typeof AppHabitsRouteRoute
     }
+    '/_app/network/people': {
+      id: '/_app/network/people'
+      path: '/people'
+      fullPath: '/network/people'
+      preLoaderRoute: typeof AppNetworkPeopleRouteRouteImport
+      parentRoute: typeof AppNetworkRouteRoute
+    }
     '/_app/u/$username/': {
       id: '/_app/u/$username/'
       path: '/u/$username'
@@ -439,10 +508,10 @@ declare module '@tanstack/react-router' {
     }
     '/_app/network/people/': {
       id: '/_app/network/people/'
-      path: '/people'
-      fullPath: '/network/people'
+      path: '/'
+      fullPath: '/network/people/'
       preLoaderRoute: typeof AppNetworkPeopleIndexRouteImport
-      parentRoute: typeof AppNetworkRouteRoute
+      parentRoute: typeof AppNetworkPeopleRouteRoute
     }
     '/_app/finances/$spaceId/': {
       id: '/_app/finances/$spaceId/'
@@ -450,6 +519,34 @@ declare module '@tanstack/react-router' {
       fullPath: '/finances/$spaceId'
       preLoaderRoute: typeof AppFinancesSpaceIdIndexRouteImport
       parentRoute: typeof AppFinancesRouteRoute
+    }
+    '/_app/network/people/following': {
+      id: '/_app/network/people/following'
+      path: '/following'
+      fullPath: '/network/people/following'
+      preLoaderRoute: typeof AppNetworkPeopleFollowingRouteImport
+      parentRoute: typeof AppNetworkPeopleRouteRoute
+    }
+    '/_app/network/people/followers': {
+      id: '/_app/network/people/followers'
+      path: '/followers'
+      fullPath: '/network/people/followers'
+      preLoaderRoute: typeof AppNetworkPeopleFollowersRouteImport
+      parentRoute: typeof AppNetworkPeopleRouteRoute
+    }
+    '/_app/network/people/discover': {
+      id: '/_app/network/people/discover'
+      path: '/discover'
+      fullPath: '/network/people/discover'
+      preLoaderRoute: typeof AppNetworkPeopleDiscoverRouteImport
+      parentRoute: typeof AppNetworkPeopleRouteRoute
+    }
+    '/_app/network/people/connections': {
+      id: '/_app/network/people/connections'
+      path: '/connections'
+      fullPath: '/network/people/connections'
+      preLoaderRoute: typeof AppNetworkPeopleConnectionsRouteImport
+      parentRoute: typeof AppNetworkPeopleRouteRoute
     }
     '/_app/finances/$spaceId/settings': {
       id: '/_app/finances/$spaceId/settings'
@@ -522,13 +619,34 @@ const AppHabitsRouteRouteWithChildren = AppHabitsRouteRoute._addFileChildren(
   AppHabitsRouteRouteChildren,
 )
 
-interface AppNetworkRouteRouteChildren {
+interface AppNetworkPeopleRouteRouteChildren {
+  AppNetworkPeopleConnectionsRoute: typeof AppNetworkPeopleConnectionsRoute
+  AppNetworkPeopleDiscoverRoute: typeof AppNetworkPeopleDiscoverRoute
+  AppNetworkPeopleFollowersRoute: typeof AppNetworkPeopleFollowersRoute
+  AppNetworkPeopleFollowingRoute: typeof AppNetworkPeopleFollowingRoute
   AppNetworkPeopleIndexRoute: typeof AppNetworkPeopleIndexRoute
+}
+
+const AppNetworkPeopleRouteRouteChildren: AppNetworkPeopleRouteRouteChildren = {
+  AppNetworkPeopleConnectionsRoute: AppNetworkPeopleConnectionsRoute,
+  AppNetworkPeopleDiscoverRoute: AppNetworkPeopleDiscoverRoute,
+  AppNetworkPeopleFollowersRoute: AppNetworkPeopleFollowersRoute,
+  AppNetworkPeopleFollowingRoute: AppNetworkPeopleFollowingRoute,
+  AppNetworkPeopleIndexRoute: AppNetworkPeopleIndexRoute,
+}
+
+const AppNetworkPeopleRouteRouteWithChildren =
+  AppNetworkPeopleRouteRoute._addFileChildren(
+    AppNetworkPeopleRouteRouteChildren,
+  )
+
+interface AppNetworkRouteRouteChildren {
+  AppNetworkPeopleRouteRoute: typeof AppNetworkPeopleRouteRouteWithChildren
   AppNetworkPostsIndexRoute: typeof AppNetworkPostsIndexRoute
 }
 
 const AppNetworkRouteRouteChildren: AppNetworkRouteRouteChildren = {
-  AppNetworkPeopleIndexRoute: AppNetworkPeopleIndexRoute,
+  AppNetworkPeopleRouteRoute: AppNetworkPeopleRouteRouteWithChildren,
   AppNetworkPostsIndexRoute: AppNetworkPostsIndexRoute,
 }
 

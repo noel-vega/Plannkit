@@ -18,16 +18,10 @@ export const UserSchema = z.object({
   isPrivate: z.boolean()
 })
 export type User = z.infer<typeof UserSchema>
-const RequestStatusSchema = z.literal("pending").or(z.literal("accepted"))
-// type Connection struct {
-// 	ID        int       `json:"id" db:"id"`
-// 	User1ID   int       `json:"user1Id" db:"user_1_id"`
-// 	User2ID   int       `json:"user2Id" db:"user_2_id"`
-// 	Status    string    `json:"status" db:"status"`
-// 	CreatedAt time.Time `json:"createdAt" db:"created_at"`
-// 	UpdatedAt time.Time `json:"updatedAt" db:"updated_at"`
-// }
-//
+
+export const RequestStatusSchema = z.literal("pending").or(z.literal("accepted"))
+export type RequestStatus = z.infer<typeof RequestStatusSchema>
+
 export const FollowSchema = z.object({
   id: z.number(),
   followerUserId: z.number(),
@@ -41,9 +35,10 @@ export type Follow = z.infer<typeof FollowSchema>
 
 export const ConnectionSchema = z.object({
   id: z.number(),
-  followerUserId: z.number(),
-  followingUserId: z.number(),
+  user1Id: z.number(),
+  user2Id: z.number(),
   status: RequestStatusSchema,
+  requestedByUserId: z.number(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
 })
@@ -57,7 +52,7 @@ export const NetworkUserSchema = z.object({
   email: z.string(),
   avatar: AvatarSchema,
   isPrivate: z.boolean(),
-  followStatus: RequestStatusSchema,
+  followStatus: RequestStatusSchema.nullable(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
 })

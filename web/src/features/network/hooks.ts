@@ -6,9 +6,13 @@ import { queryClient } from "@/lib/react-query";
 
 export function getUseDiscoverUsersQueryOptions(params?: DiscoverUsersParams) {
   return queryOptions({
-    queryKey: ['discover', params],
+    queryKey: ['discover', params?.filter, params?.search],
     queryFn: () => network.users.list(params)
   })
+}
+
+export function invalidateFollowing() {
+  return queryClient.invalidateQueries({ queryKey: ["discover", "following"] })
 }
 
 export function useDiscoverUsersQuery(params: DiscoverUsersParams, initialData: NetworkUser[]) {
@@ -23,6 +27,10 @@ export function getUseUserProfileQueryOptions(username: string) {
   })
 }
 
+export function invalidateUserProfile(username: string) {
+  return queryClient.invalidateQueries(getUseUserProfileQueryOptions(username))
+}
+
 export function useUserProfile(username: string, initialData: UserProfile) {
   return useQuery({ ...getUseUserProfileQueryOptions(username), initialData })
 }
@@ -31,17 +39,45 @@ export function useFollowMutation(username: string) {
   return useMutation({
     mutationFn: network.users.requestFollow,
     onSuccess: async () => {
-      await queryClient.invalidateQueries(getUseUserProfileQueryOptions(username))
+      return invalidateUserProfile(username)
     }
   })
 }
 
 
-export function useUnFollowMutation(username: string) {
+export function useRemoveFollowMutation(username: string) {
   return useMutation({
     mutationFn: network.users.removeFollow,
     onSuccess: async () => {
-      await queryClient.invalidateQueries(getUseUserProfileQueryOptions(username))
+      invalidateUserProfile(username)
+      invalidateFollowing()
+    }
+  })
+}
+
+export function useRequestConnectionMutation(username: string) {
+  return useMutation({
+    mutationFn: network.users.requestConnection,
+    onSuccess: async () => {
+      return invalidateUserProfile(username)
+    }
+  })
+}
+
+export function useAcceptConnectionMutation(username: string) {
+  return useMutation({
+    mutationFn: network.users.acceptConnection,
+    onSuccess: async () => {
+      return invalidateUserProfile(username)
+    }
+  })
+}
+
+export function useRemoveConnectionMutation(username: string) {
+  return useMutation({
+    mutationFn: network.users.removeConnection,
+    onSuccess: async () => {
+      return invalidateUserProfile(username)
     }
   })
 }

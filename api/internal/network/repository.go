@@ -187,8 +187,8 @@ func (r *Repository) GetConnection(user1ID, user2ID int) (*Connection, error) {
 func (r *Repository) InsertConnection(params *InsertConnectionParams) (*Connection, error) {
 	query := `
 		INSERT INTO 
-	  network_connections(user_1_id, user_2_id)
-	  VALUES(:user_1_id, :user_2_id)
+	  network_connections(user_1_id, user_2_id, requested_by_user_id)
+	VALUES(:user_1_id, :user_2_id, :requested_by_user_id)
 	  RETURNING *
 	`
 	query, args, err := sqlx.Named(query, params)
