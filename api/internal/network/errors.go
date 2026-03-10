@@ -8,4 +8,5 @@ var (
 	ErrFollowExists            = errors.New("already following user")
 	ErrConnectionRequestExists = errors.New("connection request already exists")
 	ErrConnectSelf             = errors.New("cannot connect with self")
+	ErrUserNotFound            = errors.New("user does not exist")
 )
