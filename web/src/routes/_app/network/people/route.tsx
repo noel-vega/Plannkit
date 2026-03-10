@@ -21,9 +21,9 @@ function RouteComponent() {
   const { t } = useTranslation()
   return (
     <Page title="Network">
-      <div className="border-b py-2 px-8">
+      <div className="border-b py-4 px-8">
         <div className="flex items-center gap-6">
-          <h2 className="font-semibold">Network</h2>
+          <h2 className="font-semibold text-lg">Network</h2>
         </div>
       </div>
       <Container className="max-w-4xl">
