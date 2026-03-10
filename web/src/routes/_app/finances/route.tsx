@@ -1,4 +1,5 @@
 import { Page } from '@/components/layout/page'
+import { PageHeader } from '@/components/layout/page-header'
 import { getUseListSpacesOptions } from '@/features/finances/hooks'
 import { queryClient } from '@/lib/react-query'
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
@@ -21,11 +22,7 @@ export const Route = createFileRoute('/_app/finances')({
   component: () => {
     return (
       <Page title="Finances">
-        <div className="border-b py-4 px-8">
-          <div className="flex items-center gap-6">
-            <h2 className="font-semibold text-lg">Finances</h2>
-          </div>
-        </div>
+        <PageHeader title='Finances' />
         <Outlet />
       </Page>
     )

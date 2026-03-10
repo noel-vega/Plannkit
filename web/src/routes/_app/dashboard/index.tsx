@@ -1,4 +1,5 @@
 import { Page } from '@/components/layout/page'
+import { PageHeader } from '@/components/layout/page-header'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_app/dashboard/')({
@@ -9,7 +10,7 @@ export const Route = createFileRoute('/_app/dashboard/')({
 function RouteComponent() {
   return (
     <Page title="Dashboard">
-      Dashboard
+      <PageHeader title="Dashboard" />
     </Page>
   )
 }

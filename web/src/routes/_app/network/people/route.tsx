@@ -1,5 +1,6 @@
 import { Container } from '@/components/layout/container'
 import { Page } from '@/components/layout/page'
+import { PageHeader } from '@/components/layout/page-header'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { getUseDiscoverUsersQueryOptions } from '@/features/network/hooks'
 import { queryClient } from '@/lib/react-query'
@@ -20,12 +21,8 @@ export const Route = createFileRoute('/_app/network/people')({
 function RouteComponent() {
   const { t } = useTranslation()
   return (
-    <Page title="Network">
-      <div className="border-b py-4 px-8">
-        <div className="flex items-center gap-6">
-          <h2 className="font-semibold text-lg">Network</h2>
-        </div>
-      </div>
+    <Page>
+      <PageHeader title='People' />
       <Container className="max-w-4xl">
         <Tabs defaultValue='discover'>
           <TabsList className="mb-4" variant="line">

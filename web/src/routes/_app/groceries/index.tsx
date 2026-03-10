@@ -1,5 +1,6 @@
 import { Container } from '@/components/layout/container'
 import { Page } from '@/components/layout/page'
+import { PageHeader } from '@/components/layout/page-header'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
@@ -48,12 +49,8 @@ function RouteComponent() {
   }
 
   return (
-    <Page title="Groceries">
-      <div className="border-b py-4 px-8">
-        <div className="flex items-center gap-6">
-          <h2 className="font-semibold text-lg">Groceries</h2>
-        </div>
-      </div>
+    <Page>
+      <PageHeader title='Groceries' />
       <Container className="h-full flex flex-col pb-2">
         <div className="flex gap-4">
           <h2 className="text-xl font-medium mb-4">{t("Shopping List")} ({items.length})</h2>

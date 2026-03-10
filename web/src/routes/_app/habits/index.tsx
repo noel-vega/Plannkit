@@ -12,6 +12,7 @@ import { getListHabitsQueryOptions, useListHabits } from '@/features/habits/hook
 import { WeekDayIndicator } from '@/features/habits/components/week-day-indicator'
 import type { HabitWithContributions } from '@/features/habits/types'
 import { Container } from '@/components/layout/container'
+import { PageHeader } from '@/components/layout/page-header'
 
 export const Route = createFileRoute('/_app/habits/')({
   loader: async ({ context: { queryClient } }) => {
@@ -25,12 +26,8 @@ function RouteComponent() {
   const loaderData = Route.useLoaderData()
   const habits = useListHabits({ initialData: loaderData.habits })
   return (
-    <Page title="Habits">
-      <div className="border-b py-4 px-8">
-        <div className="flex items-center gap-6">
-          <h2 className="font-semibold text-lg">Habits</h2>
-        </div>
-      </div>
+    <Page>
+      <PageHeader title="Habits" />
 
       <Container className="space-y-6">
         <Header />
