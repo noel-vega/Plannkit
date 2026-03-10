@@ -28,7 +28,6 @@ function RouteComponent() {
   return (
     <Page>
       <PageHeader title="Habits" />
-
       <Container className="space-y-6">
         <Header />
         <WeekDayIndicator habits={habits.data} />
@@ -68,7 +67,7 @@ function Header() {
 
     <header >
       <div className="flex items-center gap-4 pb-2">
-        <p className="hidden @md:block text-lg mr-auto font-medium">
+        <p className="hidden @md:block mr-auto font-medium">
           {format(new Date(), 'EEEE, MMMM d')}
         </p>
         <Button variant="secondary" className="flex-1 @md:flex-none">
