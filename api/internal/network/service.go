@@ -1,7 +1,5 @@
 package network
 
-// TODO: add operations for followeing and making connections with other users
-//
 import (
 	"errors"
 
@@ -84,6 +82,9 @@ func (s *Service) RequestFollow(params *RequestFollowParams) error {
 
 	followingUser, err := s.userService.GetUserByID(params.FollowingUserID)
 	if err != nil {
+		if errors.Is(err, apperrors.ErrNotFound) {
+			return ErrUserNotFound
+		}
 		return err
 	}
 
@@ -139,6 +140,14 @@ func (s *Service) RequestConnection(params *RequestConnectionParams) (*Connectio
 		return nil, ErrConnectSelf
 	}
 
+	_, err := s.userService.GetUserByID(params.TargerUserID)
+	if err != nil {
+		if errors.Is(err, apperrors.ErrNotFound) {
+			return nil, ErrUserNotFound
+		}
+		return nil, err
+	}
+
 	userID1, userID2 := OrderUserIDs(params.RequestedByUserID, params.TargerUserID)
 
 	connection, err := s.GetConnection(userID1, userID2)
@@ -163,6 +172,10 @@ func (s *Service) AcceptConnection(user1ID, user2ID int) error {
 	connection, err := s.GetConnection(user1ID, user2ID)
 	if err != nil {
 		return err
+	}
+
+	if connection.Status == "accepted" {
+		return nil
 	}
 
 	return s.repository.AcceptConnection(connection.ID)

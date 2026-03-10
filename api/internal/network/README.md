@@ -18,20 +18,8 @@ All handlers use `c.AbortWithError`, which sets the status code and logs the err
 
 **Files:** `handler.go` (and potentially all other handlers across the API)
 
-## Handle idempotent accept
-
-`AcceptConnection` succeeds silently when the connection is already accepted — the UPDATE is a no-op. Decide whether this is intentional. Options: check `connection.Status` and return early with 204, return 409 Conflict if already accepted, or leave as-is and document the idempotent behavior.
-
-**Files:** `service.go`
-
 ## Remove empty AcceptFollow handler stub
 
 `AcceptFollow` at `handler.go:116` is registered as a route (`PATCH /network/users/:userID/follow`) but the handler body is empty. Either implement it or remove the handler and route registration to avoid a silent 200 that does nothing.
 
 **Files:** `handler.go`, `routes.go`
-
-## Remove stale TODO comment
-
-The comment at `service.go:3` (`// TODO: add operations for following and making connections with other users`) is outdated now that follows and connections are implemented. Remove it.
-
-**Files:** `service.go`

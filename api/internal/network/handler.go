@@ -73,7 +73,7 @@ func (h *Handler) RequestFollow(c *gin.Context) {
 	})
 	if err != nil {
 		switch {
-		case errors.Is(err, apperrors.ErrNotFound):
+		case errors.Is(err, ErrUserNotFound):
 			c.AbortWithError(http.StatusNotFound, err)
 		case errors.Is(err, ErrFollowExists):
 			c.AbortWithError(http.StatusBadRequest, err)
@@ -129,12 +129,12 @@ func (h *Handler) RequestConnection(c *gin.Context) {
 	})
 	if err != nil {
 		switch {
-		case errors.Is(err, apperrors.ErrNotFound):
-			c.AbortWithError(http.StatusNotFound, err)
 		case errors.Is(err, ErrConnectionRequestExists):
 			c.AbortWithError(http.StatusConflict, err)
 		case errors.Is(err, ErrConnectSelf):
 			c.AbortWithError(http.StatusBadRequest, err)
+		case errors.Is(err, ErrUserNotFound):
+			c.AbortWithError(http.StatusNotFound, err)
 		default:
 			c.AbortWithError(http.StatusInternalServerError, err)
 		}
