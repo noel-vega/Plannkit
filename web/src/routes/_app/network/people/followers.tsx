@@ -47,7 +47,7 @@ function RouteComponent() {
                   </ItemTitle>
                 </ItemContent>
                 <ItemActions>
-                  {user.followStatus === "pending" && <AcceptFollowButton />}
+                  {user.followStatus === "pending" && <AcceptFollowButton userId={user.id} username={user.username} />}
                 </ItemActions>
               </Item>
             </Link>

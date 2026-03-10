@@ -61,9 +61,6 @@ function RouteComponent() {
   )
 }
 
-
-
-
 function MeAvatar() {
   const { me } = useAuth()
 

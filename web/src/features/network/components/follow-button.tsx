@@ -1,6 +1,6 @@
 import { useAuth } from "@/features/auth/store"
 import { useTranslation } from "react-i18next"
-import { useFollowMutation, useRemoveFollowMutation } from "../hooks"
+import { useAcceptFollowMutation, useFollowMutation, useRemoveFollowMutation } from "../hooks"
 import { NetworkButton } from "./network-button"
 import type { UserProfile } from "../types"
 import { Button } from "@/components/ui/button"
@@ -23,7 +23,7 @@ export function FollowButton(props: { profile: UserProfile }) {
       isRequester={me.id === follow?.followerUserId}
       onRequest={() => requestFollow.mutate(user.id)}
       onRemove={() => removeFollow.mutate(user.id)}
-      onAccept={() => console.log("TODO: ACCEPT FOLLOW")}
+      onAccept={() => console.log("not needed")}
       isPending={requestFollow.isPending || removeFollow.isPending}
       labels={{
         request: t("Follow"),
@@ -36,10 +36,12 @@ export function FollowButton(props: { profile: UserProfile }) {
 }
 
 // TODO: Create Accept Follow Endpoint
-export function AcceptFollowButton() {
+export function AcceptFollowButton(props: { userId: number; username: string }) {
+  const accept = useAcceptFollowMutation(props.username)
   const handleClick = (e: MouseEvent) => {
     e.stopPropagation()
     e.preventDefault()
+    accept.mutate(props.userId)
   }
   return (
     <Button variant="secondary" size="sm" onClick={handleClick}>

@@ -41,39 +41,29 @@ type UserProfile struct {
 	Connection *Connection          `json:"connection"`
 }
 
-type Follow struct {
-	ID              int       `json:"id" db:"id"`
-	FollowerUserID  int       `json:"followerUserId" db:"follower_user_id"`
-	FollowingUserID int       `json:"followingUserId" db:"following_user_id"`
-	Status          string    `json:"status" db:"status"`
-	CreatedAt       time.Time `json:"createdAt" db:"created_at"`
-	UpdatedAt       time.Time `json:"updatedAt" db:"updated_at"`
+type FollowRelationship struct {
+	FollowerUserID  int `json:"followerUserId" db:"follower_user_id"`
+	FollowingUserID int `json:"followingUserId" db:"following_user_id"`
 }
+
+type Follow struct {
+	ID int `json:"id" db:"id"`
+	FollowRelationship
+	Status    string    `json:"status" db:"status"`
+	CreatedAt time.Time `json:"createdAt" db:"created_at"`
+	UpdatedAt time.Time `json:"updatedAt" db:"updated_at"`
+}
+
+type (
+	RequestFollowParams = FollowRelationship
+	RemoveFollowParams  = FollowRelationship
+	AcceptFollowParams  = FollowRelationship
+	GetFollowerParams   = FollowRelationship
+)
 
 type InsertFollowParams struct {
-	FollowerUserID  int    `json:"followerUserId" db:"follower_user_id"`
-	FollowingUserID int    `json:"followingUserId" db:"following_user_id"`
-	Status          string `json:"status" db:"status"`
-}
-
-type RequestFollowParams struct {
-	FollowerUserID  int `json:"followerUserId" db:"follower_user_id"`
-	FollowingUserID int `json:"followingUserId" db:"following_user_id"`
-}
-
-type RemoveFollowParams struct {
-	FollowerUserID  int `json:"followerUserId" db:"follower_user_id"`
-	FollowingUserID int `json:"followingUserId" db:"following_user_id"`
-}
-
-type AcceptFollowParams struct {
-	FollowerUserID  int `json:"followerUserId" db:"follower_user_id"`
-	FollowingUserID int `json:"followingUserId" db:"following_user_id"`
-}
-
-type GetFollowerParams struct {
-	FollowerUserID  int `json:"followerUserId" db:"follower_user_id"`
-	FollowingUserID int `json:"followingUserId" db:"following_user_id"`
+	FollowRelationship
+	Status string `json:"status" db:"status"`
 }
 
 type Connection struct {
@@ -88,7 +78,7 @@ type Connection struct {
 
 type RequestConnectionParams struct {
 	RequestedByUserID int
-	TargerUserID      int
+	TargetUserID      int
 }
 
 type InsertConnectionParams struct {
@@ -98,5 +88,6 @@ type InsertConnectionParams struct {
 }
 
 type AcceptConnectionParams struct {
-	ID int `json:"id" db:"id"`
+	AcceptedByUserID  int
+	RequestedByUserID int
 }

@@ -49,11 +49,12 @@ func (h *Handler) GetUserProfile(c *gin.Context) {
 	}
 	profile, err := h.service.GetUserProfile(params)
 	if err != nil {
-		if errors.Is(err, apperrors.ErrNotFound) {
-			c.AbortWithStatus(http.StatusNotFound)
-			return
+		switch {
+		case errors.Is(err, apperrors.ErrNotFound):
+			c.AbortWithError(http.StatusNotFound, err)
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
 		}
-		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
@@ -114,6 +115,27 @@ func (h *Handler) RemoveFollow(c *gin.Context) {
 }
 
 func (h *Handler) AcceptFollow(c *gin.Context) {
+	followerUserID, err := strconv.Atoi(c.Param("userID"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+	params := &AcceptFollowParams{
+		FollowingUserID: c.MustGet("userID").(int),
+		FollowerUserID:  followerUserID,
+	}
+
+	err = h.service.AcceptFollow(params)
+	if err != nil {
+		switch {
+		case errors.Is(err, ErrFollowNotFound):
+			c.AbortWithError(http.StatusNotFound, err)
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
+		return
+	}
+	c.Status(http.StatusNoContent)
 }
 
 func (h *Handler) RequestConnection(c *gin.Context) {
@@ -125,7 +147,7 @@ func (h *Handler) RequestConnection(c *gin.Context) {
 	}
 	connection, err := h.service.RequestConnection(&RequestConnectionParams{
 		RequestedByUserID: requestedByUserID,
-		TargerUserID:      targetUserID,
+		TargetUserID:      targetUserID,
 	})
 	if err != nil {
 		switch {
@@ -151,13 +173,21 @@ func (h *Handler) AcceptConnection(c *gin.Context) {
 		return
 	}
 
-	err = h.service.AcceptConnection(user1ID, user2ID)
+	params := &AcceptConnectionParams{
+		AcceptedByUserID:  user1ID,
+		RequestedByUserID: user2ID,
+	}
+
+	err = h.service.AcceptConnection(params)
 	if err != nil {
-		if errors.Is(err, apperrors.ErrNotFound) {
+		switch {
+		case errors.Is(err, ErrConnectionNotFound):
 			c.AbortWithError(http.StatusNotFound, err)
-			return
+		case errors.Is(err, ErrCannotAcceptOwnConnectionRequest):
+			c.AbortWithError(http.StatusForbidden, err)
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
 		}
-		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 	c.Status(http.StatusNoContent)
@@ -173,11 +203,12 @@ func (h *Handler) RemoveConnection(c *gin.Context) {
 
 	err = h.service.RemoveConnection(user1ID, user2ID)
 	if err != nil {
-		if errors.Is(err, apperrors.ErrNotFound) {
+		switch {
+		case errors.Is(err, ErrConnectionNotFound):
 			c.AbortWithError(http.StatusNotFound, err)
-			return
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
 		}
-		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 

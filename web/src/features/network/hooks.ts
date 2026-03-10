@@ -15,6 +15,15 @@ export function invalidateFollowing() {
   return queryClient.invalidateQueries({ queryKey: ["discover", "following"] })
 }
 
+export function invalidateFollowers() {
+  return queryClient.invalidateQueries({ queryKey: ["discover", "followers"] })
+}
+
+
+export function invalidateConnections() {
+  return queryClient.invalidateQueries({ queryKey: ["discover", "connections"] })
+}
+
 export function useDiscoverUsersQuery(params: DiscoverUsersParams, initialData: NetworkUser[]) {
   return useQuery({ ...getUseDiscoverUsersQueryOptions(params), initialData })
 }
@@ -51,6 +60,17 @@ export function useRemoveFollowMutation(username: string) {
     onSuccess: async () => {
       invalidateUserProfile(username)
       invalidateFollowing()
+    }
+  })
+}
+
+export function useAcceptFollowMutation(username: string) {
+  return useMutation({
+    mutationFn: network.users.acceptFollow,
+    onSuccess: async () => {
+      invalidateUserProfile(username)
+      invalidateFollowing()
+      invalidateFollowers()
     }
   })
 }

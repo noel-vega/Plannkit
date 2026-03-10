@@ -83,6 +83,29 @@ func (r *Repository) ListFollowing(params *ListUsersParams) ([]NetworkUser, erro
 	return data, nil
 }
 
+func (r *Repository) ListConnections(params *ListUsersParams) ([]NetworkUser, error) {
+	qb := sq.Select(
+		"u.id", "u.username", "u.first_name", "u.last_name", "u.email",
+		"u.avatar", "u.is_private", "f.status as follow_status", "u.created_at", "u.updated_at",
+	).From("users u").
+		InnerJoin("network_connections c ON (c.user_1_id = ? AND c.user_2_id = u.id) OR (c.user_2_id = ? AND c.user_1_id = u.id)", params.UserID, params.UserID).
+		LeftJoin("network_followers f ON f.follower_user_id = ? AND f.following_user_id = u.id", params.UserID)
+
+	if params.QueryParams.Search != "" {
+		qb = qb.Where(sq.Expr("first_name || ' ' || last_name ILIKE ?", "%"+params.QueryParams.Search+"%"))
+	}
+	query, args, err := qb.PlaceholderFormat(sq.Dollar).ToSql()
+	if err != nil {
+		return nil, err
+	}
+	data := []NetworkUser{}
+	err = r.db.Select(&data, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
 func (r *Repository) GetFollow(params *GetFollowerParams) (*Follow, error) {
 	query := `
 	SELECT * FROM network_followers 
@@ -143,13 +166,14 @@ func (r *Repository) DeleteFollow(params *RemoveFollowParams) error {
 func (r *Repository) AcceptFollow(params *AcceptFollowParams) error {
 	query := `
 	UPDATE network_followers
-	SET status = :status 
+	SET status = 'accepted' 
 	WHERE follower_user_id = :follower_user_id AND following_user_id = :following_user_id 
 	`
 	_, err := r.db.NamedExec(query, params)
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -171,18 +195,6 @@ func (r *Repository) GetConnection(user1ID, user2ID int) (*Connection, error) {
 
 	return connection, nil
 }
-
-// CREATE TABLE IF NOT EXISTS network_connections (
-//     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-//     user_1_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-//     user_2_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-//     status TEXT NOT NULL DEFAULT 'pending',
-//     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-//     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-//     UNIQUE(user_1_id, user_2_id),
-//     CHECK(user_1_id < user_2_id),
-//     CHECK (status IN ('pending', 'accepted'))
-// );
 
 func (r *Repository) InsertConnection(params *InsertConnectionParams) (*Connection, error) {
 	query := `
