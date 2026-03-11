@@ -16,9 +16,11 @@ CREATE TABLE IF NOT EXISTS finance_spaces_members (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     finance_space_id INT NOT NULL REFERENCES finance_spaces(id) ON DELETE CASCADE,
     user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    status TEXT NOT NULL DEFAULT 'pending',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(finance_space_id, user_id)
+    CHECK (status IN ('pending', 'accepted'))
 );
 
 CREATE INDEX idx_finance_spaces_members_created_at
