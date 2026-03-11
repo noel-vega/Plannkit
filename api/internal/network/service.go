@@ -2,7 +2,6 @@ package network
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/noel-vega/habits/api/internal/apperrors"
@@ -28,7 +27,6 @@ func (s *Service) ListUsers(params *ListUsersParams) ([]NetworkUser, error) {
 	case "following":
 		return s.repository.ListFollowing(params)
 	case "connections":
-		fmt.Println("GET CONNECTIONS")
 		return s.repository.ListConnections(params)
 	default:
 		return s.repository.ListUsers(params)
@@ -165,6 +163,17 @@ func (s *Service) GetConnection(user1ID, user2ID int) (*Connection, error) {
 		return nil, err
 	}
 	return connection, err
+}
+
+func (s *Service) AreConnected(user1ID, user2ID int) (bool, error) {
+	_, err := s.GetConnection(user1ID, user2ID)
+	if err != nil {
+		if errors.Is(err, ErrConnectionNotFound) {
+			return false, nil
+		}
+		return false, err
+	}
+	return true, nil
 }
 
 func (s *Service) RequestConnection(params *RequestConnectionParams) (*Connection, error) {

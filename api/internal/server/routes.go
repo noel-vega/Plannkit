@@ -2,45 +2,32 @@
 package server
 
 import (
-	"net/http"
-	"os"
-
 	"github.com/gin-gonic/gin"
-	"github.com/jmoiron/sqlx"
 	"github.com/noel-vega/habits/api/internal/auth"
 	"github.com/noel-vega/habits/api/internal/finances"
 	"github.com/noel-vega/habits/api/internal/habits"
 	"github.com/noel-vega/habits/api/internal/mail"
 	"github.com/noel-vega/habits/api/internal/network"
-	"github.com/noel-vega/habits/api/internal/storage"
 	"github.com/noel-vega/habits/api/internal/todos"
 	"github.com/noel-vega/habits/api/internal/user"
 )
 
-func AddRoutes(router *gin.Engine, db *sqlx.DB, storageService storage.Service) *gin.Engine {
-	router.GET("/health", func(c *gin.Context) {
-		if err := db.Ping(); err != nil {
-			c.JSON(http.StatusServiceUnavailable, gin.H{"status": "unhealthy", "reason": "database unreachable"})
-			return
-		}
-		c.JSON(http.StatusOK, gin.H{"status": "ok"})
-	})
+type Services struct {
+	Auth     *auth.Service
+	User     *user.Service
+	Network  *network.Service
+	Finances *finances.Service
+	Todos    *todos.Service
+	Habits   *habits.Service
+}
 
-	jwtSecret := os.Getenv("JWT_SECRET")
-
-	financesService := finances.NewService(db)
-	userService := user.NewUserService(db, storageService, financesService)
-	authService := auth.NewService(jwtSecret, userService)
-	todosService := todos.NewService(db)
-	habitsService := habits.NewService(db)
-	networkService := network.NewService(db, userService)
-
-	authHandler := auth.NewHandler(authService)
-	habitsHandler := habits.NewHandler(habitsService)
-	todosHandler := todos.NewHandler(todosService)
-	usersHandler := user.NewHandler(userService)
-	networkHandler := network.NewHandler(networkService)
-	financesHandler := finances.NewHandler(financesService)
+func AddRoutes(router *gin.Engine, services *Services) *gin.Engine {
+	authHandler := auth.NewHandler(services.Auth)
+	habitsHandler := habits.NewHandler(services.Habits)
+	todosHandler := todos.NewHandler(services.Todos)
+	userHandler := user.NewHandler(services.User)
+	networkHandler := network.NewHandler(services.Network)
+	financesHandler := finances.NewHandler(services.Finances)
 
 	router.GET("/flags", FlagsHandler)
 
@@ -50,11 +37,9 @@ func AddRoutes(router *gin.Engine, db *sqlx.DB, storageService storage.Service) 
 	router.GET("/auth/me", authHandler.GetMe)
 
 	protected := router.Group("/")
-	protected.Use(Authentication(authService))
+	protected.Use(Authentication(services.Auth))
 
 	protected.GET("/auth/refresh", authHandler.RefreshAccessToken)
-	protected.GET("/finances/spaces", financesHandler.ListSpaces)
-	protected.POST("/finances/spaces", financesHandler.CreateSpace)
 
 	protected.GET("/network/profile/:username", networkHandler.GetUserProfile)
 	protected.GET("/network/users", networkHandler.ListUsers)
@@ -65,10 +50,16 @@ func AddRoutes(router *gin.Engine, db *sqlx.DB, storageService storage.Service) 
 	protected.PATCH("/network/users/:userID/connection", networkHandler.AcceptConnection)
 	protected.DELETE("/network/users/:userID/connection", networkHandler.RemoveConnection)
 
-	protected.PUT("/user/avatar", usersHandler.UpdateAvatar)
+	protected.PUT("/user/avatar", userHandler.UpdateAvatar)
 
-	financeSpace := protected.Group("/finances/spaces/:spaceID").Use(VerifySpaceMembership(financesService))
+	protected.GET("/finances/spaces", financesHandler.ListSpaces)
+	protected.POST("/finances/spaces", financesHandler.CreateSpace)
+	protected.PATCH("/finances/spaces/:spaceID/members", financesHandler.AcceptSpaceInvite)
+	financeSpace := protected.Group("/finances/spaces/:spaceID").Use(finances.VerifySpaceMembership(services.Finances))
 	financeSpace.DELETE("", financesHandler.DeleteSpace)
+	financeSpace.POST("/members", financesHandler.InviteToSpace)
+	financeSpace.GET("/members", financesHandler.ListSpaceMembers)
+	financeSpace.DELETE("/members/:userID", financesHandler.DeleteSpaceMember)
 	financeSpace.POST("/incomes", financesHandler.CreateIncomeSource)
 	financeSpace.GET("/incomes", financesHandler.ListIncomes)
 	financeSpace.DELETE("/incomes/:incomeSourceID", financesHandler.DeleteIncome)

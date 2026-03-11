@@ -5,15 +5,18 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"github.com/noel-vega/habits/api/internal/apperrors"
+	"github.com/noel-vega/habits/api/internal/contracts"
 )
 
 type Service struct {
-	repository *Repository
+	connectionChecker contracts.ConnectionChecker
+	repository        *Repository
 }
 
-func NewService(db *sqlx.DB) *Service {
+func NewService(db *sqlx.DB, cc contracts.ConnectionChecker) *Service {
 	return &Service{
-		repository: NewRepository(db),
+		repository:        NewRepository(db),
+		connectionChecker: cc,
 	}
 }
 
@@ -22,15 +25,19 @@ func (s *Service) CreateSpace(params *CreateSpaceParams) (*Space, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = s.repository.CreateSpaceMembership(params.UserID, space.ID)
+	_, err = s.repository.InsertSpaceMember(&InsertSpaceMemberParams{
+		SpaceID: space.ID,
+		UserID:  params.UserID,
+		Status:  "accepted",
+	})
 	if err != nil {
 		return nil, err
 	}
 	return space, nil
 }
 
-func (s *Service) SpaceMembershipExists(userID, spaceID int) (bool, error) {
-	_, err := s.repository.GetSpaceMembership(userID, spaceID)
+func (s *Service) SpaceMembershipExists(params *SpaceMemberRelationship) (bool, error) {
+	_, err := s.repository.GetSpaceMember(params)
 	if err != nil {
 		if errors.Is(err, apperrors.ErrNotFound) {
 			return false, nil
@@ -98,4 +105,42 @@ func (s *Service) ListIncomeSources(params *ListIncomeSourcesParams) ([]IncomeSo
 
 func (s *Service) DeleteIncomeSource(params *DeleteIncomeSourceParams) error {
 	return s.repository.DeleteIncomeSource(params)
+}
+
+func (s *Service) InviteToSpace(params *CreateSpaceMemberParams) (*SpaceMember, error) {
+	isConnected, err := s.connectionChecker.AreConnected(params.UserID, params.NewMemberUserID)
+	if err != nil {
+		return nil, err
+	}
+	if !isConnected {
+		return nil, contracts.ErrNotConnected
+	}
+	return s.repository.InsertSpaceMember(&InsertSpaceMemberParams{
+		UserID:  params.NewMemberUserID,
+		SpaceID: params.SpaceID,
+		Status:  "pending",
+	})
+}
+
+func (s *Service) ListSpaceMembers(params *ListSpaceMembersParams) ([]SpaceMember, error) {
+	return s.repository.ListSpaceMembers(params)
+}
+
+func (s *Service) GetSpaceMember(params *SpaceMemberRelationship) (*SpaceMember, error) {
+	member, err := s.repository.GetSpaceMember(params)
+	if err != nil {
+		if errors.Is(err, apperrors.ErrNotFound) {
+			return nil, ErrSpaceMemberNotFound
+		}
+		return nil, err
+	}
+	return member, nil
+}
+
+func (s *Service) DeleteSpaceMember(params *SpaceMemberRelationship) error {
+	_, err := s.GetSpaceMember(params)
+	if err != nil {
+		return err
+	}
+	return s.repository.DeleteSpaceMember(params)
 }

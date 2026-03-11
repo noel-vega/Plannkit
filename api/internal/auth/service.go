@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/noel-vega/habits/api/internal/finances"
 	"github.com/noel-vega/habits/api/internal/user"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -15,14 +16,16 @@ const (
 )
 
 type Service struct {
-	jwtSecret   string
-	userService *user.Service
+	jwtSecret       string
+	userService     *user.Service
+	financesService *finances.Service
 }
 
-func NewService(jwtSecret string, userService *user.Service) *Service {
+func NewService(jwtSecret string, userService *user.Service, financesService *finances.Service) *Service {
 	return &Service{
-		userService: userService,
-		jwtSecret:   jwtSecret,
+		financesService: financesService,
+		userService:     userService,
+		jwtSecret:       jwtSecret,
 	}
 }
 
@@ -65,17 +68,25 @@ func (s *Service) SignUp(params user.CreateUserParams) (*TokenPair, *user.UserNo
 	hashedPassword := string(hashBytes)
 	params.Password = hashedPassword
 
-	u, err := s.userService.CreateUser(params)
+	user, err := s.userService.CreateUser(params)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	tokenPair, err := s.GenerateTokenPair(u.ID)
+	_, err = s.financesService.CreateSpace(&finances.CreateSpaceParams{
+		UserID: user.ID,
+		Name:   "My Finances",
+	})
+	if err != nil {
+		return nil, user, err
+	}
+
+	tokenPair, err := s.GenerateTokenPair(user.ID)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	return tokenPair, u, nil
+	return tokenPair, user, nil
 }
 
 func (s *Service) SignIn(params *SignInParams) (*TokenPair, *user.UserNoPassword, error) {

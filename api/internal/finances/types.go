@@ -15,9 +15,40 @@ type SpaceMember struct {
 	ID        int       `json:"id" db:"id"`
 	SpaceID   int       `json:"spaceId" db:"finance_space_id"`
 	UserID    int       `json:"userId" db:"user_id"`
+	Status    string    `json:"status" db:"status"`
 	CreatedAt time.Time `json:"createdAt" db:"created_at"`
 	UpdatedAt time.Time `json:"updatedAt" db:"updated_at"`
 }
+
+type CreateSpaceMemberBody struct {
+	UserID int `json:"userId"`
+}
+
+type CreateSpaceMemberParams struct {
+	UserID          int
+	NewMemberUserID int
+	SpaceID         int
+}
+
+type InsertSpaceMemberParams struct {
+	UserID  int    `db:"user_id"`
+	SpaceID int    `db:"finance_space_id"`
+	Status  string `db:"status"`
+}
+
+type ListSpaceMembersParams struct {
+	SpaceID int `json:"spaceId" db:"finance_space_id"`
+}
+
+type SpaceMemberRelationship struct {
+	UserID  int `db:"user_id"`
+	SpaceID int `db:"finance_space_id"`
+}
+
+type (
+	GetSpaceMemberParams    = SpaceMemberRelationship
+	DeleteSpaceMemberParams = SpaceMemberRelationship
+)
 
 type Expense struct {
 	ID          int       `json:"id" db:"id"`

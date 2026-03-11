@@ -3,13 +3,11 @@ package server
 import (
 	"errors"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/noel-vega/habits/api/internal/auth"
-	"github.com/noel-vega/habits/api/internal/finances"
 )
 
 func Authentication(authService *auth.Service) gin.HandlerFunc {
@@ -45,30 +43,6 @@ func Authentication(authService *auth.Service) gin.HandlerFunc {
 		}
 
 		c.Set("userID", accessTokenClaims.UserID)
-		c.Next()
-	}
-}
-
-func VerifySpaceMembership(financeService *finances.Service) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		userID := c.MustGet("userID").(int)
-		spaceIDParam := c.Param("spaceID")
-		spaceID, err := strconv.Atoi(spaceIDParam)
-		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
-			return
-		}
-		exists, err := financeService.SpaceMembershipExists(userID, spaceID)
-		if err != nil {
-			c.AbortWithError(http.StatusInternalServerError, err)
-			return
-		}
-
-		if !exists {
-			c.AbortWithStatus(http.StatusForbidden)
-			return
-		}
-		c.Set("spaceID", spaceID)
 		c.Next()
 	}
 }

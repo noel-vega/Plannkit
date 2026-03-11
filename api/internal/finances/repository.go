@@ -40,43 +40,22 @@ func (r *Repository) CreateSpace(params *CreateSpaceParams) (*Space, error) {
 	return data, nil
 }
 
-func (r *Repository) CreateSpaceMembership(userID, spaceID int) error {
-	query := `
-		INSERT INTO 
-		finance_spaces_members (user_id, finance_space_id)
-	  VALUES ($1, $2)
-	`
-	_, err := r.db.Exec(query, userID, spaceID)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (r *Repository) GetSpaceMembership(userID, spaceID int) (*SpaceMember, error) {
+func (r *Repository) GetSpaceMember(params *SpaceMemberRelationship) (*SpaceMember, error) {
 	query := `
 		SELECT *
 	  FROM finance_spaces_members
-	  WHERE user_id = $1 AND finance_space_id = $2 
+	  WHERE user_id = :user_id AND finance_space_id = :finance_space_id
 	`
+	query, args, err := sqlx.Named(query, params)
+	if err != nil {
+		return nil, err
+	}
 	data := &SpaceMember{}
-	err := r.db.Get(data, query, userID, spaceID)
+	err = r.db.Get(data, r.db.Rebind(query), args...)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, apperrors.ErrNotFound
 		}
-		return nil, err
-	}
-	return data, nil
-}
-
-func (r *Repository) ListSpaceMemberships(userID int) ([]SpaceMember, error) {
-	data := []SpaceMember{}
-	query := `
-		SELECT * FROM finance_spaces_members WHERE user_id = $1
-	`
-	err := r.db.Select(&data, query, userID)
-	if err != nil {
 		return nil, err
 	}
 	return data, nil
@@ -302,16 +281,6 @@ func (r *Repository) DeleteExpense(params *DeleteExpenseParams) error {
 	return nil
 }
 
-// CREATE TABLE IF NOT EXISTS finance_spaces_income_sources (
-//   id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-//   finance_space_id INT NOT NULL REFERENCES finance_spaces(id) ON DELETE CASCADE,
-//   user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-//   name TEXT NOT NULL,
-//   amount INT NOT NULL,
-//   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-//   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-// );
-
 func (r *Repository) InsertIncomeSource(params *InsertIncomeSourceParams) (*IncomeSource, error) {
 	query := `
 		INSERT INTO 
@@ -356,5 +325,50 @@ func (r *Repository) DeleteIncomeSource(params *DeleteIncomeSourceParams) error 
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func (r *Repository) InsertSpaceMember(params *InsertSpaceMemberParams) (*SpaceMember, error) {
+	query := `
+		INSERT INTO
+	  finance_spaces_members (user_id, finance_space_id, status)
+	VALUES (:user_id, :finance_space_id, :status)
+	  RETURNING *
+	`
+	query, args, err := sqlx.Named(query, params)
+	if err != nil {
+		return nil, err
+	}
+
+	member := &SpaceMember{}
+	err = r.db.Get(member, r.db.Rebind(query), args...)
+	if err != nil {
+		return nil, err
+	}
+	return member, nil
+}
+
+func (r *Repository) ListSpaceMembers(params *ListSpaceMembersParams) ([]SpaceMember, error) {
+	query := `
+		SELECT * FROM finance_spaces_members WHERE finance_space_id = $1
+	`
+	members := []SpaceMember{}
+	err := r.db.Select(&members, query, params.SpaceID)
+	if err != nil {
+		return nil, err
+	}
+	return members, nil
+}
+
+func (r *Repository) DeleteSpaceMember(params *DeleteSpaceMemberParams) error {
+	query := `
+		DELETE FROM finance_spaces_members
+	  WHERE user_id = :user_id AND finance_space_id = :finance_space_id 
+	`
+	_, err := r.db.NamedExec(query, params)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

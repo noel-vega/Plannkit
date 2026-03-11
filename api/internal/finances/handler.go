@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/noel-vega/habits/api/internal/apperrors"
+	"github.com/noel-vega/habits/api/internal/contracts"
 )
 
 type Handler struct {
@@ -323,5 +324,67 @@ func (h *Handler) DeleteIncome(c *gin.Context) {
 		return
 	}
 
+	c.Status(http.StatusNoContent)
+}
+
+func (h *Handler) InviteToSpace(c *gin.Context) {
+	body := &CreateSpaceMemberBody{}
+	err := c.Bind(body)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	member, err := h.service.InviteToSpace(&CreateSpaceMemberParams{
+		UserID:          c.MustGet("userID").(int),
+		NewMemberUserID: body.UserID,
+		SpaceID:         c.MustGet("spaceID").(int),
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, contracts.ErrNotConnected):
+			c.AbortWithError(http.StatusForbidden, err)
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
+		return
+	}
+
+	c.JSON(http.StatusCreated, member)
+}
+
+func (h *Handler) AcceptSpaceInvite(c *gin.Context) {
+}
+
+func (h *Handler) ListSpaceMembers(c *gin.Context) {
+	members, err := h.service.ListSpaceMembers(&ListSpaceMembersParams{
+		SpaceID: c.MustGet("spaceID").(int),
+	})
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+	c.JSON(http.StatusOK, members)
+}
+
+func (h *Handler) DeleteSpaceMember(c *gin.Context) {
+	userID, err := strconv.Atoi(c.Param("userID"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+	err = h.service.DeleteSpaceMember(&SpaceMemberRelationship{
+		UserID:  userID,
+		SpaceID: c.MustGet("spaceID").(int),
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, ErrSpaceMemberNotFound):
+			c.AbortWithError(http.StatusNotFound, err)
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
+		return
+	}
 	c.Status(http.StatusNoContent)
 }

@@ -16,11 +16,10 @@ type Service struct {
 	storageService  storage.Service
 }
 
-func NewUserService(db *sqlx.DB, storageService storage.Service, financesService *finances.Service) *Service {
+func NewService(db *sqlx.DB, storageService storage.Service) *Service {
 	return &Service{
-		userRepo:        NewRepository(db),
-		storageService:  storageService,
-		financesService: financesService,
+		userRepo:       NewRepository(db),
+		storageService: storageService,
 	}
 }
 
@@ -37,14 +36,6 @@ func (s *Service) CreateUser(params CreateUserParams) (*UserNoPassword, error) {
 	}
 
 	newUser, err := s.userRepo.Create(params)
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = s.financesService.CreateSpace(&finances.CreateSpaceParams{
-		UserID: newUser.ID,
-		Name:   "My Finances",
-	})
 	if err != nil {
 		return nil, err
 	}
