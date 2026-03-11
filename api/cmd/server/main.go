@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/gin-contrib/cors"
@@ -9,8 +10,14 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
+	"github.com/noel-vega/habits/api/internal/auth"
+	"github.com/noel-vega/habits/api/internal/finances"
+	"github.com/noel-vega/habits/api/internal/habits"
+	"github.com/noel-vega/habits/api/internal/network"
 	"github.com/noel-vega/habits/api/internal/server"
 	"github.com/noel-vega/habits/api/internal/storage"
+	"github.com/noel-vega/habits/api/internal/todos"
+	"github.com/noel-vega/habits/api/internal/user"
 )
 
 func main() {
@@ -35,11 +42,36 @@ func main() {
 		AllowCredentials: true,
 	}))
 
+	router.GET("/health", func(c *gin.Context) {
+		if err := db.Ping(); err != nil {
+			c.JSON(http.StatusServiceUnavailable, gin.H{"status": "unhealthy", "reason": "database unreachable"})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"status": "ok"})
+	})
+
 	storageBasePath := os.Getenv("STORAGE_BASE_PATH")
 	router.Static("/public", storageBasePath)
 	storageService := storage.NewLocalStorage(storageBasePath)
+	jwtSecret := os.Getenv("JWT_SECRET")
 
-	server.AddRoutes(router, db, storageService)
+	userService := user.NewService(db, storageService)
+	networkService := network.NewService(db, userService)
+	financesService := finances.NewService(db, networkService)
+	todosService := todos.NewService(db)
+	habitsService := habits.NewService(db)
+	authService := auth.NewService(jwtSecret, userService, financesService)
+
+	services := &server.Services{
+		User:     userService,
+		Network:  networkService,
+		Finances: financesService,
+		Todos:    todosService,
+		Habits:   habitsService,
+		Auth:     authService,
+	}
+
+	server.AddRoutes(router, services)
 
 	if err := router.Run(); err != nil {
 		log.Fatalf("failed to run server: %v", err)
