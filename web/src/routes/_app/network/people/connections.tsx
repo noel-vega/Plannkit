@@ -1,12 +1,11 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Field } from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
 import { Item, ItemContent, ItemMedia, ItemTitle } from '@/components/ui/item'
 import { useDiscoverUsersQuery } from '@/features/network/hooks'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { SearchIcon } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
-import { useTranslation } from 'react-i18next'
 import { useDebounce } from 'use-debounce'
 
 export const Route = createFileRoute('/_app/network/people/connections')({
@@ -14,8 +13,6 @@ export const Route = createFileRoute('/_app/network/people/connections')({
 })
 
 function RouteComponent() {
-
-  const { t } = useTranslation()
   const [search, setSearch] = useState("")
   const [value] = useDebounce(search, 500)
   const users = useDiscoverUsersQuery({ search: value, filter: "connections" }, [])
@@ -24,10 +21,15 @@ function RouteComponent() {
     setSearch(e.currentTarget.value)
   }
   return (
-
     <>
       <Field className="mb-4">
-        <Input icon={SearchIcon} onInput={handleSearchInput} placeholder={t("Search connections...")} />
+        <InputGroup>
+          <InputGroupInput placeholder="Search connections..." onInput={handleSearchInput} />
+          <InputGroupAddon>
+            <SearchIcon />
+          </InputGroupAddon>
+          <InputGroupAddon align="inline-end">{users.data.length} result(s)</InputGroupAddon>
+        </InputGroup>
       </Field>
       <ul className="divide-y">
         {users.data.map(user => (

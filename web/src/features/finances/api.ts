@@ -18,6 +18,16 @@ export const finances = {
       return await api.DELETE(`/finances/spaces/${params.id}`)
     },
   },
+  members: {
+    create: async () => {
+    },
+    list: async () => {
+
+    },
+    delete: async () => {
+
+    },
+  },
   goals: {
     create: async (params: CreateGoalParams) => {
       const response = await api.POST(`/finances/spaces/${params.spaceId}/goals`, params)

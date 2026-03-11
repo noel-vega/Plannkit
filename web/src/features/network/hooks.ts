@@ -19,7 +19,6 @@ export function invalidateFollowers() {
   return queryClient.invalidateQueries({ queryKey: ["discover", "followers"] })
 }
 
-
 export function invalidateConnections() {
   return queryClient.invalidateQueries({ queryKey: ["discover", "connections"] })
 }

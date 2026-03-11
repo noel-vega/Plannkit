@@ -7,6 +7,8 @@ import { CreateSpaceDialog } from "./create-finance-space-form";
 import { useDialog } from "@/hooks";
 import { useTranslation } from "react-i18next";
 import { ManageIncomesSheet } from "./manage-incomes-sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import type { DialogProps } from "@/types";
 
 type Props = {
   currentSpace: FinanceSpace,
@@ -19,7 +21,8 @@ type Props = {
 export function FinanceSpaceSwitcher(props: Props) {
   const { t } = useTranslation()
   const createSpaceDialog = useDialog()
-  const incomeSourcesSheet = useDialog()
+  const manageIncomeSourcesSheet = useDialog()
+  const manageMembersSheet = useDialog()
   const popover = useDialog()
   return (
     <>
@@ -56,16 +59,16 @@ export function FinanceSpaceSwitcher(props: Props) {
                 <CommandItem
                   onSelect={() => {
                     popover.close()
-                    incomeSourcesSheet.handleOpenDialog()
+                    manageIncomeSourcesSheet.handleOpenDialog()
                   }}>
-                  <DollarSignIcon />{t("Manage Incomes")}
+                  <DollarSignIcon />{t("Incomes Sources")}
                 </CommandItem>
                 <CommandItem
                   onSelect={() => {
                     popover.close()
-                    incomeSourcesSheet.handleOpenDialog()
+                    manageMembersSheet.handleOpenDialog()
                   }}>
-                  <UsersIcon />{t("Manage Members")}
+                  <UsersIcon />{t("Members")}
                 </CommandItem>
               </CommandGroup>
               <CommandGroup heading={t("Spaces")}>
@@ -88,7 +91,23 @@ export function FinanceSpaceSwitcher(props: Props) {
         <CreateSpaceDialog {...createSpaceDialog} onSuccess={props.onCreate} />
       </Popover>
 
-      <ManageIncomesSheet spaceId={props.currentSpace.id} {...incomeSourcesSheet} />
+      <ManageIncomesSheet spaceId={props.currentSpace.id} {...manageIncomeSourcesSheet} />
+      <ManageMembersSheet spaceId={props.currentSpace.id} {...manageMembersSheet} />
     </>
+  )
+}
+
+
+
+function ManageMembersSheet({ spaceId, ...dialog }: { spaceId: number } & DialogProps) {
+  return (
+    <Sheet {...dialog}>
+      <SheetContent>
+        <SheetHeader>
+          <SheetTitle>Manage Members</SheetTitle>
+        </SheetHeader>
+
+      </SheetContent>
+    </Sheet>
   )
 }

@@ -1,13 +1,12 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Field } from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
 import { Item, ItemActions, ItemContent, ItemMedia, ItemTitle } from '@/components/ui/item'
 import { PendingFollowButton } from '@/features/network/components/follow-button'
 import { useDiscoverUsersQuery } from '@/features/network/hooks'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { SearchIcon } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
-import { useTranslation } from 'react-i18next'
 import { useDebounce } from 'use-debounce'
 
 export const Route = createFileRoute('/_app/network/people/following')({
@@ -16,7 +15,6 @@ export const Route = createFileRoute('/_app/network/people/following')({
 
 function RouteComponent() {
 
-  const { t } = useTranslation()
   const [search, setSearch] = useState("")
   const [value] = useDebounce(search, 500)
   const users = useDiscoverUsersQuery({ search: value, filter: "following" }, [])
@@ -28,7 +26,13 @@ function RouteComponent() {
 
     <>
       <Field className="mb-4">
-        <Input icon={SearchIcon} onInput={handleSearchInput} placeholder={t("Search following...")} />
+        <InputGroup>
+          <InputGroupInput placeholder="Search following..." onInput={handleSearchInput} />
+          <InputGroupAddon>
+            <SearchIcon />
+          </InputGroupAddon>
+          <InputGroupAddon align="inline-end">{users.data.length} result(s)</InputGroupAddon>
+        </InputGroup>
       </Field>
       <ul className="divide-y">
         {users.data.map(user => (
