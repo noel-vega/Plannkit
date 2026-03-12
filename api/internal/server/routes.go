@@ -22,7 +22,7 @@ type Services struct {
 }
 
 func AddRoutes(router *gin.Engine, services *Services) *gin.Engine {
-	authHandler := auth.NewHandler(services.Auth)
+	authHandler := auth.NewHandler(services.Auth, services.User, services.Finances)
 	habitsHandler := habits.NewHandler(services.Habits)
 	todosHandler := todos.NewHandler(services.Todos)
 	userHandler := user.NewHandler(services.User)
@@ -37,7 +37,7 @@ func AddRoutes(router *gin.Engine, services *Services) *gin.Engine {
 	router.GET("/auth/me", authHandler.GetMe)
 
 	protected := router.Group("/")
-	protected.Use(Authentication(services.Auth))
+	protected.Use(auth.AuthenticateUser(services.Auth))
 
 	protected.GET("/auth/refresh", authHandler.RefreshAccessToken)
 

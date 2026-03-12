@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/noel-vega/habits/api/internal/apperrors"
+	"github.com/noel-vega/habits/api/internal/finances"
 	"github.com/noel-vega/habits/api/internal/user"
 )
 
@@ -17,16 +18,20 @@ const (
 )
 
 type Handler struct {
-	AuthService *Service
+	service         *Service
+	userService     *user.Service
+	financesService *finances.Service
 }
 
-func NewHandler(authService *Service) *Handler {
+func NewHandler(authService *Service, userService *user.Service, financesService *finances.Service) *Handler {
 	return &Handler{
-		AuthService: authService,
+		service:         authService,
+		financesService: financesService,
+		userService:     userService,
 	}
 }
 
-func (h *Handler) SetCookieRefreshToken(c *gin.Context, refreshToken string, maxAge int) {
+func (h *Handler) setCookieRefreshToken(c *gin.Context, refreshToken string, maxAge int) {
 	c.SetCookie(
 		"refresh_token",
 		refreshToken,
@@ -46,7 +51,15 @@ func (h *Handler) SignUp(c *gin.Context) {
 		return
 	}
 
-	tokens, me, err := h.AuthService.SignUp(data)
+	hashedPassword, err := h.service.HashPassword(data.Password)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	data.Password = hashedPassword
+
+	newUser, err := h.userService.CreateUser(data)
 	if err != nil {
 		if errors.Is(err, user.ErrEmailExists) {
 			c.AbortWithError(http.StatusConflict, err)
@@ -56,46 +69,67 @@ func (h *Handler) SignUp(c *gin.Context) {
 		return
 	}
 
-	h.SetCookieRefreshToken(c, tokens.RefreshToken, refreshTokenMaxAge)
+	tokens, err := h.service.GenerateTokenPair(newUser.ID)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
 
-	authResponse := AuthResposne{
+	_, err = h.financesService.CreateSpace(&finances.CreateSpaceParams{
+		UserID: newUser.ID,
+		Name:   "My Finances",
+	})
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	h.setCookieRefreshToken(c, tokens.RefreshToken, refreshTokenMaxAge)
+	authResponse := AuthResponse{
 		AccessToken: tokens.AccessToken,
-		Me:          me,
+		Me:          newUser,
 	}
 
 	c.JSON(http.StatusOK, authResponse)
 }
 
 func (h *Handler) SignIn(c *gin.Context) {
-	data := &SignInParams{}
-	err := c.Bind(data)
+	body := &SignInParams{}
+	err := c.Bind(body)
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	tokens, me, err := h.AuthService.SignIn(data)
-
-	if errors.Is(err, ErrInvalidCredentials) {
+	u, err := h.userService.GetUserByEmailWithPassword(body.Email)
+	if err != nil {
 		c.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}
+
+	err = h.service.ComparePassword(u.Password, body.Password)
+	if err != nil {
+		c.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+
+	tokens, err := h.service.GenerateTokenPair(u.ID)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
-	h.SetCookieRefreshToken(c, tokens.RefreshToken, refreshTokenMaxAge)
+	h.setCookieRefreshToken(c, tokens.RefreshToken, refreshTokenMaxAge)
 
-	authResponse := AuthResposne{
+	authResponse := AuthResponse{
 		AccessToken: tokens.AccessToken,
-		Me:          me,
+		Me:          u.WithoutPassword(),
 	}
 
 	c.JSON(http.StatusOK, authResponse)
 }
 
 func (h *Handler) SignOut(c *gin.Context) {
-	h.SetCookieRefreshToken(c, emptyRefreshToken, refreshTokenInvalidateTokenAge)
+	h.setCookieRefreshToken(c, emptyRefreshToken, refreshTokenInvalidateTokenAge)
 }
 
 func (h *Handler) RefreshAccessToken(c *gin.Context) {
@@ -105,7 +139,7 @@ func (h *Handler) RefreshAccessToken(c *gin.Context) {
 		return
 	}
 
-	accessToken, err := h.AuthService.RefreshAccessToken(refreshTokenStr)
+	accessToken, err := h.service.RefreshAccessToken(refreshTokenStr)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid refresh token: " + err.Error()})
 		return
@@ -123,19 +157,19 @@ func (h *Handler) GetMe(c *gin.Context) {
 		return
 	}
 
-	refreshTokenClaims, err := h.AuthService.ValidateToken(refreshTokenStr)
+	refreshTokenClaims, err := h.service.ValidateToken(refreshTokenStr)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid refresh token: " + err.Error()})
 		return
 	}
 
-	accessToken, err := h.AuthService.RefreshAccessToken(refreshTokenStr)
+	accessToken, err := h.service.RefreshAccessToken(refreshTokenStr)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid refresh token: " + err.Error()})
 		return
 	}
 
-	me, err := h.AuthService.userService.GetUserByID(refreshTokenClaims.UserID)
+	me, err := h.userService.GetUserByID(refreshTokenClaims.UserID)
 	if err != nil {
 		if errors.Is(err, apperrors.ErrNotFound) {
 			c.AbortWithStatus(http.StatusNotFound)
@@ -145,7 +179,7 @@ func (h *Handler) GetMe(c *gin.Context) {
 		return
 	}
 
-	authResponse := AuthResposne{
+	authResponse := AuthResponse{
 		AccessToken: accessToken,
 		Me:          me,
 	}

@@ -1,14 +1,12 @@
 package auth
 
 import (
-	"errors"
-
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/noel-vega/habits/api/internal/user"
 )
 
-type AuthResposne struct {
-	AccessToken string                `json:"accessToken"`
+type AuthResponse struct {
+	AccessToken string               `json:"accessToken"`
 	Me          *user.UserNoPassword `json:"me"`
 }
 
@@ -16,8 +14,6 @@ type TokenPair struct {
 	AccessToken  string `json:"accessToken"`
 	RefreshToken string `json:"refresh_token"`
 }
-
-var ErrInvalidCredentials = errors.New("invalid email or password")
 
 type SignInParams struct {
 	Email    string `json:"email"`

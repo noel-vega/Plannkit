@@ -60,7 +60,7 @@ func main() {
 	financesService := finances.NewService(db, networkService)
 	todosService := todos.NewService(db)
 	habitsService := habits.NewService(db)
-	authService := auth.NewService(jwtSecret, userService, financesService)
+	authService := auth.NewService(jwtSecret)
 
 	services := &server.Services{
 		User:     userService,

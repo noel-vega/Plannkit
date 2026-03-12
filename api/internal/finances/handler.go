@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/noel-vega/habits/api/internal/apperrors"
 	"github.com/noel-vega/habits/api/internal/contracts"
+	"github.com/noel-vega/habits/api/internal/httputil"
 )
 
 type Handler struct {
@@ -30,7 +31,7 @@ func (h *Handler) CreateSpace(c *gin.Context) {
 	}
 
 	params := &CreateSpaceParams{
-		UserID: c.MustGet("userID").(int),
+		UserID: httputil.UserID(c),
 		Name:   body.Name,
 	}
 
@@ -44,7 +45,7 @@ func (h *Handler) CreateSpace(c *gin.Context) {
 }
 
 func (h *Handler) ListSpaces(c *gin.Context) {
-	userID := c.MustGet("userID").(int)
+	userID := httputil.UserID(c)
 	spaces, err := h.service.ListSpaces(userID)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
@@ -55,7 +56,7 @@ func (h *Handler) ListSpaces(c *gin.Context) {
 }
 
 func (h *Handler) DeleteSpace(c *gin.Context) {
-	userID := c.MustGet("userID").(int)
+	userID := httputil.UserID(c)
 	spaceID := c.MustGet("spaceID").(int)
 
 	err := h.service.DeleteSpace(userID, spaceID)
@@ -76,7 +77,7 @@ func (h *Handler) CreateGoal(c *gin.Context) {
 	}
 
 	params := &CreateGoalParams{
-		UserID:            c.MustGet("userID").(int),
+		UserID:            httputil.UserID(c),
 		SpaceID:           c.MustGet("spaceID").(int),
 		Name:              body.Name,
 		Amount:            body.Amount,
@@ -145,7 +146,7 @@ func (h *Handler) CreateGoalContribution(c *gin.Context) {
 	}
 
 	params := &CreateGoalContributionParams{
-		UserID:  c.MustGet("userID").(int),
+		UserID:  httputil.UserID(c),
 		SpaceID: c.MustGet("spaceID").(int),
 		GoalID:  goalID,
 		Amount:  body.Amount,
@@ -168,7 +169,7 @@ func (h *Handler) ListGoalContributions(c *gin.Context) {
 		return
 	}
 	params := &ListGoalContributionsParams{
-		UserID:  c.MustGet("userID").(int),
+		UserID:  httputil.UserID(c),
 		SpaceID: c.MustGet("spaceID").(int),
 		GoalID:  goalID,
 	}

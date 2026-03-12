@@ -1,4 +1,4 @@
-package server
+package auth
 
 import (
 	"errors"
@@ -7,10 +7,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/noel-vega/habits/api/internal/auth"
 )
 
-func Authentication(authService *auth.Service) gin.HandlerFunc {
+func AuthenticateUser(authService *Service) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		refreshTokenStr, err := c.Cookie("refresh_token")
 		if err != nil {

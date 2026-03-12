@@ -5,8 +5,6 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/noel-vega/habits/api/internal/finances"
-	"github.com/noel-vega/habits/api/internal/user"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -16,16 +14,12 @@ const (
 )
 
 type Service struct {
-	jwtSecret       string
-	userService     *user.Service
-	financesService *finances.Service
+	jwtSecret string
 }
 
-func NewService(jwtSecret string, userService *user.Service, financesService *finances.Service) *Service {
+func NewService(jwtSecret string) *Service {
 	return &Service{
-		financesService: financesService,
-		userService:     userService,
-		jwtSecret:       jwtSecret,
+		jwtSecret: jwtSecret,
 	}
 }
 
@@ -36,7 +30,6 @@ func (s *Service) GenerateToken(userID int, duration time.Duration) (string, err
 		"iat":    time.Now().Unix(),
 	})
 
-	// TODO: secret key
 	tokenStr, err := token.SignedString([]byte(s.jwtSecret))
 	if err != nil {
 		return "", err
@@ -60,59 +53,16 @@ func (s *Service) GenerateRefreshToken(userID int) (string, error) {
 	return token, nil
 }
 
-func (s *Service) SignUp(params user.CreateUserParams) (*TokenPair, *user.UserNoPassword, error) {
-	hashBytes, err := bcrypt.GenerateFromPassword([]byte(params.Password), bcrypt.DefaultCost)
+func (s *Service) HashPassword(plainPassword string) (string, error) {
+	hashBytes, err := bcrypt.GenerateFromPassword([]byte(plainPassword), bcrypt.DefaultCost)
 	if err != nil {
-		return nil, nil, err
+		return "", err
 	}
-	hashedPassword := string(hashBytes)
-	params.Password = hashedPassword
-
-	user, err := s.userService.CreateUser(params)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	_, err = s.financesService.CreateSpace(&finances.CreateSpaceParams{
-		UserID: user.ID,
-		Name:   "My Finances",
-	})
-	if err != nil {
-		return nil, user, err
-	}
-
-	tokenPair, err := s.GenerateTokenPair(user.ID)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return tokenPair, user, nil
+	return string(hashBytes), nil
 }
 
-func (s *Service) SignIn(params *SignInParams) (*TokenPair, *user.UserNoPassword, error) {
-	u, err := s.userService.GetUserByEmailWithPassword(params.Email)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	err = bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(params.Password))
-	if err != nil {
-		return nil, nil, ErrInvalidCredentials
-	}
-	tokenPair, err := s.GenerateTokenPair(u.ID)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	userNoPassword := &user.UserNoPassword{
-		ID:        u.ID,
-		FirstName: u.FirstName,
-		LastName:  u.LastName,
-		Email:     u.Email,
-		CreatedAt: u.CreatedAt,
-		UpdatedAt: u.UpdatedAt,
-	}
-	return tokenPair, userNoPassword, nil
+func (s *Service) ComparePassword(hashedPassword string, plainPassword string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(plainPassword))
 }
 
 func (s *Service) GenerateTokenPair(userID int) (*TokenPair, error) {

@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS finance_spaces_members (
     status TEXT NOT NULL DEFAULT 'pending',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(finance_space_id, user_id)
+    UNIQUE(finance_space_id, user_id),
     CHECK (status IN ('pending', 'accepted'))
 );
 

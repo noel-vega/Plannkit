@@ -28,6 +28,18 @@ type UserNoPassword struct {
 	UpdatedAt time.Time `json:"updatedAt" db:"updated_at"`
 }
 
+func (u *User) WithoutPassword() *UserNoPassword {
+	return &UserNoPassword{
+		ID:        u.ID,
+		Username:  u.Username,
+		FirstName: u.FirstName,
+		LastName:  u.LastName,
+		Email:     u.Email,
+		CreatedAt: u.CreatedAt,
+		UpdatedAt: u.UpdatedAt,
+	}
+}
+
 type CreateUserParams struct {
 	Username  string `json:"username" db:"username"`
 	FirstName string `json:"firstName" db:"first_name"`
