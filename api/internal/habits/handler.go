@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/noel-vega/habits/api/internal/httputil"
 )
 
 type Handler struct {
@@ -26,7 +27,7 @@ func (handler *Handler) CreateHabit(c *gin.Context) {
 	}
 
 	params := &CreateHabitParams{
-		UserID:            c.MustGet("userID").(int),
+		UserID:            httputil.UserID(c),
 		Icon:              body.Icon,
 		Name:              body.Name,
 		Description:       body.Description,
@@ -53,7 +54,7 @@ func (handler *Handler) CreateHabit(c *gin.Context) {
 }
 
 func (handler *Handler) GetHabitWithContributions(c *gin.Context) {
-	userID := c.MustGet("userID").(int)
+	userID := httputil.UserID(c)
 	habitID, err := strconv.Atoi(c.Param("habitID"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -75,7 +76,7 @@ func (handler *Handler) GetHabitWithContributions(c *gin.Context) {
 }
 
 func (handler *Handler) ListHabitsWithContributions(c *gin.Context) {
-	habits, err := handler.habitsService.ListHabitsWithContributions(c.MustGet("userID").(int))
+	habits, err := handler.habitsService.ListHabitsWithContributions(httputil.UserID(c))
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -100,7 +101,7 @@ func (handler *Handler) UpdateHabit(c *gin.Context) {
 
 	params := &UpdateHabitParams{
 		ID:                habitID,
-		UserID:            c.MustGet("userID").(int),
+		UserID:            httputil.UserID(c),
 		Name:              body.Name,
 		Description:       body.Description,
 		Icon:              body.Icon,
@@ -125,7 +126,7 @@ func (handler *Handler) DeleteHabit(c *gin.Context) {
 
 	params := &DeleteHabitParams{
 		ID:     habitID,
-		UserID: c.MustGet("userID").(int),
+		UserID: httputil.UserID(c),
 	}
 
 	err = handler.habitsService.DeleteHabit(params)
@@ -152,7 +153,7 @@ func (handler *Handler) CreateHabitContribution(c *gin.Context) {
 
 	params := &CreateContributionParams{
 		HabitID:     habitID,
-		UserID:      c.MustGet("userID").(int),
+		UserID:      httputil.UserID(c),
 		Completions: body.Completions,
 		Date:        body.Date,
 	}
@@ -182,7 +183,7 @@ func (handler *Handler) UpdateHabitContribution(c *gin.Context) {
 
 	params := &UpdateContributionCompletionsParams{
 		ID:          contributionID,
-		UserID:      c.MustGet("userID").(int),
+		UserID:      httputil.UserID(c),
 		Completions: body.Completions,
 	}
 
@@ -210,7 +211,7 @@ func (handler *Handler) DeleteHabitContribution(c *gin.Context) {
 	params := &DeleteContributionParams{
 		ID:      contributionID,
 		HabitID: habitID,
-		UserID:  c.MustGet("userID").(int),
+		UserID:  httputil.UserID(c),
 	}
 	err = handler.habitsService.DeleteContribution(params)
 	if err != nil {

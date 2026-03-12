@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/noel-vega/habits/api/internal/httputil"
 )
 
 type Handler struct {
@@ -19,7 +20,7 @@ func NewHandler(userService *Service) *Handler {
 }
 
 func (h *Handler) UpdateAvatar(c *gin.Context) {
-	userID := c.MustGet("userID").(int)
+	userID := httputil.UserID(c)
 	file, header, err := c.Request.FormFile("avatar")
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)

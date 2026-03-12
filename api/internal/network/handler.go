@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/noel-vega/habits/api/internal/apperrors"
+	"github.com/noel-vega/habits/api/internal/httputil"
 )
 
 type Handler struct {
@@ -28,7 +29,7 @@ func (h *Handler) ListUsers(c *gin.Context) {
 	}
 
 	params := &ListUsersParams{
-		UserID:      c.MustGet("userID").(int),
+		UserID:      httputil.UserID(c),
 		QueryParams: queryParams,
 	}
 
@@ -44,7 +45,7 @@ func (h *Handler) GetUserProfile(c *gin.Context) {
 	username := c.Param("username")
 
 	params := &GetUserProfileParams{
-		UserID:   c.MustGet("userID").(int),
+		UserID:   httputil.UserID(c),
 		Username: username,
 	}
 	profile, err := h.service.GetUserProfile(params)
@@ -69,7 +70,7 @@ func (h *Handler) RequestFollow(c *gin.Context) {
 	}
 
 	err = h.service.RequestFollow(&RequestFollowParams{
-		FollowerUserID:  c.MustGet("userID").(int),
+		FollowerUserID:  httputil.UserID(c),
 		FollowingUserID: followingUserID,
 	})
 	if err != nil {
@@ -97,7 +98,7 @@ func (h *Handler) RemoveFollow(c *gin.Context) {
 	}
 
 	err = h.service.RemoveFollow(&RemoveFollowParams{
-		FollowerUserID:  c.MustGet("userID").(int),
+		FollowerUserID:  httputil.UserID(c),
 		FollowingUserID: followingUserID,
 	})
 	if err != nil {
@@ -121,7 +122,7 @@ func (h *Handler) AcceptFollow(c *gin.Context) {
 		return
 	}
 	params := &AcceptFollowParams{
-		FollowingUserID: c.MustGet("userID").(int),
+		FollowingUserID: httputil.UserID(c),
 		FollowerUserID:  followerUserID,
 	}
 
@@ -139,7 +140,7 @@ func (h *Handler) AcceptFollow(c *gin.Context) {
 }
 
 func (h *Handler) RequestConnection(c *gin.Context) {
-	requestedByUserID := c.MustGet("userID").(int)
+	requestedByUserID := httputil.UserID(c)
 	targetUserID, err := strconv.Atoi(c.Param("userID"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -166,7 +167,7 @@ func (h *Handler) RequestConnection(c *gin.Context) {
 }
 
 func (h *Handler) AcceptConnection(c *gin.Context) {
-	user1ID := c.MustGet("userID").(int)
+	user1ID := httputil.UserID(c)
 	user2ID, err := strconv.Atoi(c.Param("userID"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -194,7 +195,7 @@ func (h *Handler) AcceptConnection(c *gin.Context) {
 }
 
 func (h *Handler) RemoveConnection(c *gin.Context) {
-	user1ID := c.MustGet("userID").(int)
+	user1ID := httputil.UserID(c)
 	user2ID, err := strconv.Atoi(c.Param("userID"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)

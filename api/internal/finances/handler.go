@@ -218,7 +218,7 @@ func (h *Handler) CreateExpense(c *gin.Context) {
 	}
 
 	params := &CreateExpenseParams{
-		UserID:      c.MustGet("userID").(int),
+		UserID:      httputil.UserID(c),
 		SpaceID:     c.MustGet("spaceID").(int),
 		Name:        body.Name,
 		Amount:      body.Amount,
@@ -237,7 +237,7 @@ func (h *Handler) CreateExpense(c *gin.Context) {
 
 func (h *Handler) ListExpenses(c *gin.Context) {
 	params := &ListExpensesParams{
-		UserID:  c.MustGet("userID").(int),
+		UserID:  httputil.UserID(c),
 		SpaceID: c.MustGet("spaceID").(int),
 	}
 
@@ -260,7 +260,7 @@ func (h *Handler) DeleteExpense(c *gin.Context) {
 	params := &DeleteExpenseParams{
 		ID:      expenseID,
 		SpaceID: c.MustGet("spaceID").(int),
-		UserID:  c.MustGet("userID").(int),
+		UserID:  httputil.UserID(c),
 	}
 	err = h.service.DeleteExpense(params)
 	if err != nil {
@@ -281,7 +281,7 @@ func (h *Handler) CreateIncomeSource(c *gin.Context) {
 
 	params := &InsertIncomeSourceParams{
 		SpaceID: c.MustGet("spaceID").(int),
-		UserID:  c.MustGet("userID").(int),
+		UserID:  httputil.UserID(c),
 		Amount:  body.Amount,
 		Name:    body.Name,
 	}
@@ -337,7 +337,7 @@ func (h *Handler) InviteToSpace(c *gin.Context) {
 	}
 
 	member, err := h.service.InviteToSpace(&CreateSpaceMemberParams{
-		UserID:          c.MustGet("userID").(int),
+		UserID:          httputil.UserID(c),
 		NewMemberUserID: body.UserID,
 		SpaceID:         c.MustGet("spaceID").(int),
 	})

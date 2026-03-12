@@ -6,11 +6,12 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/noel-vega/habits/api/internal/httputil"
 )
 
 func VerifySpaceMembership(financeService *Service) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		userID := c.MustGet("userID").(int)
+		userID := httputil.UserID(c)
 		spaceIDParam := c.Param("spaceID")
 		spaceID, err := strconv.Atoi(spaceIDParam)
 		if err != nil {

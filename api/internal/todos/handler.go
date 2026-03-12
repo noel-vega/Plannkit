@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/noel-vega/habits/api/internal/httputil"
 )
 
 type Handler struct {
@@ -18,7 +19,7 @@ func NewHandler(todoService *Service) *Handler {
 }
 
 func (h *Handler) CreateTodo(c *gin.Context) {
-	userID := c.MustGet("userID").(int)
+	userID := httputil.UserID(c)
 
 	body := &CreateTodoBody{}
 	err := c.Bind(&body)
@@ -43,7 +44,7 @@ func (h *Handler) CreateTodo(c *gin.Context) {
 }
 
 func (h *Handler) ListTodos(c *gin.Context) {
-	todos, err := h.todosService.ListTodos(c.MustGet("userID").(int))
+	todos, err := h.todosService.ListTodos(httputil.UserID(c))
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -52,7 +53,7 @@ func (h *Handler) ListTodos(c *gin.Context) {
 }
 
 func (h *Handler) GetTodosBoard(c *gin.Context) {
-	t, err := h.todosService.ListTodos(c.MustGet("userID").(int))
+	t, err := h.todosService.ListTodos(httputil.UserID(c))
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -87,7 +88,7 @@ func (h *Handler) UpdateTodoPosition(c *gin.Context) {
 
 	params := &UpdatePositionParams{
 		ID:             id,
-		UserID:         c.MustGet("userID").(int),
+		UserID:         httputil.UserID(c),
 		Status:         body.Status,
 		AfterPosition:  body.AfterPosition,
 		BeforePosition: body.BeforePosition,
@@ -110,7 +111,7 @@ func (h *Handler) DeleteTodo(c *gin.Context) {
 
 	params := &DeleteTodoParams{
 		ID:     id,
-		UserID: c.MustGet("userID").(int),
+		UserID: httputil.UserID(c),
 	}
 	err = h.todosService.DeleteTodo(params)
 	if err != nil {
@@ -129,7 +130,7 @@ func (h *Handler) GetTodo(c *gin.Context) {
 
 	params := &GetTodoParams{
 		ID:     todoID,
-		UserID: c.MustGet("userID").(int),
+		UserID: httputil.UserID(c),
 	}
 	todo, err := h.todosService.GetTodo(params)
 	if err != nil {
