@@ -107,7 +107,7 @@ func (s *Service) DeleteIncomeSource(params *DeleteIncomeSourceParams) error {
 	return s.repository.DeleteIncomeSource(params)
 }
 
-func (s *Service) InviteToSpace(params *CreateSpaceMemberParams) (*SpaceMember, error) {
+func (s *Service) InviteToSpace(params *InviteToSpaceParams) (*SpaceMember, error) {
 	isConnected, err := s.connectionChecker.AreConnected(params.UserID, params.NewMemberUserID)
 	if err != nil {
 		return nil, err

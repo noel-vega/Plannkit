@@ -329,14 +329,14 @@ func (h *Handler) DeleteIncome(c *gin.Context) {
 }
 
 func (h *Handler) InviteToSpace(c *gin.Context) {
-	body := &CreateSpaceMemberBody{}
+	body := &InviteToSpaceBody{}
 	err := c.Bind(body)
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	member, err := h.service.InviteToSpace(&CreateSpaceMemberParams{
+	member, err := h.service.InviteToSpace(&InviteToSpaceParams{
 		UserID:          httputil.UserID(c),
 		NewMemberUserID: body.UserID,
 		SpaceID:         c.MustGet("spaceID").(int),
@@ -361,8 +361,8 @@ func (h *Handler) AcceptSpaceInvite(c *gin.Context) {
 	})
 	if err != nil {
 		switch {
-		case errors.Is(err, ErrSpaceMemberNotFound):
-		case errors.Is(err, ErrSpaceInviteNotFound):
+		case errors.Is(err, ErrSpaceMemberNotFound),
+			errors.Is(err, ErrSpaceInviteNotFound):
 			c.AbortWithError(http.StatusNotFound, err)
 		case errors.Is(err, ErrSpaceInviteAlreadyAccepted):
 			c.AbortWithError(http.StatusConflict, err)
@@ -371,7 +371,7 @@ func (h *Handler) AcceptSpaceInvite(c *gin.Context) {
 		}
 		return
 	}
-	c.JSON(http.StatusNoContent, member)
+	c.JSON(http.StatusOK, member)
 }
 
 func (h *Handler) ListSpaceMembers(c *gin.Context) {

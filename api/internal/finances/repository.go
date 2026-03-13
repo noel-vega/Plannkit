@@ -369,5 +369,8 @@ func (r *Repository) UpdateSpaceMemberStatus(params *UpdateSpaceMemberStatus) (*
 	}
 	member := &SpaceMember{}
 	err = r.db.Get(member, r.db.Rebind(query), args...)
+	if err != nil {
+		return nil, err
+	}
 	return member, err
 }

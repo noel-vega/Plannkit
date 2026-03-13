@@ -20,11 +20,11 @@ type SpaceMember struct {
 	UpdatedAt time.Time `json:"updatedAt" db:"updated_at"`
 }
 
-type CreateSpaceMemberBody struct {
+type InviteToSpaceBody struct {
 	UserID int `json:"userId"`
 }
 
-type CreateSpaceMemberParams struct {
+type InviteToSpaceParams struct {
 	UserID          int
 	NewMemberUserID int
 	SpaceID         int
