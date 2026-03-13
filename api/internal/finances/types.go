@@ -5,7 +5,6 @@ import "time"
 
 type Space struct {
 	ID        int       `json:"id" db:"id"`
-	UserID    int       `json:"userId" db:"user_id"`
 	Name      string    `json:"name" db:"name"`
 	CreatedAt time.Time `json:"createdAt" db:"created_at"`
 	UpdatedAt time.Time `json:"updatedAt" db:"updated_at"`
@@ -15,24 +14,28 @@ type SpaceMember struct {
 	ID        int       `json:"id" db:"id"`
 	SpaceID   int       `json:"spaceId" db:"finance_space_id"`
 	UserID    int       `json:"userId" db:"user_id"`
+	Role      string    `json:"role" db:"role"`
 	Status    string    `json:"status" db:"status"`
 	CreatedAt time.Time `json:"createdAt" db:"created_at"`
 	UpdatedAt time.Time `json:"updatedAt" db:"updated_at"`
 }
 
 type InviteToSpaceBody struct {
-	UserID int `json:"userId"`
+	UserID int    `json:"userId"`
+	Role   string `json:"role"`
 }
 
 type InviteToSpaceParams struct {
 	UserID          int
 	NewMemberUserID int
 	SpaceID         int
+	Role            string
 }
 
 type InsertSpaceMemberParams struct {
 	UserID  int    `db:"user_id"`
 	SpaceID int    `db:"finance_space_id"`
+	Role    string `db:"role"`
 	Status  string `db:"status"`
 }
 

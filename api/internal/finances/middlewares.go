@@ -3,6 +3,7 @@ package finances
 import (
 	"errors"
 	"net/http"
+	"slices"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -36,6 +37,18 @@ func VerifySpaceMembership(financeService *Service) gin.HandlerFunc {
 			return
 		}
 		c.Set("spaceID", spaceID)
+		c.Set("spaceRole", member.Role)
+		c.Next()
+	}
+}
+
+func RequireRole(roles ...string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		role := c.MustGet("spaceRole").(string)
+		if !slices.Contains(roles, role) {
+			c.AbortWithStatus(http.StatusForbidden)
+			return
+		}
 		c.Next()
 	}
 }

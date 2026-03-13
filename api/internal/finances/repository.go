@@ -22,8 +22,8 @@ func (r *Repository) CreateSpace(params *CreateSpaceParams) (*Space, error) {
 	data := &Space{}
 	query := `
 	INSERT INTO 
-	finance_spaces (user_id, name)
-	VALUES (:user_id, :name)
+	finance_spaces (name)
+	VALUES (:name)
 	RETURNING *
 	`
 	query, args, err := sqlx.Named(query, params)
@@ -77,19 +77,22 @@ func (r *Repository) ListSpaces(userID int) ([]Space, error) {
 	return spaces, nil
 }
 
-func (r *Repository) DeleteSpaceByID(userID, spaceID int) error {
+func (r *Repository) DeleteSpace(spaceID int) error {
 	query := `
 	DELETE FROM finance_spaces 
-	WHERE id = $1 AND user_id = $2`
-	_, err := r.db.Exec(query, spaceID, userID)
+	WHERE id = $1`
+	_, err := r.db.Exec(query, spaceID)
 	return err
 }
 
-func (r *Repository) GetSpaceByID(userID, spaceID int) (*Space, error) {
+func (r *Repository) GetSpace(spaceID int) (*Space, error) {
 	data := &Space{}
-	query := `SELECT * FROM finance_spaces WHERE user_id = $1 AND id = $2`
-	err := r.db.Get(data, query, userID, spaceID)
+	query := `SELECT * FROM finance_spaces WHERE id = $1`
+	err := r.db.Get(data, query, spaceID)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, apperrors.ErrNotFound
+		}
 		return nil, err
 	}
 	return data, nil
@@ -318,8 +321,8 @@ func (r *Repository) DeleteIncomeSource(params *DeleteIncomeSourceParams) error 
 func (r *Repository) InsertSpaceMember(params *InsertSpaceMemberParams) (*SpaceMember, error) {
 	query := `
 		INSERT INTO
-	  finance_spaces_members (user_id, finance_space_id, status)
-	VALUES (:user_id, :finance_space_id, :status)
+	  finance_spaces_members (user_id, finance_space_id, role, status)
+	  VALUES (:user_id, :finance_space_id, :role, :status)
 	  RETURNING *
 	`
 	query, args, err := sqlx.Named(query, params)

@@ -29,6 +29,7 @@ func (s *Service) CreateSpace(params *CreateSpaceParams) (*Space, error) {
 		SpaceID: space.ID,
 		UserID:  params.UserID,
 		Status:  "accepted",
+		Role:    "owner",
 	})
 	if err != nil {
 		return nil, err
@@ -47,16 +48,23 @@ func (s *Service) SpaceMembershipExists(params *SpaceMemberRelationship) (bool, 
 	return true, nil
 }
 
-func (s *Service) GetSpace(userID, spaceID int) (*Space, error) {
-	return s.repository.GetSpaceByID(userID, spaceID)
+func (s *Service) GetSpace(spaceID int) (*Space, error) {
+	space, err := s.repository.GetSpace(spaceID)
+	if err != nil {
+		if errors.Is(err, apperrors.ErrNotFound) {
+			return nil, ErrSpaceNotFound
+		}
+		return nil, err
+	}
+	return space, err
 }
 
 func (s *Service) ListSpaces(userID int) ([]Space, error) {
 	return s.repository.ListSpaces(userID)
 }
 
-func (s *Service) DeleteSpace(userID, spaceID int) error {
-	return s.repository.DeleteSpaceByID(userID, spaceID)
+func (s *Service) DeleteSpace(spaceID int) error {
+	return s.repository.DeleteSpace(spaceID)
 }
 
 func (s *Service) CreateGoal(params *CreateGoalParams) (*Goal, error) {
@@ -108,7 +116,6 @@ func (s *Service) DeleteIncomeSource(params *DeleteIncomeSourceParams) error {
 }
 
 func (s *Service) InviteToSpace(params *InviteToSpaceParams) (*SpaceMember, error) {
-	// TODO: only owners and admins should be allowed to invite
 	isConnected, err := s.connectionChecker.AreConnected(params.UserID, params.NewMemberUserID)
 	if err != nil {
 		return nil, err
@@ -116,9 +123,14 @@ func (s *Service) InviteToSpace(params *InviteToSpaceParams) (*SpaceMember, erro
 	if !isConnected {
 		return nil, contracts.ErrNotConnected
 	}
+
+	if params.Role != "editor" && params.Role != "viewer" {
+		return nil, ErrInvalidRole
+	}
 	return s.repository.InsertSpaceMember(&InsertSpaceMemberParams{
 		UserID:  params.NewMemberUserID,
 		SpaceID: params.SpaceID,
+		Role:    params.Role,
 		Status:  "pending",
 	})
 }
@@ -159,11 +171,13 @@ func (s *Service) GetSpaceMember(params *SpaceMemberRelationship) (*SpaceMember,
 }
 
 func (s *Service) DeleteSpaceMember(params *SpaceMemberRelationship) error {
-	// TODO: Only owners and admins should be allowed to delete members.
-	// Owners cannot be deleted
-	_, err := s.GetSpaceMember(params)
+	member, err := s.GetSpaceMember(params)
 	if err != nil {
 		return err
+	}
+
+	if member.Role == "owner" {
+		return ErrCannotDeleteOwner
 	}
 	return s.repository.DeleteSpaceMember(params)
 }

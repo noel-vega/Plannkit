@@ -56,12 +56,14 @@ func (h *Handler) ListSpaces(c *gin.Context) {
 }
 
 func (h *Handler) DeleteSpace(c *gin.Context) {
-	userID := httputil.UserID(c)
-	spaceID := c.MustGet("spaceID").(int)
-
-	err := h.service.DeleteSpace(userID, spaceID)
+	err := h.service.DeleteSpace(c.MustGet("spaceID").(int))
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		switch {
+		case errors.Is(err, ErrSpaceMemberNotFound):
+			c.AbortWithStatus(http.StatusForbidden)
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
 		return
 	}
 
@@ -345,6 +347,8 @@ func (h *Handler) InviteToSpace(c *gin.Context) {
 		switch {
 		case errors.Is(err, contracts.ErrNotConnected):
 			c.AbortWithError(http.StatusForbidden, err)
+		case errors.Is(err, ErrInvalidRole):
+			c.AbortWithError(http.StatusBadRequest, err)
 		default:
 			c.AbortWithError(http.StatusInternalServerError, err)
 		}
@@ -355,9 +359,14 @@ func (h *Handler) InviteToSpace(c *gin.Context) {
 }
 
 func (h *Handler) AcceptSpaceInvite(c *gin.Context) {
+	spaceID, err := strconv.Atoi(c.Param("spaceID"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
 	member, err := h.service.AcceptSpaceInvite(&SpaceMemberRelationship{
 		UserID:  httputil.UserID(c),
-		SpaceID: c.MustGet("spaceID").(int),
+		SpaceID: spaceID,
 	})
 	if err != nil {
 		switch {
@@ -399,6 +408,8 @@ func (h *Handler) DeleteSpaceMember(c *gin.Context) {
 		switch {
 		case errors.Is(err, ErrSpaceMemberNotFound):
 			c.AbortWithError(http.StatusNotFound, err)
+		case errors.Is(err, ErrCannotDeleteOwner):
+			c.AbortWithError(http.StatusForbidden, err)
 		default:
 			c.AbortWithError(http.StatusInternalServerError, err)
 		}
