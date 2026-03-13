@@ -10,7 +10,7 @@ import (
 )
 
 type Handler struct {
-	UserService *Service
+	userService *Service
 }
 
 func NewHandler(userService *Service) *Handler {
@@ -35,7 +35,7 @@ func (h *Handler) UpdateAvatar(c *gin.Context) {
 		return
 	}
 
-	filename, err := h.UserService.UpdateAvatar(userID, ext, file)
+	filename, err := h.userService.UpdateAvatar(userID, ext, file)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return

@@ -8,7 +8,7 @@ type User struct {
 	Username  string    `json:"username" db:"username"`
 	FirstName string    `json:"firstName" db:"first_name"`
 	LastName  string    `json:"lastName" db:"last_name"`
-	Password  string    `json:"password" db:"password"`
+	Password  string    `json:"-" db:"password"`
 	Email     string    `json:"email" db:"email"`
 	IsPrivate bool      `json:"isPrivate" db:"is_private"`
 	Avatar    *string   `json:"avatar" db:"avatar"`
@@ -35,6 +35,8 @@ func (u *User) WithoutPassword() *UserNoPassword {
 		FirstName: u.FirstName,
 		LastName:  u.LastName,
 		Email:     u.Email,
+		IsPrivate: u.IsPrivate,
+		Avatar:    u.Avatar,
 		CreatedAt: u.CreatedAt,
 		UpdatedAt: u.UpdatedAt,
 	}

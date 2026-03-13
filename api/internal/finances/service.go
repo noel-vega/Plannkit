@@ -75,7 +75,7 @@ func (s *Service) CreateGoalContribution(params *CreateGoalContributionParams) (
 	return s.repository.CreateGoalContribution(params)
 }
 
-func (s *Service) ListGoalContributions(params *ListGoalContributionsParams) (*[]GoalContribution, error) {
+func (s *Service) ListGoalContributions(params *ListGoalContributionsParams) ([]GoalContribution, error) {
 	return s.repository.ListGoalContributions(params)
 }
 

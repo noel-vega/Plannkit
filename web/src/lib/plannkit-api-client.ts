@@ -1,6 +1,7 @@
+import { auth } from "@/features/auth/api"
 import { useAuth } from "@/features/auth/store"
 
-type Method = "GET" | "POST" | "PATCH" | "DELETE"
+type Method = "GET" | "POST" | "PATCH" | "DELETE" | "PUT"
 
 function parseBodyData(data?: unknown) {
   if (data instanceof FormData) {
@@ -22,15 +23,29 @@ export async function pkFetch(baseURL: string, path: string, options?: RequestIn
     headers.set("Content-Type", "application/json")
   }
 
-  return await fetch(url, {
+  const response = await fetch(url, {
     ...options,
     credentials: "include",
     headers,
   })
+
+  if (response.status === 401) {
+    const { success, accessToken } = await auth.refreshAccessToken()
+    if (!success) return response
+    useAuth.setState({ accessToken })
+    headers.set("Authorization", `Bearer ${accessToken}`)
+    return await fetch(url, {
+      ...options,
+      credentials: "include",
+      headers,
+    })
+  }
+
+  return response
 }
 
 class Client {
-  private baseURL: string
+  baseURL: string
   constructor(baseURL: string) {
     this.baseURL = baseURL
   }
@@ -59,7 +74,7 @@ class Client {
     if (data !== undefined) {
       options = { body: parseBodyData(data) }
     }
-    return pkFetch(this.baseURL, path, { ...options, method: "PATCH" })
+    return pkFetch(this.baseURL, path, { ...options, method: "PUT" })
   }
 }
 

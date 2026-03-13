@@ -9,12 +9,12 @@ import (
 )
 
 type Handler struct {
-	todosService *Service
+	service *Service
 }
 
 func NewHandler(todoService *Service) *Handler {
 	return &Handler{
-		todosService: todoService,
+		service: todoService,
 	}
 }
 
@@ -35,7 +35,7 @@ func (h *Handler) CreateTodo(c *gin.Context) {
 		Status:      body.Status,
 		Position:    body.Position,
 	}
-	err = h.todosService.CreateTodo(params)
+	err = h.service.CreateTodo(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -44,7 +44,7 @@ func (h *Handler) CreateTodo(c *gin.Context) {
 }
 
 func (h *Handler) ListTodos(c *gin.Context) {
-	todos, err := h.todosService.ListTodos(httputil.UserID(c))
+	todos, err := h.service.ListTodos(httputil.UserID(c))
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -53,7 +53,7 @@ func (h *Handler) ListTodos(c *gin.Context) {
 }
 
 func (h *Handler) GetTodosBoard(c *gin.Context) {
-	t, err := h.todosService.ListTodos(httputil.UserID(c))
+	t, err := h.service.ListTodos(httputil.UserID(c))
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -93,7 +93,7 @@ func (h *Handler) UpdateTodoPosition(c *gin.Context) {
 		AfterPosition:  body.AfterPosition,
 		BeforePosition: body.BeforePosition,
 	}
-	err = h.todosService.UpdateTodoPosition(params)
+	err = h.service.UpdateTodoPosition(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -113,7 +113,7 @@ func (h *Handler) DeleteTodo(c *gin.Context) {
 		ID:     id,
 		UserID: httputil.UserID(c),
 	}
-	err = h.todosService.DeleteTodo(params)
+	err = h.service.DeleteTodo(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -132,7 +132,7 @@ func (h *Handler) GetTodo(c *gin.Context) {
 		ID:     todoID,
 		UserID: httputil.UserID(c),
 	}
-	todo, err := h.todosService.GetTodo(params)
+	todo, err := h.service.GetTodo(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return

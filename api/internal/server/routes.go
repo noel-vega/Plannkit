@@ -6,7 +6,6 @@ import (
 	"github.com/noel-vega/habits/api/internal/auth"
 	"github.com/noel-vega/habits/api/internal/finances"
 	"github.com/noel-vega/habits/api/internal/habits"
-	"github.com/noel-vega/habits/api/internal/mail"
 	"github.com/noel-vega/habits/api/internal/network"
 	"github.com/noel-vega/habits/api/internal/todos"
 	"github.com/noel-vega/habits/api/internal/user"
@@ -34,12 +33,12 @@ func AddRoutes(router *gin.Engine, services *Services) *gin.Engine {
 	router.POST("/auth/signup", authHandler.SignUp)
 	router.POST("/auth/signin", authHandler.SignIn)
 	router.GET("/auth/signout", authHandler.SignOut)
-	router.GET("/auth/me", authHandler.GetMe)
+	router.GET("/auth/refresh", authHandler.RefreshAccessToken)
 
 	protected := router.Group("/")
 	protected.Use(auth.AuthenticateUser(services.Auth))
 
-	protected.GET("/auth/refresh", authHandler.RefreshAccessToken)
+	protected.GET("/auth/me", authHandler.GetMe)
 
 	protected.GET("/network/profile/:username", networkHandler.GetUserProfile)
 	protected.GET("/network/users", networkHandler.ListUsers)
@@ -88,11 +87,6 @@ func AddRoutes(router *gin.Engine, services *Services) *gin.Engine {
 	protected.GET("/todos/:todoID", todosHandler.GetTodo)
 	protected.DELETE("/todos/:todoID", todosHandler.DeleteTodo)
 	protected.PATCH("/todos/:todoID/position", todosHandler.UpdateTodoPosition)
-
-	mail.InitGoogleOAuth()
-	router.GET("/auth/google/login", mail.HandleLogin)
-	router.GET("/auth/google/callback", mail.HandleCallback)
-	router.GET("/emails", mail.HandleListEmails)
 
 	return router
 }

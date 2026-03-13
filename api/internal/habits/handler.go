@@ -9,16 +9,16 @@ import (
 )
 
 type Handler struct {
-	habitsService *Service
+	service *Service
 }
 
-func NewHandler(habitsService *Service) *Handler {
+func NewHandler(service *Service) *Handler {
 	return &Handler{
-		habitsService: habitsService,
+		service: service,
 	}
 }
 
-func (handler *Handler) CreateHabit(c *gin.Context) {
+func (h *Handler) CreateHabit(c *gin.Context) {
 	body := &CreateHabitBody{}
 	err := c.Bind(body)
 	if err != nil {
@@ -36,24 +36,24 @@ func (handler *Handler) CreateHabit(c *gin.Context) {
 		CompletionsPerDay: body.CompletionsPerDay,
 	}
 
-	h, err := handler.habitsService.CreateHabit(params)
+	habit, err := h.service.CreateHabit(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
 	c.JSON(http.StatusCreated, HabitWithContributions{
-		ID:                h.ID,
-		Name:              h.Name,
-		Icon:              h.Icon,
-		Description:       h.Description,
-		CompletionType:    h.CompletionType,
-		CompletionsPerDay: h.CompletionsPerDay,
+		ID:                habit.ID,
+		Name:              habit.Name,
+		Icon:              habit.Icon,
+		Description:       habit.Description,
+		CompletionType:    habit.CompletionType,
+		CompletionsPerDay: habit.CompletionsPerDay,
 		Contributions:     []HabitContribution{},
 	})
 }
 
-func (handler *Handler) GetHabitWithContributions(c *gin.Context) {
+func (h *Handler) GetHabitWithContributions(c *gin.Context) {
 	userID := httputil.UserID(c)
 	habitID, err := strconv.Atoi(c.Param("habitID"))
 	if err != nil {
@@ -66,7 +66,7 @@ func (handler *Handler) GetHabitWithContributions(c *gin.Context) {
 		UserID: userID,
 	}
 
-	habit, err := handler.habitsService.GetHabitWithContributions(params)
+	habit, err := h.service.GetHabitWithContributions(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -75,8 +75,8 @@ func (handler *Handler) GetHabitWithContributions(c *gin.Context) {
 	c.JSON(http.StatusOK, habit)
 }
 
-func (handler *Handler) ListHabitsWithContributions(c *gin.Context) {
-	habits, err := handler.habitsService.ListHabitsWithContributions(httputil.UserID(c))
+func (h *Handler) ListHabitsWithContributions(c *gin.Context) {
+	habits, err := h.service.ListHabitsWithContributions(httputil.UserID(c))
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -85,7 +85,7 @@ func (handler *Handler) ListHabitsWithContributions(c *gin.Context) {
 	c.JSON(http.StatusOK, habits)
 }
 
-func (handler *Handler) UpdateHabit(c *gin.Context) {
+func (h *Handler) UpdateHabit(c *gin.Context) {
 	habitID, err := strconv.Atoi(c.Param("habitID"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -109,15 +109,16 @@ func (handler *Handler) UpdateHabit(c *gin.Context) {
 		CompletionType:    body.CompletionType,
 		CompletionsPerDay: body.CompletionsPerDay,
 	}
-	err = handler.habitsService.UpdateHabit(params)
+	err = h.service.UpdateHabit(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
 	c.Status(http.StatusNoContent)
 }
 
-func (handler *Handler) DeleteHabit(c *gin.Context) {
+func (h *Handler) DeleteHabit(c *gin.Context) {
 	habitID, err := strconv.Atoi(c.Param("habitID"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -129,7 +130,7 @@ func (handler *Handler) DeleteHabit(c *gin.Context) {
 		UserID: httputil.UserID(c),
 	}
 
-	err = handler.habitsService.DeleteHabit(params)
+	err = h.service.DeleteHabit(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -137,7 +138,7 @@ func (handler *Handler) DeleteHabit(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
-func (handler *Handler) CreateHabitContribution(c *gin.Context) {
+func (h *Handler) CreateHabitContribution(c *gin.Context) {
 	habitID, err := strconv.Atoi(c.Param("habitID"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -158,7 +159,7 @@ func (handler *Handler) CreateHabitContribution(c *gin.Context) {
 		Date:        body.Date,
 	}
 
-	err = handler.habitsService.CreateContribution(params)
+	err = h.service.CreateContribution(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -167,7 +168,7 @@ func (handler *Handler) CreateHabitContribution(c *gin.Context) {
 	c.Status(http.StatusCreated)
 }
 
-func (handler *Handler) UpdateHabitContribution(c *gin.Context) {
+func (h *Handler) UpdateHabitContribution(c *gin.Context) {
 	contributionID, err := strconv.Atoi(c.Param("contributionID"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -187,7 +188,7 @@ func (handler *Handler) UpdateHabitContribution(c *gin.Context) {
 		Completions: body.Completions,
 	}
 
-	if err := handler.habitsService.UpdateContributionCompletions(params); err != nil {
+	if err := h.service.UpdateContributionCompletions(params); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
@@ -195,7 +196,7 @@ func (handler *Handler) UpdateHabitContribution(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
-func (handler *Handler) DeleteHabitContribution(c *gin.Context) {
+func (h *Handler) DeleteHabitContribution(c *gin.Context) {
 	habitID, err := strconv.Atoi(c.Param("habitID"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -213,7 +214,7 @@ func (handler *Handler) DeleteHabitContribution(c *gin.Context) {
 		HabitID: habitID,
 		UserID:  httputil.UserID(c),
 	}
-	err = handler.habitsService.DeleteContribution(params)
+	err = h.service.DeleteContribution(params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return

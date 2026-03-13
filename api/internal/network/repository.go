@@ -126,7 +126,7 @@ func (r *Repository) GetFollow(params *GetFollowerParams) (*Follow, error) {
 		return nil, err
 	}
 
-	return follower, err
+	return follower, nil
 }
 
 func (r *Repository) InsertFollow(params *InsertFollowParams) error {
@@ -157,10 +157,7 @@ func (r *Repository) DeleteFollow(params *RemoveFollowParams) error {
 	WHERE follower_user_id = :follower_user_id AND following_user_id = :following_user_id
 	`
 	_, err := r.db.NamedExec(query, params)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 func (r *Repository) AcceptFollow(params *AcceptFollowParams) error {
@@ -170,11 +167,7 @@ func (r *Repository) AcceptFollow(params *AcceptFollowParams) error {
 	WHERE follower_user_id = :follower_user_id AND following_user_id = :following_user_id 
 	`
 	_, err := r.db.NamedExec(query, params)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 func (r *Repository) GetConnection(user1ID, user2ID int) (*Connection, error) {
@@ -224,10 +217,7 @@ func (r *Repository) AcceptConnection(ID int) error {
 	  SET status = 'accepted'
 	  WHERE id = $1	`
 	_, err := r.db.Exec(query, ID)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 func (r *Repository) DeleteConnection(ID int) error {
@@ -235,8 +225,5 @@ func (r *Repository) DeleteConnection(ID int) error {
 		DELETE FROM network_connections WHERE id = $1
 	`
 	_, err := r.db.Exec(query, ID)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }

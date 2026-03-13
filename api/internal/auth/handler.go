@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/noel-vega/habits/api/internal/apperrors"
 	"github.com/noel-vega/habits/api/internal/finances"
+	"github.com/noel-vega/habits/api/internal/httputil"
 	"github.com/noel-vega/habits/api/internal/user"
 )
 
@@ -151,25 +152,7 @@ func (h *Handler) RefreshAccessToken(c *gin.Context) {
 }
 
 func (h *Handler) GetMe(c *gin.Context) {
-	refreshTokenStr, err := c.Cookie("refresh_token")
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid refresh token: " + err.Error()})
-		return
-	}
-
-	refreshTokenClaims, err := h.service.ValidateToken(refreshTokenStr)
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid refresh token: " + err.Error()})
-		return
-	}
-
-	accessToken, err := h.service.RefreshAccessToken(refreshTokenStr)
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid refresh token: " + err.Error()})
-		return
-	}
-
-	me, err := h.userService.GetUserByID(refreshTokenClaims.UserID)
+	me, err := h.userService.GetUserByID(httputil.UserID(c))
 	if err != nil {
 		if errors.Is(err, apperrors.ErrNotFound) {
 			c.AbortWithStatus(http.StatusNotFound)
@@ -179,10 +162,5 @@ func (h *Handler) GetMe(c *gin.Context) {
 		return
 	}
 
-	authResponse := AuthResponse{
-		AccessToken: accessToken,
-		Me:          me,
-	}
-
-	c.JSON(http.StatusOK, authResponse)
+	c.JSON(http.StatusOK, me)
 }

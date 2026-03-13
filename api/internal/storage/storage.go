@@ -39,12 +39,13 @@ func (l *localStorage) Put(folder, ext string, r io.Reader) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	defer file.Close()
 
 	if _, err := io.Copy(file, r); err != nil {
 		return "", err
 	}
 
-	return fileName, err
+	return fileName, nil
 }
 
 func (l *localStorage) Get(folder, fileName string) (io.ReadCloser, error) {

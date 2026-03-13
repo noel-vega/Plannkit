@@ -1,5 +1,6 @@
 import { api } from "@/lib/plannkit-api-client";
-import { AuthenticationResponseSchema, type SignInParams, type SignUpParams } from "./types";
+import { AuthenticationResponseSchema, MeSchema, type SignInParams, type SignUpParams } from "./types";
+import z from "zod/v3";
 
 export const auth = {
   signUp: async (params: SignUpParams) => {
@@ -14,6 +15,18 @@ export const auth = {
     }
     throw new Error("Failed to signup")
   },
+  refreshAccessToken: async () => {
+    const response = await fetch(`${api.baseURL}/auth/refresh`, {
+      credentials: "include"
+    })
+    if (!response.ok) {
+      return { success: false, accessToken: "" }
+    }
+
+    const { accessToken } = z.object({ accessToken: z.string() }).parse(await response.json())
+    return { success: true, accessToken }
+
+  },
   signIn: async (params: SignInParams) => {
     const response = await api.POST("/auth/signin", params)
     if (response.status === 401) {
@@ -26,11 +39,7 @@ export const auth = {
   },
   getMe: async () => {
     const response = await api.GET("/auth/me")
-
-    if (!response.ok) return { success: false } as const
-
-    const data = AuthenticationResponseSchema.parse(await response.json())
-    return { success: true, data } as const
+    return MeSchema.parse(await response.json())
   },
   signOut: async () => api.GET("/auth/signout")
 }

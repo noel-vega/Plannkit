@@ -82,10 +82,7 @@ func (r *Repository) DeleteSpaceByID(userID, spaceID int) error {
 	DELETE FROM finance_spaces 
 	WHERE id = $1 AND user_id = $2`
 	_, err := r.db.Exec(query, spaceID, userID)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 func (r *Repository) GetSpaceByID(userID, spaceID int) (*Space, error) {
@@ -186,7 +183,7 @@ func (r *Repository) CreateGoalContribution(params *CreateGoalContributionParams
 	return data, nil
 }
 
-func (r *Repository) ListGoalContributions(params *ListGoalContributionsParams) (*[]GoalContribution, error) {
+func (r *Repository) ListGoalContributions(params *ListGoalContributionsParams) ([]GoalContribution, error) {
 	query := `
 		SELECT * 
 	  FROM finance_spaces_goals_contributions
@@ -199,8 +196,8 @@ func (r *Repository) ListGoalContributions(params *ListGoalContributionsParams) 
 
 	query = r.db.Rebind(query)
 
-	data := &[]GoalContribution{}
-	err = r.db.Select(data, query, args...)
+	data := []GoalContribution{}
+	err = r.db.Select(&data, query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -216,11 +213,7 @@ func (r *Repository) DeleteGoalContribution(params *DeleteGoalContributionParams
 	  AND finance_space_goal_id = :finance_space_goal_id 
 	`
 	_, err := r.db.NamedExec(query, params)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 func (r *Repository) CreateExpense(params *CreateExpenseParams) (*Expense, error) {
@@ -275,10 +268,7 @@ func (r *Repository) DeleteExpense(params *DeleteExpenseParams) error {
 	  AND finance_space_id = :finance_space_id
 	`
 	_, err := r.db.NamedExec(query, params)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 func (r *Repository) InsertIncomeSource(params *InsertIncomeSourceParams) (*IncomeSource, error) {
@@ -322,10 +312,7 @@ func (r *Repository) DeleteIncomeSource(params *DeleteIncomeSourceParams) error 
 	  WHERE id = :id AND finance_space_id = :finance_space_id
 	`
 	_, err := r.db.NamedExec(query, params)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 func (r *Repository) InsertSpaceMember(params *InsertSpaceMemberParams) (*SpaceMember, error) {
@@ -366,9 +353,5 @@ func (r *Repository) DeleteSpaceMember(params *DeleteSpaceMemberParams) error {
 	  WHERE user_id = :user_id AND finance_space_id = :finance_space_id 
 	`
 	_, err := r.db.NamedExec(query, params)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }

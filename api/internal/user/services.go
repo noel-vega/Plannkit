@@ -6,14 +6,12 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"github.com/noel-vega/habits/api/internal/apperrors"
-	"github.com/noel-vega/habits/api/internal/finances"
 	"github.com/noel-vega/habits/api/internal/storage"
 )
 
 type Service struct {
-	userRepo        *Repository
-	financesService *finances.Service
-	storageService  storage.Service
+	userRepo       *Repository
+	storageService storage.Service
 }
 
 func NewService(db *sqlx.DB, storageService storage.Service) *Service {

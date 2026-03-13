@@ -98,8 +98,5 @@ func (r *Repository) GetUserByUsername(username string) (*UserNoPassword, error)
 func (r *Repository) UpdateAvatar(userID int, filename string) error {
 	query := `UPDATE users SET avatar = $1 WHERE id = $2`
 	_, err := r.db.Exec(query, filename, userID)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }

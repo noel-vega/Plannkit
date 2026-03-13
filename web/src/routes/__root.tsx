@@ -15,9 +15,12 @@ const RootLayout = () => (
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient, today: Date, flags: Flags }>()({
   beforeLoad: async ({ location }) => {
-    const response = await auth.getMe()
-    if (response.success) {
-      useAuth.setState(response.data)
+    const { success, accessToken } = await auth.refreshAccessToken()
+    useAuth.setState({ accessToken })
+
+    if (success) {
+      const me = await auth.getMe()
+      useAuth.setState({ me })
       if (location.pathname.startsWith("/auth")) {
         throw redirect({ to: "/habits" })
       }
