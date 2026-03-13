@@ -2,58 +2,65 @@
 
 ## Backend
 
-### 1. Implement `AcceptSpaceInvite` handler
+### RBAC — Role-Based Access Control for Finance Spaces
 
-- `handler.go:356` — currently an empty function
-- Parse `spaceID` from URL param
-- Get `userID` from auth context
-- Call service method and return updated member
-- Handle errors: not found (404), already accepted (409)
+#### Roles: `owner`, `editor`, `viewer`
 
-### 2. Add `AcceptSpaceInvite` service method
+| Action                          | Owner | Editor | Viewer |
+|---------------------------------|-------|--------|--------|
+| Delete space                    | Y     |        |        |
+| Invite/remove members           | Y     |        |        |
+| Create/delete goals & expenses  | Y     | Y      |        |
+| Add contributions               | Y     | Y      |        |
+| Read everything                 | Y     | Y      | Y      |
 
-- Look up the membership by userID + spaceID
-- Verify status is `pending` — return error if already accepted or not found
-- Call repository to update status to `accepted`
-- Consider adding `ErrAlreadyAccepted` and `ErrInviteNotFound` errors
+#### 1. DB migration — add `role` column to `finance_spaces_members`
 
-### 3. Add `UpdateSpaceMemberStatus` repository method
+- Add `role` column with CHECK constraint: `role IN ('owner', 'editor', 'viewer')`
+- Default to `'viewer'` for new members (invited via `InviteToSpace`)
+- Migrate existing rows: set `role = 'owner'` where `user_id` matches `finance_spaces.user_id`
+- Consider removing `user_id` from `finance_spaces` once ownership is role-based
 
-- `UPDATE finance_spaces_members SET status = :status WHERE user_id = :user_id AND finance_space_id = :finance_space_id`
-- Return the updated `SpaceMember`
+#### 2. Update `SpaceMember` type and params
 
-### 4. Add owner-only check to `InviteToSpace`
+- Add `Role` field to `SpaceMember` struct in `types.go`
+- Update `InsertSpaceMemberParams` to include `Role`
+- Update `CreateSpace` service to insert the creator as `role = 'owner'`
+- Update `InviteToSpace` service to insert invited members with a default role (e.g., `'editor'`)
 
-- Before checking connection, verify the requesting `userID` matches `space.user_id`
-- Need to fetch the space first: `s.repository.GetSpaceByID`
-- Return 403 if non-owner tries to invite
-- Consider adding `ErrNotSpaceOwner` error in `errors.go`
+#### 3. Expose role in `VerifySpaceMembership` middleware
 
-### 5. Clean up old unused methods
+- Middleware already fetches `SpaceMember` — set `c.Set("spaceRole", member.Role)` alongside `spaceID`
+- Downstream handlers can read the role from the context
 
-- Check if `CreateSpaceMembership`, `GetSpaceMembership`, `ListSpaceMemberships` still exist in repository.go
-- Remove any dead code references across the package
+#### 4. Add `RequireRole` helper function
 
-### 6. Remove `finances` import from `user/services.go`
+- Helper that checks `c.GetString("spaceRole")` against allowed roles
+- Aborts with 403 if the caller's role is insufficient
+- Signature: `func RequireRole(c *gin.Context, roles ...string) bool`
 
-- Verify `user` package no longer imports `finances`
-- Clean up `financesService` field from `user.Service` struct if still present
+#### 5. Add role checks to handlers
 
-### 7. DB migration for `status` column
+- `DeleteSpace` — require `owner`
+- `InviteToSpace` — require `owner`
+- `DeleteSpaceMember` — require `owner`
+- `CreateGoal`, `CreateExpense`, `CreateIncomeSource` — require `owner` or `editor`
+- `CreateGoalContribution` — require `owner` or `editor`
+- `DeleteGoalContribution`, `DeleteExpense`, `DeleteIncome` — require `owner` or `editor`
+- Read endpoints (`List*`, `Get*`) — any accepted member (no role check needed beyond middleware)
 
-- Verify `20260214192150_finances.up.sql` properly adds `status` column with default `'pending'`
-- Consider adding a CHECK constraint: `status IN ('pending', 'accepted')`
-- Write the corresponding `.down.sql` migration
+#### 6. Add endpoint to update a member's role
 
-### 8. Rename `CreateSpaceMemberParams` → `InviteToSpaceParams`
+- `PATCH /finances/spaces/:spaceID/members/:userID/role`
+- Only `owner` can change roles
+- Prevent owner from demoting themselves (would orphan the space)
+- Add service method, repo method, handler, and types
 
-- Update struct in `types.go`
-- Update references in service and handler
+#### 7. Remove `user_id` from `finance_spaces` table (optional)
 
-### 9. Rename `CreateSpaceMemberBody` → `InviteToSpaceBody`
-
-- Update struct in `types.go`
-- Update reference in handler
+- Once ownership is determined by role on `finance_spaces_members`, `user_id` on `finance_spaces` is redundant
+- Remove `GetSpaceByID` queries that filter by `user_id`
+- Update `DeleteSpace` to check role instead of `space.user_id`
 
 ## Frontend
 

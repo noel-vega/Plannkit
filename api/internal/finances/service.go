@@ -108,6 +108,7 @@ func (s *Service) DeleteIncomeSource(params *DeleteIncomeSourceParams) error {
 }
 
 func (s *Service) InviteToSpace(params *InviteToSpaceParams) (*SpaceMember, error) {
+	// TODO: only owners and admins should be allowed to invite
 	isConnected, err := s.connectionChecker.AreConnected(params.UserID, params.NewMemberUserID)
 	if err != nil {
 		return nil, err
@@ -158,6 +159,8 @@ func (s *Service) GetSpaceMember(params *SpaceMemberRelationship) (*SpaceMember,
 }
 
 func (s *Service) DeleteSpaceMember(params *SpaceMemberRelationship) error {
+	// TODO: Only owners and admins should be allowed to delete members.
+	// Owners cannot be deleted
 	_, err := s.GetSpaceMember(params)
 	if err != nil {
 		return err
