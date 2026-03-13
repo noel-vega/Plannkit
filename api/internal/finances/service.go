@@ -122,6 +122,26 @@ func (s *Service) InviteToSpace(params *CreateSpaceMemberParams) (*SpaceMember, 
 	})
 }
 
+func (s *Service) AcceptSpaceInvite(params *SpaceMemberRelationship) (*SpaceMember, error) {
+	member, err := s.GetSpaceMember(params)
+	if err != nil {
+		return nil, err
+	}
+
+	if member.Status == "accepted" {
+		return nil, ErrSpaceInviteAlreadyAccepted
+	}
+
+	if member.Status != "pending" {
+		return nil, ErrSpaceInviteNotFound
+	}
+
+	return s.repository.UpdateSpaceMemberStatus(&UpdateSpaceMemberStatus{
+		SpaceMemberRelationship: *params,
+		Status:                  "accepted",
+	})
+}
+
 func (s *Service) ListSpaceMembers(params *ListSpaceMembersParams) ([]SpaceMember, error) {
 	return s.repository.ListSpaceMembers(params)
 }

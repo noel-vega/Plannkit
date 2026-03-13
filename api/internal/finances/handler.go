@@ -355,6 +355,23 @@ func (h *Handler) InviteToSpace(c *gin.Context) {
 }
 
 func (h *Handler) AcceptSpaceInvite(c *gin.Context) {
+	member, err := h.service.AcceptSpaceInvite(&SpaceMemberRelationship{
+		UserID:  httputil.UserID(c),
+		SpaceID: c.MustGet("spaceID").(int),
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, ErrSpaceMemberNotFound):
+		case errors.Is(err, ErrSpaceInviteNotFound):
+			c.AbortWithError(http.StatusNotFound, err)
+		case errors.Is(err, ErrSpaceInviteAlreadyAccepted):
+			c.AbortWithError(http.StatusConflict, err)
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
+		return
+	}
+	c.JSON(http.StatusNoContent, member)
 }
 
 func (h *Handler) ListSpaceMembers(c *gin.Context) {

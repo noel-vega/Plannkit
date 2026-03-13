@@ -355,3 +355,19 @@ func (r *Repository) DeleteSpaceMember(params *DeleteSpaceMemberParams) error {
 	_, err := r.db.NamedExec(query, params)
 	return err
 }
+
+func (r *Repository) UpdateSpaceMemberStatus(params *UpdateSpaceMemberStatus) (*SpaceMember, error) {
+	query := `
+		UPDATE finance_spaces_members
+	  SET status = :status
+	  WHERE user_id = :user_id AND finance_space_id = :finance_space_id
+	  RETURNING *
+	`
+	query, args, err := sqlx.Named(query, params)
+	if err != nil {
+		return nil, err
+	}
+	member := &SpaceMember{}
+	err = r.db.Get(member, r.db.Rebind(query), args...)
+	return member, err
+}

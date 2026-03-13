@@ -50,6 +50,11 @@ type (
 	DeleteSpaceMemberParams = SpaceMemberRelationship
 )
 
+type UpdateSpaceMemberStatus struct {
+	SpaceMemberRelationship
+	Status string `db:"status"`
+}
+
 type Expense struct {
 	ID          int       `json:"id" db:"id"`
 	SpaceID     int       `json:"spaceId" db:"finance_space_id"`
