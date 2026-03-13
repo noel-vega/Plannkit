@@ -1,1 +1,1 @@
-# Plannkit
+![Plannkit Banner](./Plannkit-Repo-Banner.png)
