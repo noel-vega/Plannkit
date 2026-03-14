@@ -350,6 +350,31 @@ func (r *Repository) ListSpaceMembers(params *ListSpaceMembersParams) ([]SpaceMe
 	return members, nil
 }
 
+func (r *Repository) ListSpaceMembersWithUsers(params *ListSpaceMembersParams) ([]SpaceMemberWithUser, error) {
+	query := `
+		SELECT 
+	    m.*, 
+	    u.id         AS "user.id",
+	    u.username   AS "user.username",
+	    u.first_name AS "user.first_name",
+	    u.last_name  AS "user.last_name",
+	    u.email      AS "user.email",
+	    u.is_private AS "user.is_private",
+      u.avatar     AS "user.avatar",
+      u.created_at AS "user.created_at",
+      u.updated_at AS "user.updated_at"
+	  FROM finance_spaces_members m
+	  JOIN users u ON m.user_id = u.id
+	  WHERE m.finance_space_id = $1
+	`
+	members := []SpaceMemberWithUser{}
+	err := r.db.Select(&members, query, params.SpaceID)
+	if err != nil {
+		return nil, err
+	}
+	return members, nil
+}
+
 func (r *Repository) DeleteSpaceMember(params *DeleteSpaceMemberParams) error {
 	query := `
 		DELETE FROM finance_spaces_members

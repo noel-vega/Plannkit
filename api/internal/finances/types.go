@@ -26,7 +26,7 @@ type SpaceMember struct {
 
 type SpaceMemberWithUser struct {
 	SpaceMember
-	User *user.User `json:"user" db:"user"`
+	User *user.UserNoPassword `json:"user" db:"user"`
 }
 
 type InviteToSpaceBody struct {
