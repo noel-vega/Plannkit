@@ -1,7 +1,11 @@
 // Package finances
 package finances
 
-import "time"
+import (
+	"time"
+
+	"github.com/noel-vega/habits/api/internal/user"
+)
 
 type Space struct {
 	ID        int       `json:"id" db:"id"`
@@ -18,6 +22,11 @@ type SpaceMember struct {
 	Status    string    `json:"status" db:"status"`
 	CreatedAt time.Time `json:"createdAt" db:"created_at"`
 	UpdatedAt time.Time `json:"updatedAt" db:"updated_at"`
+}
+
+type SpaceMemberWithUser struct {
+	SpaceMember
+	User *user.User `json:"user" db:"user"`
 }
 
 type InviteToSpaceBody struct {
