@@ -12,7 +12,7 @@ import { MonthlyGoalCommitmentsCard } from '@/features/finances/components/month
 import { MonthlyIncomeCard } from '@/features/finances/components/monthly-income-card'
 import { CreateExpenseDialog } from '@/features/finances/components/create-expense-form'
 import { FinanceSpaceSwitcher } from '@/features/finances/components/finance-space-switcher'
-import { getUseListExpensesOptions, getUseListGoalsOptions, getUseListIncomeSourcesOptions, useListExpenses, useListGoals, useListSpaces } from '@/features/finances/hooks'
+import { getUseListExpensesOptions, getUseListGoalsOptions, getUseListIncomeSourcesOptions, useListExpenses, useListGoals, useListSpacesQuery } from '@/features/finances/hooks'
 import type { Expense, FinanceSpace, Goal } from '@/features/finances/types'
 import { GoalCard } from '@/features/finances/components/goal-card'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
@@ -45,7 +45,7 @@ function RouteComponent() {
   const rtCtx = Route.useRouteContext()
   const expenses = useListExpenses({ spaceId, initialData: rtCtx.expenses })
   const goals = useListGoals({ spaceId, initialData: rtCtx.goals })
-  const spaces = useListSpaces({ initialData: rtCtx.spaces })
+  const spaces = useListSpacesQuery({ initialData: rtCtx.spaces })
 
   const handleSwitchSpace = (space: FinanceSpace) => {
     navigate({ to: "/finances/$spaceId", params: { spaceId: space.id } })

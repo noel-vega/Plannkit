@@ -2,7 +2,6 @@ import z from "zod/v3"
 
 export const FinanceSpaceSchema = z.object({
   id: z.number(),
-  userId: z.number(),
   name: z.string(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date()
@@ -99,3 +98,22 @@ export type IncomeSource = z.infer<typeof IncomeSourceSchema>
 
 export const CreateIncomeSourceParamsSchema = IncomeSourceSchema.omit({ id: true, userId: true, createdAt: true, updatedAt: true })
 export type CreateIncomeSourceParams = z.infer<typeof CreateIncomeSourceParamsSchema>
+
+export const SpaceMemberRoleSchema = z.literal("owner").or(z.literal("editor")).or(z.literal("viewer"))
+export type SpaceMemberRole = z.infer<typeof SpaceMemberRoleSchema>
+
+export const SpaceMemberStatusSchema = z.literal("pending").or(z.literal("accepted"))
+export type SpaceMemberStatus = z.infer<typeof SpaceMemberStatusSchema>
+
+
+export const SpaceMemberSchema = z.object({
+  id: z.number(),
+  spaceId: z.number(),
+  userId: z.number(),
+  role: SpaceMemberRoleSchema,
+  status: SpaceMemberStatusSchema,
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date()
+})
+
+export type SpaceMember = z.infer<typeof SpaceMemberSchema>

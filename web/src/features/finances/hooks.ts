@@ -16,7 +16,7 @@ export async function invalidateUseListSpaces() {
   return queryClient.invalidateQueries(getUseListSpacesOptions())
 }
 
-export function useListSpaces({ initialData }: { initialData: FinanceSpace[] }) {
+export function useListSpacesQuery({ initialData }: { initialData: FinanceSpace[] }) {
   return useQuery({ ...getUseListSpacesOptions(), initialData })
 }
 
@@ -159,7 +159,7 @@ export function useDeleteExpense() {
 // Income Sources
 export function getUseListIncomeSourcesOptions(params: SpaceIdent) {
   return queryOptions({
-    queryKey: ["income-sources", params.spaceId],
+    queryKey: ["finances", params.spaceId, "income-sources",],
     queryFn: () => finances.incomeSources.list(params)
   })
 }
@@ -188,4 +188,19 @@ export function useDeleteIncomeSource() {
       invalidateUseListIncomeSources({ spaceId })
     }
   })
+}
+
+export function getListSpaceMembersQueryOptions(params: SpaceIdent) {
+  return queryOptions({
+    queryKey: ["finances", params.spaceId, "members"],
+    queryFn: () => finances.members.list(params)
+  })
+}
+
+export function invalidateListSpaceMembersQuery(params: SpaceIdent) {
+  return queryClient.invalidateQueries(getListSpaceMembersQueryOptions(params))
+}
+
+export function useListSpaceMembersQuery(params: SpaceIdent) {
+  return useQuery(getListSpaceMembersQueryOptions(params))
 }

@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import { ManageIncomesSheet } from "./manage-incomes-sheet";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import type { DialogProps } from "@/types";
+import { useListSpaceMembersQuery } from "../hooks";
 
 type Props = {
   currentSpace: FinanceSpace,
@@ -97,15 +98,19 @@ export function FinanceSpaceSwitcher(props: Props) {
   )
 }
 
-
-
 function ManageMembersSheet({ spaceId, ...dialog }: { spaceId: number } & DialogProps) {
+  const members = useListSpaceMembersQuery({ spaceId })
   return (
     <Sheet {...dialog}>
       <SheetContent>
         <SheetHeader>
           <SheetTitle>Manage Members</SheetTitle>
         </SheetHeader>
+        <ul>
+          {members.data?.map(member => (
+            <li>{member.userId} {member.role}</li>
+          ))}
+        </ul>
 
       </SheetContent>
     </Sheet>
