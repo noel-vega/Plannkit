@@ -383,8 +383,8 @@ func (h *Handler) AcceptSpaceInvite(c *gin.Context) {
 	c.JSON(http.StatusOK, member)
 }
 
-func (h *Handler) ListSpaceMembers(c *gin.Context) {
-	members, err := h.service.ListSpaceMembers(&ListSpaceMembersParams{
+func (h *Handler) ListSpaceMembersWithUsers(c *gin.Context) {
+	members, err := h.service.ListSpaceMembersWithUsers(&ListSpaceMembersParams{
 		SpaceID: c.MustGet("spaceID").(int),
 	})
 	if err != nil {

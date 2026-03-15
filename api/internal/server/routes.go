@@ -11,15 +11,6 @@ import (
 	"github.com/noel-vega/habits/api/internal/user"
 )
 
-type Services struct {
-	Auth     *auth.Service
-	User     *user.Service
-	Network  *network.Service
-	Finances *finances.Service
-	Todos    *todos.Service
-	Habits   *habits.Service
-}
-
 func AddRoutes(router *gin.Engine, services *Services) *gin.Engine {
 	authHandler := auth.NewHandler(services.Auth, services.User, services.Finances)
 	habitsHandler := habits.NewHandler(services.Habits)
@@ -65,7 +56,7 @@ func AddRoutes(router *gin.Engine, services *Services) *gin.Engine {
 	financeSpace.Use(finances.RequireRole("owner", "editor")).DELETE("/expenses/:expenseID", financesHandler.DeleteExpense)
 	financeSpace.Use(finances.RequireRole("owner", "editor")).POST("/expenses", financesHandler.CreateExpense)
 	financeSpace.Use(finances.RequireRole("owner", "editor")).DELETE("/goals/:goalID/contributions/:contributionID", financesHandler.DeleteGoalContribution)
-	financeSpace.GET("/members", financesHandler.ListSpaceMembers)
+	financeSpace.GET("/members", financesHandler.ListSpaceMembersWithUsers)
 	financeSpace.GET("/incomes", financesHandler.ListIncomes)
 	financeSpace.GET("/goals", financesHandler.ListGoals)
 	financeSpace.GET("/goals/:goalID", financesHandler.GetGoal)

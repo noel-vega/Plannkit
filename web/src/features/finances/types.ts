@@ -1,4 +1,5 @@
 import z from "zod/v3"
+import { UserSchema } from "../network/types"
 
 export const FinanceSpaceSchema = z.object({
   id: z.number(),
@@ -113,7 +114,8 @@ export const SpaceMemberSchema = z.object({
   role: SpaceMemberRoleSchema,
   status: SpaceMemberStatusSchema,
   createdAt: z.coerce.date(),
-  updatedAt: z.coerce.date()
+  updatedAt: z.coerce.date(),
+  user: UserSchema
 })
 
 export type SpaceMember = z.infer<typeof SpaceMemberSchema>

@@ -159,6 +159,10 @@ func (s *Service) ListSpaceMembers(params *ListSpaceMembersParams) ([]SpaceMembe
 	return s.repository.ListSpaceMembers(params)
 }
 
+func (s *Service) ListSpaceMembersWithUsers(params *ListSpaceMembersParams) ([]SpaceMemberWithUser, error) {
+	return s.repository.ListSpaceMembersWithUsers(params)
+}
+
 func (s *Service) GetSpaceMember(params *SpaceMemberRelationship) (*SpaceMember, error) {
 	member, err := s.repository.GetSpaceMember(params)
 	if err != nil {

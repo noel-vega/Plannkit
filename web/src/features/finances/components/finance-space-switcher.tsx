@@ -10,6 +10,9 @@ import { ManageIncomesSheet } from "./manage-incomes-sheet";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import type { DialogProps } from "@/types";
 import { useListSpaceMembersQuery } from "../hooks";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useDiscoverUsersQuery } from "@/features/network/hooks";
 
 type Props = {
   currentSpace: FinanceSpace,
@@ -93,26 +96,47 @@ export function FinanceSpaceSwitcher(props: Props) {
       </Popover>
 
       <ManageIncomesSheet spaceId={props.currentSpace.id} {...manageIncomeSourcesSheet} />
-      <ManageMembersSheet spaceId={props.currentSpace.id} {...manageMembersSheet} />
+      <ManageMembersDialog spaceId={props.currentSpace.id} {...manageMembersSheet} />
     </>
   )
 }
 
-function ManageMembersSheet({ spaceId, ...dialog }: { spaceId: number } & DialogProps) {
+function ManageMembersDialog({ spaceId, ...dialog }: { spaceId: number } & DialogProps) {
   const members = useListSpaceMembersQuery({ spaceId })
-  return (
-    <Sheet {...dialog}>
-      <SheetContent>
-        <SheetHeader>
-          <SheetTitle>Manage Members</SheetTitle>
-        </SheetHeader>
-        <ul>
-          {members.data?.map(member => (
-            <li>{member.userId} {member.role}</li>
-          ))}
-        </ul>
+  const connections = useDiscoverUsersQuery({ search: "", filter: "connections" }, [])
 
-      </SheetContent>
-    </Sheet>
+  return (
+    <Dialog {...dialog}>
+      <DialogContent className="max-h-5/6 h-full grid-rows-[auto_1fr]">
+        <DialogHeader>
+          <DialogTitle>Manage Members</DialogTitle>
+        </DialogHeader>
+        <Tabs className="overflow-hidden">
+          <TabsList variant="line" defaultValue="members">
+            <TabsTrigger value="members">Members {members.data?.length}</TabsTrigger>
+            <TabsTrigger value="connections">Connections {connections.data?.length}</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="members">
+            <ul>
+              {members.data?.map(member => (
+                <li>{member.user.firstName} {member.user.lastName} {member.role}</li>
+              ))}
+            </ul>
+          </TabsContent>
+
+
+          <TabsContent value="connections">
+            <ul>
+              {members.data?.map(member => (
+                <li>{member.user.firstName} {member.user.lastName} {member.role}</li>
+              ))}
+            </ul>
+          </TabsContent>
+
+        </Tabs>
+
+      </DialogContent>
+    </Dialog>
   )
 }

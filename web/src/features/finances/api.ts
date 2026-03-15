@@ -25,7 +25,6 @@ export const finances = {
       const response = await api.GET(`/finances/spaces/${params.spaceId}/members`)
       const data = await response.json()
       return SpaceMemberSchema.array().parse(data)
-
     },
     delete: async () => {
 

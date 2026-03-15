@@ -10,14 +10,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
-	"github.com/noel-vega/habits/api/internal/auth"
-	"github.com/noel-vega/habits/api/internal/finances"
-	"github.com/noel-vega/habits/api/internal/habits"
-	"github.com/noel-vega/habits/api/internal/network"
 	"github.com/noel-vega/habits/api/internal/server"
-	"github.com/noel-vega/habits/api/internal/storage"
-	"github.com/noel-vega/habits/api/internal/todos"
-	"github.com/noel-vega/habits/api/internal/user"
 )
 
 func main() {
@@ -52,24 +45,13 @@ func main() {
 
 	storageBasePath := os.Getenv("STORAGE_BASE_PATH")
 	router.Static("/public", storageBasePath)
-	storageService := storage.NewLocalStorage(storageBasePath)
 	jwtSecret := os.Getenv("JWT_SECRET")
 
-	userService := user.NewService(db, storageService)
-	networkService := network.NewService(db, userService)
-	financesService := finances.NewService(db, networkService)
-	todosService := todos.NewService(db)
-	habitsService := habits.NewService(db)
-	authService := auth.NewService(jwtSecret)
-
-	services := &server.Services{
-		User:     userService,
-		Network:  networkService,
-		Finances: financesService,
-		Todos:    todosService,
-		Habits:   habitsService,
-		Auth:     authService,
-	}
+	services := server.NewServices(&server.NewServicesParams{
+		DB:          db,
+		JwtSecret:   jwtSecret,
+		StoragePath: storageBasePath,
+	})
 
 	server.AddRoutes(router, services)
 
