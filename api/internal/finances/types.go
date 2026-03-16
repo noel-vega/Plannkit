@@ -7,6 +7,17 @@ import (
 	"github.com/noel-vega/habits/api/internal/user"
 )
 
+const (
+	RoleOwner  = "owner"
+	RoleEditor = "editor"
+	RoleViewer = "viewer"
+)
+
+const (
+	MemberInvitePending  = "pending"
+	MemberInviteAccepted = "accepted"
+)
+
 type Space struct {
 	ID        int       `json:"id" db:"id"`
 	Name      string    `json:"name" db:"name"`

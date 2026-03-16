@@ -18,6 +18,7 @@ type Services struct {
 	Finances *finances.Service
 	Todos    *todos.Service
 	Habits   *habits.Service
+	Storage  storage.Service
 }
 
 type NewServicesParams struct {
@@ -28,7 +29,7 @@ type NewServicesParams struct {
 
 func NewServices(params *NewServicesParams) *Services {
 	storageService := storage.NewLocalStorage(params.StoragePath)
-	userService := user.NewService(params.DB, storageService)
+	userService := user.NewService(params.DB)
 	networkService := network.NewService(params.DB, userService)
 	financesService := finances.NewService(params.DB, networkService)
 	todosService := todos.NewService(params.DB)
@@ -42,5 +43,6 @@ func NewServices(params *NewServicesParams) *Services {
 		Finances: financesService,
 		Todos:    todosService,
 		Habits:   habitsService,
+		Storage:  storageService,
 	}
 }

@@ -7,15 +7,18 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/noel-vega/habits/api/internal/httputil"
+	"github.com/noel-vega/habits/api/internal/storage"
 )
 
 type Handler struct {
-	userService *Service
+	userService    *Service
+	storageService storage.Service
 }
 
-func NewHandler(userService *Service) *Handler {
+func NewHandler(userService *Service, storageService storage.Service) *Handler {
 	return &Handler{
-		userService,
+		userService:    userService,
+		storageService: storageService,
 	}
 }
 
@@ -35,7 +38,13 @@ func (h *Handler) UpdateAvatar(c *gin.Context) {
 		return
 	}
 
-	filename, err := h.userService.UpdateAvatar(userID, ext, file)
+	filename, err := h.storageService.Put("avatars", ext, file)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+
+	}
+	err = h.userService.UpdateAvatar(userID, filename)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return

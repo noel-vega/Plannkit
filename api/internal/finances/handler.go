@@ -35,9 +35,14 @@ func (h *Handler) CreateSpace(c *gin.Context) {
 		Name:   body.Name,
 	}
 
-	space, err := h.service.CreateSpace(params)
+	space, _, err := h.service.CreateSpace(params)
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		switch {
+		case errors.Is(err, ErrValidationRequireName):
+			c.AbortWithError(http.StatusBadRequest, err)
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
 		return
 	}
 

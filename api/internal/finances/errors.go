@@ -9,4 +9,5 @@ var (
 	ErrSpaceNotFound              = errors.New("space not found")
 	ErrInvalidRole                = errors.New("not a valid role")
 	ErrCannotDeleteOwner          = errors.New("cannot delete space owner")
+	ErrValidationRequireName      = errors.New("name required")
 )

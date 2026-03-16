@@ -20,21 +20,24 @@ func NewService(db *sqlx.DB, cc contracts.ConnectionChecker) *Service {
 	}
 }
 
-func (s *Service) CreateSpace(params *CreateSpaceParams) (*Space, error) {
+func (s *Service) CreateSpace(params *CreateSpaceParams) (*Space, *SpaceMember, error) {
+	if params.Name == "" {
+		return nil, nil, ErrValidationRequireName
+	}
 	space, err := s.repository.CreateSpace(params)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	_, err = s.repository.InsertSpaceMember(&InsertSpaceMemberParams{
+	member, err := s.repository.InsertSpaceMember(&InsertSpaceMemberParams{
 		SpaceID: space.ID,
 		UserID:  params.UserID,
-		Status:  "accepted",
-		Role:    "owner",
+		Status:  MemberInviteAccepted,
+		Role:    RoleOwner,
 	})
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return space, nil
+	return space, member, nil
 }
 
 func (s *Service) SpaceMembershipExists(params *SpaceMemberRelationship) (bool, error) {
@@ -124,14 +127,14 @@ func (s *Service) InviteToSpace(params *InviteToSpaceParams) (*SpaceMember, erro
 		return nil, contracts.ErrNotConnected
 	}
 
-	if params.Role != "editor" && params.Role != "viewer" {
+	if params.Role != RoleEditor && params.Role != RoleViewer {
 		return nil, ErrInvalidRole
 	}
 	return s.repository.InsertSpaceMember(&InsertSpaceMemberParams{
 		UserID:  params.NewMemberUserID,
 		SpaceID: params.SpaceID,
 		Role:    params.Role,
-		Status:  "pending",
+		Status:  MemberInvitePending,
 	})
 }
 
@@ -141,17 +144,17 @@ func (s *Service) AcceptSpaceInvite(params *SpaceMemberRelationship) (*SpaceMemb
 		return nil, err
 	}
 
-	if member.Status == "accepted" {
+	if member.Status == MemberInviteAccepted {
 		return nil, ErrSpaceInviteAlreadyAccepted
 	}
 
-	if member.Status != "pending" {
+	if member.Status != MemberInvitePending {
 		return nil, ErrSpaceInviteNotFound
 	}
 
 	return s.repository.UpdateSpaceMemberStatus(&UpdateSpaceMemberStatus{
 		SpaceMemberRelationship: *params,
-		Status:                  "accepted",
+		Status:                  MemberInviteAccepted,
 	})
 }
 
@@ -180,7 +183,7 @@ func (s *Service) DeleteSpaceMember(params *SpaceMemberRelationship) error {
 		return err
 	}
 
-	if member.Role == "owner" {
+	if member.Role == RoleOwner {
 		return ErrCannotDeleteOwner
 	}
 	return s.repository.DeleteSpaceMember(params)

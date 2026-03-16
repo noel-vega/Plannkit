@@ -2,22 +2,18 @@ package user
 
 import (
 	"errors"
-	"io"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/noel-vega/habits/api/internal/apperrors"
-	"github.com/noel-vega/habits/api/internal/storage"
 )
 
 type Service struct {
-	userRepo       *Repository
-	storageService storage.Service
+	userRepo *Repository
 }
 
-func NewService(db *sqlx.DB, storageService storage.Service) *Service {
+func NewService(db *sqlx.DB) *Service {
 	return &Service{
-		userRepo:       NewRepository(db),
-		storageService: storageService,
+		userRepo: NewRepository(db),
 	}
 }
 
@@ -61,16 +57,11 @@ func (s *Service) GetUserByUsername(username string) (*UserNoPassword, error) {
 	return s.userRepo.GetUserByUsername(username)
 }
 
-func (s *Service) UpdateAvatar(userID int, ext string, file io.Reader) (string, error) {
-	fileName, err := s.storageService.Put("avatars", ext, file)
+func (s *Service) UpdateAvatar(userID int, fileName string) error {
+	err := s.userRepo.UpdateAvatar(userID, fileName)
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	err = s.userRepo.UpdateAvatar(userID, fileName)
-	if err != nil {
-		return "", err
-	}
-
-	return fileName, nil
+	return err
 }

@@ -4,7 +4,6 @@ import (
 	"errors"
 	"io"
 	"os"
-	"strings"
 	"testing"
 
 	"github.com/jmoiron/sqlx"
@@ -42,12 +41,11 @@ func (f *fakeStorage) Delete(folder, fileName string) error {
 	return nil
 }
 
-func setupService(t *testing.T) (*user.Service, *fakeStorage) {
+func setupService(t *testing.T) *user.Service {
 	t.Helper()
 	testutil.TruncateAll(testDB)
-	fs := &fakeStorage{}
-	svc := user.NewService(testDB, fs)
-	return svc, fs
+	svc := user.NewService(testDB)
+	return svc
 }
 
 func seedUser(t *testing.T, svc *user.Service) *user.UserNoPassword {
@@ -94,7 +92,7 @@ func TestServiceCreateUser(t *testing.T) {
 		},
 	}
 
-	svc, _ := setupService(t)
+	svc := setupService(t)
 	seedUser(t, svc)
 
 	for _, tt := range tests {
@@ -117,7 +115,7 @@ func TestServiceCreateUser(t *testing.T) {
 }
 
 func TestServiceGetUserByID(t *testing.T) {
-	svc, _ := setupService(t)
+	svc := setupService(t)
 	seeded := seedUser(t, svc)
 
 	tests := []struct {
@@ -149,7 +147,7 @@ func TestServiceGetUserByID(t *testing.T) {
 }
 
 func TestServiceGetUserByEmailWithPassword(t *testing.T) {
-	svc, _ := setupService(t)
+	svc := setupService(t)
 	seedUser(t, svc)
 
 	tests := []struct {
@@ -181,7 +179,7 @@ func TestServiceGetUserByEmailWithPassword(t *testing.T) {
 }
 
 func TestServiceGetUserByUsername(t *testing.T) {
-	svc, _ := setupService(t)
+	svc := setupService(t)
 	seeded := seedUser(t, svc)
 
 	tests := []struct {
@@ -213,19 +211,12 @@ func TestServiceGetUserByUsername(t *testing.T) {
 }
 
 func TestServiceUpdateAvatar(t *testing.T) {
-	svc, fs := setupService(t)
+	svc := setupService(t)
 	seeded := seedUser(t, svc)
 
-	fileName, err := svc.UpdateAvatar(seeded.ID, ".png", strings.NewReader("fake image data"))
+	err := svc.UpdateAvatar(seeded.ID, "fake-uuid.png")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
-	}
-
-	if fileName != "fake-uuid.png" {
-		t.Errorf("fileName = %q, want %q", fileName, "fake-uuid.png")
-	}
-	if fs.lastFolder != "avatars" {
-		t.Errorf("storage folder = %q, want %q", fs.lastFolder, "avatars")
 	}
 
 	updated, err := svc.GetUserByID(seeded.ID)

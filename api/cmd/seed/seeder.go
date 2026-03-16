@@ -59,7 +59,7 @@ func (s *Seeder) SeedUser(num int) *user.UserNoPassword {
 		panic(err)
 	}
 
-	_, err = s.services.Finances.CreateSpace(&finances.CreateSpaceParams{
+	_, _, err = s.services.Finances.CreateSpace(&finances.CreateSpaceParams{
 		UserID: u.ID,
 		Name:   "My Finances",
 	})
@@ -89,7 +89,7 @@ func (s *Seeder) SeedTestUser() *user.UserNoPassword {
 		panic(err)
 	}
 
-	_, err = s.services.Finances.CreateSpace(&finances.CreateSpaceParams{
+	_, _, err = s.services.Finances.CreateSpace(&finances.CreateSpaceParams{
 		UserID: u.ID,
 		Name:   "My Finances",
 	})
