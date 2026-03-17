@@ -61,13 +61,13 @@ function RouteComponent() {
     <div className="@container">
       <Container>
         <div className="mb-4 grid grid-cols-1 @3xl:grid-cols-3 gap-4">
-          <FinanceSpaceSwitcher
-            currentSpace={rtCtx.currentSpace}
-            spaces={spaces.data}
-            onSpaceSelect={handleSwitchSpace}
-            onCreate={handleCreate}
-            onSettings={handleSettings}
-          />
+          {/* <FinanceSpaceSwitcher */}
+          {/*   currentSpace={rtCtx.currentSpace} */}
+          {/*   spaces={spaces.data} */}
+          {/*   onSpaceSelect={handleSwitchSpace} */}
+          {/*   onCreate={handleCreate} */}
+          {/*   onSettings={handleSettings} */}
+          {/* /> */}
         </div>
         <div className="grid grid-cols-1 @3xl:grid-cols-3 gap-3.5 mb-4">
           <MonthlyIncomeCard spaceId={spaceId} incomeSources={rtCtx.incomeSources} />

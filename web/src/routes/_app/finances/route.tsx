@@ -12,12 +12,13 @@ export const Route = createFileRoute('/_app/finances')({
   },
   beforeLoad: async ({ params }) => {
     const spaces = await queryClient.ensureQueryData(getUseListSpacesOptions())
-    if (params.spaceId === undefined) {
-      throw redirect({ to: "/finances/$spaceId", params: { spaceId: spaces[0].id } })
-    }
-    const currentSpace = spaces.find(x => x.id === Number(params.spaceId))
-    if (!currentSpace) throw Error("Space not found")
-    return { spaces, currentSpace }
+
+    // if (params.spaceId === undefined) {
+    //   throw redirect({ to: "/finances/$spaceId", params: { spaceId: spaces[0].id } })
+    // }
+    // const currentSpace = spaces.find(x => x.id === Number(params.spaceId))
+    // if (!currentSpace) throw Error("Space not found")
+    return { spaces }
   },
   component: () => {
     return (

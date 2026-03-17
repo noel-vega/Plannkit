@@ -3,7 +3,7 @@ import { Field } from '@/components/ui/field'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
 import { Item, ItemActions, ItemContent, ItemMedia, ItemTitle } from '@/components/ui/item'
 import { PendingFollowButton } from '@/features/network/components/follow-button'
-import { useDiscoverUsersQuery } from '@/features/network/hooks'
+import { useListNetworkFollowing } from '@/features/network/hooks'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { SearchIcon } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
@@ -17,7 +17,7 @@ function RouteComponent() {
 
   const [search, setSearch] = useState("")
   const [value] = useDebounce(search, 500)
-  const users = useDiscoverUsersQuery({ search: value, filter: "following" }, [])
+  const users = useListNetworkFollowing(value, [])
 
   const handleSearchInput = (e: FormEvent<HTMLInputElement>) => {
     setSearch(e.currentTarget.value)

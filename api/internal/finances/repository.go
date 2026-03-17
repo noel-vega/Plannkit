@@ -61,13 +61,32 @@ func (r *Repository) GetSpaceMember(params *SpaceMemberRelationship) (*SpaceMemb
 	return data, nil
 }
 
-func (r *Repository) ListSpaces(userID int) ([]Space, error) {
-	spaces := []Space{}
+func (r *Repository) ListSpaces(userID int) ([]SpaceWithMembership, error) {
+	spaces := []SpaceWithMembership{}
 	query := `
-	SELECT s.* 
+	SELECT 
+	  s.*, 
+	  m.id as "membership.id",
+	  m.finance_space_id as "membership.finance_space_id",
+	  m.user_id as "membership.user_id",
+	  m.role as "membership.role",
+	  m.status as "membership.status",
+	  m.created_at as "membership.created_at",
+	  m.updated_at as "membership.updated_at",
+    u.id as "owner.id",
+    u.username as "owner.username",
+    u.first_name as "owner.first_name",
+    u.last_name as "owner.last_name",
+    u.email as "owner.email",
+    u.is_private as "owner.is_private",
+    u.avatar as "owner.avatar",
+    u.created_at as "owner.created_at",
+    u.updated_at as "owner.updated_at"
 	FROM finance_spaces s
-	JOIN finance_spaces_members m ON m.finance_space_id = s.id
-	WHERE m.user_id = $1`
+	JOIN finance_spaces_members m ON m.finance_space_id = s.id AND m.user_id = $1
+	JOIN finance_spaces_members om ON om.finance_space_id = s.id AND om.role = 'owner'
+	JOIN users u ON u.id = om.user_id
+	`
 
 	err := r.db.Select(&spaces, query, userID)
 	if err != nil {

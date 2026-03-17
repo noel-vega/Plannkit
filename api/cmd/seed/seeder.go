@@ -43,7 +43,7 @@ func (s *Seeder) ResetDB() error {
 func (s *Seeder) SeedUser(num int) *user.UserNoPassword {
 	firstName := s.faker.FirstName()
 	lastName := s.faker.LastName()
-	password, err := s.services.Auth.HashPassword("Welcome123")
+	password, err := s.services.Auth.HashPassword("password")
 	if err != nil {
 		panic(err)
 	}

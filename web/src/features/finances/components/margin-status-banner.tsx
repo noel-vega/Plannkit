@@ -10,7 +10,6 @@ export function MarginStatusBanner({ spaceId }: { spaceId: number }) {
   const monthlyGoalCommitments = goals.data?.reduce((total, curr) => total + curr.monthlyCommitment, 0) ?? 0
   const monthlyExpenses = expenses.data?.reduce((total, curr) => total + curr.amount, 0) ?? 0
 
-  console.log(monthlyGoalCommitments, monthlyExpenses)
   const monthlyRemaining = data.monthlyIncome - (monthlyExpenses + monthlyGoalCommitments)
 
   return (

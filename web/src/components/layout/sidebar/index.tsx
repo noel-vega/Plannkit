@@ -20,7 +20,6 @@ function FeatureNavLink(props: { feature: FeatureLink }) {
   const { t } = useTranslation()
   const { feature } = props
   const { pathname } = useLocation()
-  console.log(pathname, feature.to)
   const isActive = pathname.startsWith(feature.to as string)
   return (
     <SidebarMenuItem key={feature.label} className="relative px-2">

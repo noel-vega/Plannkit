@@ -28,6 +28,21 @@ export function useDiscoverUsersQuery(params: DiscoverUsersParams, initialData: 
 }
 
 
+export function useListNetworkConnections(search: string, initialData: NetworkUser[]) {
+  return useQuery({ ...getUseDiscoverUsersQueryOptions({ search, filter: "connections" }), initialData })
+}
+
+
+export function useListNetworkFollowers(search: string, initialData: NetworkUser[]) {
+  return useQuery({ ...getUseDiscoverUsersQueryOptions({ search, filter: "followers" }), initialData })
+}
+
+
+export function useListNetworkFollowing(search: string, initialData: NetworkUser[]) {
+  return useQuery({ ...getUseDiscoverUsersQueryOptions({ search, filter: "following" }), initialData })
+}
+
+
 export function getUseUserProfileQueryOptions(username: string) {
   return queryOptions({
     queryKey: ['profile', username],
@@ -39,7 +54,7 @@ export function invalidateUserProfile(username: string) {
   return queryClient.invalidateQueries(getUseUserProfileQueryOptions(username))
 }
 
-export function useUserProfile(username: string, initialData: UserProfile) {
+export function useUserProfile(username: string, initialData?: UserProfile) {
   return useQuery({ ...getUseUserProfileQueryOptions(username), initialData })
 }
 

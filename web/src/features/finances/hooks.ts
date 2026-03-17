@@ -1,6 +1,6 @@
 import { queryOptions, useMutation, useQuery } from "@tanstack/react-query";
 import { finances } from "./api";
-import type { Expense, FinanceSpace, Goal, GoalContribution, GoalIdent, IncomeSource, SpaceIdent } from "./types";
+import type { Expense, Goal, GoalContribution, GoalIdent, IncomeSource, SpaceIdent, SpaceWithMembership } from "./types";
 import { queryClient } from "@/lib/react-query";
 
 
@@ -16,8 +16,26 @@ export async function invalidateUseListSpaces() {
   return queryClient.invalidateQueries(getUseListSpacesOptions())
 }
 
-export function useListSpacesQuery({ initialData }: { initialData: FinanceSpace[] }) {
+export function useListSpacesQuery({ initialData }: { initialData: SpaceWithMembership[] }) {
   return useQuery({ ...getUseListSpacesOptions(), initialData })
+}
+
+export function useAcceptSpaceInviteMutation() {
+  return useMutation({
+    mutationFn: finances.spaces.acceptInvite,
+    onSuccess: () => {
+      invalidateUseListSpaces()
+    }
+  })
+}
+
+export function useDeclineSpaceInviteMutation() {
+  return useMutation({
+    mutationFn: finances.members.delete,
+    onSuccess: () => {
+      invalidateUseListSpaces()
+    }
+  })
 }
 
 export function useCreateFinanceSpace() {
@@ -203,4 +221,22 @@ export function invalidateListSpaceMembersQuery(params: SpaceIdent) {
 
 export function useListSpaceMembersQuery(params: SpaceIdent) {
   return useQuery(getListSpaceMembersQueryOptions(params))
+}
+
+export function useInviteToSpaceMutation() {
+  return useMutation({
+    mutationFn: finances.members.invite,
+    onSuccess: (_, { spaceId }) => {
+      invalidateListSpaceMembersQuery({ spaceId })
+    }
+  })
+}
+
+export function useDeleteSpaceMemberMutation() {
+  return useMutation({
+    mutationFn: finances.members.delete,
+    onSuccess: (_, { spaceId }) => {
+      invalidateListSpaceMembersQuery({ spaceId })
+    }
+  })
 }

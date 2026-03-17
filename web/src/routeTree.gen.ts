@@ -22,6 +22,7 @@ import { Route as AppTodosIndexRouteImport } from './routes/_app/todos/index'
 import { Route as AppSettingsIndexRouteImport } from './routes/_app/settings/index'
 import { Route as AppHabitsIndexRouteImport } from './routes/_app/habits/index'
 import { Route as AppGroceriesIndexRouteImport } from './routes/_app/groceries/index'
+import { Route as AppFinancesIndexRouteImport } from './routes/_app/finances/index'
 import { Route as AppEmailIndexRouteImport } from './routes/_app/email/index'
 import { Route as AppDocumentsIndexRouteImport } from './routes/_app/documents/index'
 import { Route as AppDashboardIndexRouteImport } from './routes/_app/dashboard/index'
@@ -101,6 +102,11 @@ const AppGroceriesIndexRoute = AppGroceriesIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppGroceriesRouteRoute,
+} as any)
+const AppFinancesIndexRoute = AppFinancesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppFinancesRouteRoute,
 } as any)
 const AppEmailIndexRoute = AppEmailIndexRouteImport.update({
   id: '/email/',
@@ -198,6 +204,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AppDashboardIndexRoute
   '/documents': typeof AppDocumentsIndexRoute
   '/email': typeof AppEmailIndexRoute
+  '/finances/': typeof AppFinancesIndexRoute
   '/groceries/': typeof AppGroceriesIndexRoute
   '/habits/': typeof AppHabitsIndexRoute
   '/settings': typeof AppSettingsIndexRoute
@@ -216,7 +223,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteRouteWithChildren
-  '/finances': typeof AppFinancesRouteRouteWithChildren
   '/network': typeof AppNetworkRouteRouteWithChildren
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
@@ -224,6 +230,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AppDashboardIndexRoute
   '/documents': typeof AppDocumentsIndexRoute
   '/email': typeof AppEmailIndexRoute
+  '/finances': typeof AppFinancesIndexRoute
   '/groceries': typeof AppGroceriesIndexRoute
   '/habits': typeof AppHabitsIndexRoute
   '/settings': typeof AppSettingsIndexRoute
@@ -255,6 +262,7 @@ export interface FileRoutesById {
   '/_app/dashboard/': typeof AppDashboardIndexRoute
   '/_app/documents/': typeof AppDocumentsIndexRoute
   '/_app/email/': typeof AppEmailIndexRoute
+  '/_app/finances/': typeof AppFinancesIndexRoute
   '/_app/groceries/': typeof AppGroceriesIndexRoute
   '/_app/habits/': typeof AppHabitsIndexRoute
   '/_app/settings/': typeof AppSettingsIndexRoute
@@ -286,6 +294,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/documents'
     | '/email'
+    | '/finances/'
     | '/groceries/'
     | '/habits/'
     | '/settings'
@@ -304,7 +313,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
-    | '/finances'
     | '/network'
     | '/auth/signin'
     | '/auth/signup'
@@ -312,6 +320,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/documents'
     | '/email'
+    | '/finances'
     | '/groceries'
     | '/habits'
     | '/settings'
@@ -342,6 +351,7 @@ export interface FileRouteTypes {
     | '/_app/dashboard/'
     | '/_app/documents/'
     | '/_app/email/'
+    | '/_app/finances/'
     | '/_app/groceries/'
     | '/_app/habits/'
     | '/_app/settings/'
@@ -456,6 +466,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/groceries/'
       preLoaderRoute: typeof AppGroceriesIndexRouteImport
       parentRoute: typeof AppGroceriesRouteRoute
+    }
+    '/_app/finances/': {
+      id: '/_app/finances/'
+      path: '/'
+      fullPath: '/finances/'
+      preLoaderRoute: typeof AppFinancesIndexRouteImport
+      parentRoute: typeof AppFinancesRouteRoute
     }
     '/_app/email/': {
       id: '/_app/email/'
@@ -580,12 +597,14 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 )
 
 interface AppFinancesRouteRouteChildren {
+  AppFinancesIndexRoute: typeof AppFinancesIndexRoute
   AppFinancesSpaceIdSettingsRoute: typeof AppFinancesSpaceIdSettingsRoute
   AppFinancesSpaceIdIndexRoute: typeof AppFinancesSpaceIdIndexRoute
   AppFinancesSpaceIdGoalsGoalIdRoute: typeof AppFinancesSpaceIdGoalsGoalIdRoute
 }
 
 const AppFinancesRouteRouteChildren: AppFinancesRouteRouteChildren = {
+  AppFinancesIndexRoute: AppFinancesIndexRoute,
   AppFinancesSpaceIdSettingsRoute: AppFinancesSpaceIdSettingsRoute,
   AppFinancesSpaceIdIndexRoute: AppFinancesSpaceIdIndexRoute,
   AppFinancesSpaceIdGoalsGoalIdRoute: AppFinancesSpaceIdGoalsGoalIdRoute,

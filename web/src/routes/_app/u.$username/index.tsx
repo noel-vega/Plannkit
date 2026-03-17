@@ -22,8 +22,16 @@ export const Route = createFileRoute('/_app/u/$username/')({
 function RouteComponent() {
   const routeContext = Route.useRouteContext()
   const { username } = Route.useParams()
-  const { data: profile } = useUserProfile(username, routeContext.profile)
+  const { data: profile, isLoading } = useUserProfile(username, routeContext.profile)
   const { me } = useAuth()
+
+  if (isLoading) {
+    return "loading..."
+  }
+
+  if (!profile) {
+    return "Error"
+  }
 
   const isMe = me.id === profile.user.id
   return (

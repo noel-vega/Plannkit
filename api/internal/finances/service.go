@@ -62,7 +62,7 @@ func (s *Service) GetSpace(spaceID int) (*Space, error) {
 	return space, err
 }
 
-func (s *Service) ListSpaces(userID int) ([]Space, error) {
+func (s *Service) ListSpaces(userID int) ([]SpaceWithMembership, error) {
 	return s.repository.ListSpaces(userID)
 }
 

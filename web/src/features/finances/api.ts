@@ -1,6 +1,6 @@
 import { api } from "@/lib/plannkit-api-client"
 import type { ByIdParams } from "../habits/types"
-import { ExpenseSchema, FinanceSpaceSchema, GoalContributionSchema, GoalSchema, IncomeSourceSchema, SpaceMemberSchema, type CreateExpenseParams, type CreateFinanceSpaceParams, type CreateGoalContributionParams, type CreateGoalParams, type CreateIncomeSourceParams, type Expense, type ExpenseIdent, type GoalIdent, type SpaceIdent } from "./types"
+import { ExpenseSchema, FinanceSpaceSchema, GoalContributionSchema, GoalSchema, IncomeSourceSchema, SpaceMemberSchema, SpaceWithMembershipSchema, type CreateExpenseParams, type CreateFinanceSpaceParams, type CreateGoalContributionParams, type CreateGoalParams, type CreateIncomeSourceParams, type Expense, type ExpenseIdent, type GoalIdent, type SpaceIdent, type SpaceMemberRole } from "./types"
 
 export const finances = {
   spaces: {
@@ -12,22 +12,29 @@ export const finances = {
     list: async () => {
       const response = await api.GET("/finances/spaces")
       const data = await response.json()
-      return FinanceSpaceSchema.array().parse(data)
+      return SpaceWithMembershipSchema.array().parse(data)
+    },
+    acceptInvite: async (params: SpaceIdent) => {
+      await api.PATCH(`/finances/spaces/${params.spaceId}/members`)
     },
     delete: async (params: ByIdParams) => {
       return await api.DELETE(`/finances/spaces/${params.id}`)
     },
   },
   members: {
-    create: async () => {
+    invite: async (params: SpaceIdent & { userId: number; role: SpaceMemberRole }) => {
+      const { spaceId, ...body } = params
+      const response = await api.POST(`/finances/spaces/${params.spaceId}/members`, body)
+      await response.json()
     },
     list: async (params: SpaceIdent) => {
       const response = await api.GET(`/finances/spaces/${params.spaceId}/members`)
       const data = await response.json()
       return SpaceMemberSchema.array().parse(data)
     },
-    delete: async () => {
-
+    delete: async (params: SpaceIdent & { userId: number }) => {
+      const { spaceId, userId } = params
+      return api.DELETE(`/finances/spaces/${spaceId}/members/${userId}`)
     },
   },
   goals: {

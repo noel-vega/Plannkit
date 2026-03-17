@@ -1,6 +1,13 @@
 import z from "zod/v3"
 import { UserSchema } from "../network/types"
 
+
+export const SpaceMemberRoleSchema = z.literal("owner").or(z.literal("editor")).or(z.literal("viewer"))
+export type SpaceMemberRole = z.infer<typeof SpaceMemberRoleSchema>
+
+export const SpaceMemberStatusSchema = z.literal("pending").or(z.literal("accepted"))
+export type SpaceMemberStatus = z.infer<typeof SpaceMemberStatusSchema>
+
 export const FinanceSpaceSchema = z.object({
   id: z.number(),
   name: z.string(),
@@ -9,6 +16,22 @@ export const FinanceSpaceSchema = z.object({
 })
 
 export type FinanceSpace = z.infer<typeof FinanceSpaceSchema>
+
+export const SpaceMemberSchema = z.object({
+  id: z.number(),
+  spaceId: z.number(),
+  userId: z.number(),
+  role: SpaceMemberRoleSchema,
+  status: SpaceMemberStatusSchema,
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
+  user: UserSchema
+})
+
+export type SpaceMember = z.infer<typeof SpaceMemberSchema>
+
+export const SpaceWithMembershipSchema = FinanceSpaceSchema.merge(z.object({ membership: SpaceMemberSchema.omit({ user: true }), owner: UserSchema }))
+export type SpaceWithMembership = z.infer<typeof SpaceWithMembershipSchema>
 
 export const SpaceIdentSchema = z.object({
   spaceId: z.coerce.number()
@@ -100,22 +123,5 @@ export type IncomeSource = z.infer<typeof IncomeSourceSchema>
 export const CreateIncomeSourceParamsSchema = IncomeSourceSchema.omit({ id: true, userId: true, createdAt: true, updatedAt: true })
 export type CreateIncomeSourceParams = z.infer<typeof CreateIncomeSourceParamsSchema>
 
-export const SpaceMemberRoleSchema = z.literal("owner").or(z.literal("editor")).or(z.literal("viewer"))
-export type SpaceMemberRole = z.infer<typeof SpaceMemberRoleSchema>
-
-export const SpaceMemberStatusSchema = z.literal("pending").or(z.literal("accepted"))
-export type SpaceMemberStatus = z.infer<typeof SpaceMemberStatusSchema>
 
 
-export const SpaceMemberSchema = z.object({
-  id: z.number(),
-  spaceId: z.number(),
-  userId: z.number(),
-  role: SpaceMemberRoleSchema,
-  status: SpaceMemberStatusSchema,
-  createdAt: z.coerce.date(),
-  updatedAt: z.coerce.date(),
-  user: UserSchema
-})
-
-export type SpaceMember = z.infer<typeof SpaceMemberSchema>

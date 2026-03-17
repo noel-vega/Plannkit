@@ -35,6 +35,12 @@ type SpaceMember struct {
 	UpdatedAt time.Time `json:"updatedAt" db:"updated_at"`
 }
 
+type SpaceWithMembership struct {
+	Space
+	Membership SpaceMember         `json:"membership" db:"membership"`
+	Owner      user.UserNoPassword `json:"owner" db:"owner"`
+}
+
 type SpaceMemberWithUser struct {
 	SpaceMember
 	User *user.UserNoPassword `json:"user" db:"user"`

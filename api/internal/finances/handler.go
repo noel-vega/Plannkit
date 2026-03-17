@@ -347,6 +347,7 @@ func (h *Handler) InviteToSpace(c *gin.Context) {
 		UserID:          httputil.UserID(c),
 		NewMemberUserID: body.UserID,
 		SpaceID:         c.MustGet("spaceID").(int),
+		Role:            body.Role,
 	})
 	if err != nil {
 		switch {

@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Field } from '@/components/ui/field'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
 import { Item, ItemContent, ItemMedia, ItemTitle } from '@/components/ui/item'
-import { useDiscoverUsersQuery } from '@/features/network/hooks'
+import { useListNetworkConnections } from '@/features/network/hooks'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { SearchIcon } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
@@ -15,7 +15,7 @@ export const Route = createFileRoute('/_app/network/people/connections')({
 function RouteComponent() {
   const [search, setSearch] = useState("")
   const [value] = useDebounce(search, 500)
-  const users = useDiscoverUsersQuery({ search: value, filter: "connections" }, [])
+  const users = useListNetworkConnections(value, [])
 
   const handleSearchInput = (e: FormEvent<HTMLInputElement>) => {
     setSearch(e.currentTarget.value)
