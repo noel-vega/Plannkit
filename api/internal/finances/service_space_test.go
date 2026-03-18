@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/noel-vega/habits/api/internal/apperrors"
 	"github.com/noel-vega/habits/api/internal/finances"
 	"github.com/noel-vega/habits/api/internal/network"
 	"github.com/noel-vega/habits/api/internal/testutil"
@@ -14,18 +15,18 @@ import (
 
 var testDB *sqlx.DB
 
+type Services struct {
+	User     *user.Service
+	Network  *network.Service
+	Finances *finances.Service
+}
+
 func TestMain(m *testing.M) {
 	db, cleanup := testutil.SetupTestDB()
 	testDB = db
 	code := m.Run()
 	cleanup()
 	os.Exit(code)
-}
-
-type Services struct {
-	User     *user.Service
-	Network  *network.Service
-	Finances *finances.Service
 }
 
 func setupService(t *testing.T) *Services {
@@ -42,15 +43,9 @@ func setupService(t *testing.T) *Services {
 	}
 }
 
-func seedUser(t *testing.T, svc *user.Service) *user.UserNoPassword {
+func seedUser(t *testing.T, svc *user.Service, params user.CreateUserParams) *user.UserNoPassword {
 	t.Helper()
-	u, err := svc.CreateUser(user.CreateUserParams{
-		Username:  "johndoe",
-		FirstName: "John",
-		LastName:  "Doe",
-		Email:     "john@example.com",
-		Password:  "hashedpassword123",
-	})
+	u, err := svc.CreateUser(params)
 	if err != nil {
 		t.Fatalf("failed to seed user: %v", err)
 	}
@@ -89,7 +84,13 @@ func TestServiceCreateSpace(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			services := setupService(t)
-			u := seedUser(t, services.User)
+			u := seedUser(t, services.User, user.CreateUserParams{
+				Username:  "johndoe",
+				FirstName: "John",
+				LastName:  "Doe",
+				Email:     "john@example.com",
+				Password:  "hashedpassword123",
+			})
 			params := &finances.CreateSpaceParams{
 				UserID: u.ID,
 				Name:   tt.spaceName,
@@ -130,7 +131,13 @@ func TestServiceCreateSpace(t *testing.T) {
 
 func TestServiceUpdateSpaceName(t *testing.T) {
 	services := setupService(t)
-	u := seedUser(t, services.User)
+	u := seedUser(t, services.User, user.CreateUserParams{
+		Username:  "johndoe",
+		FirstName: "John",
+		LastName:  "Doe",
+		Email:     "john@example.com",
+		Password:  "hashedpassword123",
+	})
 	space := seedSpace(t, services.Finances, u)
 
 	tests := []struct {
@@ -170,5 +177,61 @@ func TestServiceUpdateSpaceName(t *testing.T) {
 				t.Errorf("name = %q, want = %q", updatedSpace.Name, tt.spaceName)
 			}
 		})
+	}
+}
+
+func TestServiceUpdateSpaceName_Unauthorized(t *testing.T) {
+	services := setupService(t)
+	owner := seedUser(t, services.User, user.CreateUserParams{
+		Username:  "johndoe",
+		FirstName: "John",
+		LastName:  "Doe",
+		Email:     "john@example.com",
+		Password:  "hashedpassword123",
+	})
+	editor := seedUser(t, services.User, user.CreateUserParams{
+		Username:  "janedoe",
+		FirstName: "Jane",
+		LastName:  "Doe",
+		Email:     "jane@example.com",
+		Password:  "hashedpassword123",
+	})
+	space := seedSpace(t, services.Finances, owner)
+
+	_, err := services.Network.RequestConnection(&network.RequestConnectionParams{
+		RequestedByUserID: owner.ID,
+		TargetUserID:      editor.ID,
+	})
+	if err != nil {
+		t.Fatalf("failed to request connection: %v", err)
+	}
+
+	err = services.Network.AcceptConnection(&network.AcceptConnectionParams{
+		AcceptedByUserID:  editor.ID,
+		RequestedByUserID: owner.ID,
+	})
+	if err != nil {
+		t.Fatalf("failed to accept connection: %v", err)
+	}
+
+	_, err = services.Finances.InviteToSpace(&finances.InviteToSpaceParams{
+		UserID:          owner.ID,
+		NewMemberUserID: editor.ID,
+		SpaceID:         space.ID,
+		Role:            finances.RoleEditor,
+	})
+	if err != nil {
+		t.Fatalf("failed to invite to space: %v", err)
+	}
+
+	_, err = services.Finances.UpdateSpaceName(&finances.UpdateSpaceNameParams{
+		SpaceMemberRelationship: finances.SpaceMemberRelationship{
+			SpaceID: space.ID,
+			UserID:  editor.ID,
+		},
+		Name: "Should Fail",
+	})
+	if !errors.Is(err, apperrors.ErrUnauthorized) {
+		t.Fatalf("error = %v, want %v", err, apperrors.ErrUnauthorized)
 	}
 }
