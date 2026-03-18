@@ -1,5 +1,4 @@
 import { Page } from '@/components/layout/page'
-import { PageHeader } from '@/components/layout/page-header'
 import { getUseListSpacesOptions } from '@/features/finances/hooks'
 import { queryClient } from '@/lib/react-query'
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
@@ -11,19 +10,22 @@ export const Route = createFileRoute('/_app/finances')({
     parse: z.object({ spaceId: z.coerce.number().nullish() }).parse
   },
   beforeLoad: async ({ params }) => {
+    const lastVisitedSpaceId = localStorage.getItem("last_visited_finance_space_id")
     const spaces = await queryClient.ensureQueryData(getUseListSpacesOptions())
 
-    // if (params.spaceId === undefined) {
-    //   throw redirect({ to: "/finances/$spaceId", params: { spaceId: spaces[0].id } })
-    // }
-    // const currentSpace = spaces.find(x => x.id === Number(params.spaceId))
-    // if (!currentSpace) throw Error("Space not found")
-    return { spaces }
+    if (params.spaceId === undefined) {
+      if (lastVisitedSpaceId === null) {
+        throw redirect({ to: "/finances/$spaceId", params: { spaceId: spaces[0].id } })
+      }
+      throw redirect({ to: "/finances/$spaceId", params: { spaceId: Number(lastVisitedSpaceId) } })
+    }
+    const currentSpace = spaces.find(x => x.id === Number(params.spaceId))
+    if (!currentSpace) throw Error("Space not found")
+    return { spaces, currentSpace }
   },
   component: () => {
     return (
       <Page title="Finances">
-        <PageHeader title='Finances' />
         <Outlet />
       </Page>
     )

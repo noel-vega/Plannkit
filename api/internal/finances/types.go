@@ -84,6 +84,11 @@ type UpdateSpaceMemberStatus struct {
 	Status string `db:"status"`
 }
 
+type UpdateSpaceNameParams struct {
+	SpaceMemberRelationship
+	Name string `db:"name"`
+}
+
 type Expense struct {
 	ID          int       `json:"id" db:"id"`
 	SpaceID     int       `json:"spaceId" db:"finance_space_id"`

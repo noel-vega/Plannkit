@@ -57,6 +57,17 @@ func seedUser(t *testing.T, svc *user.Service) *user.UserNoPassword {
 	return u
 }
 
+func seedSpace(t *testing.T, financeService *finances.Service, user *user.UserNoPassword) *finances.Space {
+	space, _, err := financeService.CreateSpace(&finances.CreateSpaceParams{
+		UserID: user.ID,
+		Name:   "Test Space",
+	})
+	if err != nil {
+		t.Fatalf("failed to seed space: %v", err)
+	}
+	return space
+}
+
 func TestServiceCreateSpace(t *testing.T) {
 	tests := []struct {
 		name      string
@@ -112,6 +123,51 @@ func TestServiceCreateSpace(t *testing.T) {
 
 			if member.SpaceID != space.ID {
 				t.Errorf("member spaceID = %d, want = %d", member.SpaceID, space.ID)
+			}
+		})
+	}
+}
+
+func TestServiceUpdateSpaceName(t *testing.T) {
+	services := setupService(t)
+	u := seedUser(t, services.User)
+	space := seedSpace(t, services.Finances, u)
+
+	tests := []struct {
+		name      string
+		spaceName string
+		userID    int
+		wantErr   error
+	}{
+		{name: "valid", spaceName: "Updated Name", userID: u.ID},
+		{name: "require name", spaceName: "", userID: u.ID, wantErr: finances.ErrValidationRequireName},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			params := &finances.UpdateSpaceNameParams{
+				SpaceMemberRelationship: finances.SpaceMemberRelationship{
+					SpaceID: space.ID,
+					UserID:  tt.userID,
+				},
+				Name: tt.spaceName,
+			}
+
+			updatedSpace, err := services.Finances.UpdateSpaceName(params)
+
+			if tt.wantErr != nil {
+				if !errors.Is(err, tt.wantErr) {
+					t.Fatalf("error = %v, want %v", err, tt.wantErr)
+				}
+				return
+			}
+
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+
+			if updatedSpace.Name != tt.spaceName {
+				t.Errorf("name = %q, want = %q", updatedSpace.Name, tt.spaceName)
 			}
 		})
 	}

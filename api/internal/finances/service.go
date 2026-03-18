@@ -2,6 +2,7 @@ package finances
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/noel-vega/habits/api/internal/apperrors"
@@ -187,4 +188,25 @@ func (s *Service) DeleteSpaceMember(params *SpaceMemberRelationship) error {
 		return ErrCannotDeleteOwner
 	}
 	return s.repository.DeleteSpaceMember(params)
+}
+
+func (s *Service) UpdateSpaceName(params *UpdateSpaceNameParams) (*Space, error) {
+	member, err := s.GetSpaceMember(&params.SpaceMemberRelationship)
+	if err != nil {
+		return nil, err
+	}
+
+	if member.Role != RoleOwner {
+		return nil, apperrors.ErrUnauthorized
+	}
+
+	trimmedName := strings.TrimSpace(params.Name)
+	if trimmedName == "" {
+		return nil, ErrValidationRequireName
+	}
+
+	return s.repository.UpdateSpaceName(&UpdateSpaceNameParams{
+		SpaceMemberRelationship: params.SpaceMemberRelationship,
+		Name:                    trimmedName,
+	})
 }

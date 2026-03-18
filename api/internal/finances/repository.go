@@ -117,6 +117,26 @@ func (r *Repository) GetSpace(spaceID int) (*Space, error) {
 	return data, nil
 }
 
+func (r *Repository) UpdateSpaceName(params *UpdateSpaceNameParams) (*Space, error) {
+	query := `
+		UPDATE finance_spaces
+	  SET name = :name
+	  WHERE id = :finance_space_id 
+	  RETURNING *
+	`
+	query, args, err := sqlx.Named(query, params)
+	if err != nil {
+		return nil, err
+	}
+
+	space := &Space{}
+	err = r.db.Get(space, r.db.Rebind(query), args...)
+	if err != nil {
+		return nil, err
+	}
+	return space, nil
+}
+
 func (r *Repository) CreateGoal(params *CreateGoalParams) (*Goal, error) {
 	query := `
 		INSERT INTO 

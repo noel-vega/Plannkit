@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ChevronsUpDownIcon, DollarSignIcon, MoreVerticalIcon, PlusIcon, SearchIcon, SettingsIcon, UsersIcon, WalletIcon } from "lucide-react";
-import type { FinanceSpace, SpaceMember } from "../types";
+import type { FinanceSpace, SpaceMember, SpaceWithMembership } from "../types";
 import { CreateSpaceDialog } from "./create-finance-space-form";
 import { useDialog } from "@/hooks";
 import { useTranslation } from "react-i18next";
@@ -20,12 +20,11 @@ import { useState, type FormEvent } from "react";
 import type { User } from "@/features/network/types";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { UserProfileSheet } from "@/features/network/components/user-profile-sheet";
 
 type Props = {
   currentSpace: FinanceSpace,
-  spaces: FinanceSpace[],
+  spaces: SpaceWithMembership[],
   onSpaceSelect: (space: FinanceSpace) => void,
   onCreate: (space: FinanceSpace) => void
   onSettings: (space: FinanceSpace) => void
@@ -89,7 +88,6 @@ export function FinanceSpaceSwitcher(props: Props) {
                   if (props.currentSpace.id === space.id) {
                     return null
                   }
-
                   return <CommandItem
                     key={space.id}
                     onSelect={() => {

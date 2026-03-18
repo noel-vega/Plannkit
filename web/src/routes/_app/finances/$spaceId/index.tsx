@@ -25,6 +25,7 @@ import { useTranslation } from 'react-i18next'
 
 export const Route = createFileRoute('/_app/finances/$spaceId/')({
   beforeLoad: async ({ params }) => {
+    localStorage.setItem("last_visited_finance_space_id", params.spaceId.toString())
     const [expenses, goals, incomeSources] = await Promise.all([
       queryClient.ensureQueryData(getUseListExpensesOptions(params)),
       queryClient.ensureQueryData(getUseListGoalsOptions(params)),
@@ -61,13 +62,13 @@ function RouteComponent() {
     <div className="@container">
       <Container>
         <div className="mb-4 grid grid-cols-1 @3xl:grid-cols-3 gap-4">
-          {/* <FinanceSpaceSwitcher */}
-          {/*   currentSpace={rtCtx.currentSpace} */}
-          {/*   spaces={spaces.data} */}
-          {/*   onSpaceSelect={handleSwitchSpace} */}
-          {/*   onCreate={handleCreate} */}
-          {/*   onSettings={handleSettings} */}
-          {/* /> */}
+          <FinanceSpaceSwitcher
+            currentSpace={rtCtx.currentSpace}
+            spaces={spaces.data}
+            onSpaceSelect={handleSwitchSpace}
+            onCreate={handleCreate}
+            onSettings={handleSettings}
+          />
         </div>
         <div className="grid grid-cols-1 @3xl:grid-cols-3 gap-3.5 mb-4">
           <MonthlyIncomeCard spaceId={spaceId} incomeSources={rtCtx.incomeSources} />

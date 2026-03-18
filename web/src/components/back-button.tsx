@@ -1,8 +1,8 @@
-import { useCanGoBack, useRouter } from "@tanstack/react-router";
+import { useCanGoBack, useRouter, type LinkProps } from "@tanstack/react-router";
 import { Button } from "./ui/button";
 import { MoveLeftIcon } from "lucide-react";
 
-export function BackButton({ to }: { to?: string }) {
+export function BackButton({ to }: { to?: LinkProps["to"] }) {
   const canGoBack = useCanGoBack()
   const router = useRouter()
   const handleClick = () => {
@@ -19,7 +19,7 @@ export function BackButton({ to }: { to?: string }) {
   }
 
   return (
-    <Button variant="outline" size="icon" onClick={handleClick}>
+    <Button variant="outline" size="sm" onClick={handleClick}>
       <MoveLeftIcon />
     </Button>
   )
