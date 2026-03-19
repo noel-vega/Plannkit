@@ -41,14 +41,15 @@ func AddRoutes(router *gin.Engine, services *Services) *gin.Engine {
 	protected.DELETE("/network/users/:userID/connection", networkHandler.RemoveConnection)
 
 	protected.PUT("/user/avatar", userHandler.UpdateAvatar)
-	owner := finances.RequireRole(finances.RoleOwner)
-	editor := finances.RequireRole(finances.RoleOwner, finances.RoleEditor)
 
 	protected.GET("/finances/spaces", financesHandler.ListSpaces)
 	protected.POST("/finances/spaces", financesHandler.CreateSpace)
 	protected.PATCH("/finances/spaces/:spaceID/members", financesHandler.AcceptSpaceInvite)
+	owner := finances.RequireRole(finances.RoleOwner)
+	editor := finances.RequireRole(finances.RoleOwner, finances.RoleEditor)
 	financeSpace := protected.Group("/finances/spaces/:spaceID").Use(finances.VerifySpaceMembership(services.Finances))
 	financeSpace.DELETE("", owner, financesHandler.DeleteSpace)
+	financeSpace.PATCH("/name", owner, financesHandler.UpdateSpaceName)
 	financeSpace.POST("/members", owner, financesHandler.InviteToSpace)
 	financeSpace.DELETE("/members/:userID", owner, financesHandler.DeleteSpaceMember)
 	financeSpace.POST("/incomes", editor, financesHandler.CreateIncomeSource)

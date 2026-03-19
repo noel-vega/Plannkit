@@ -84,6 +84,10 @@ type UpdateSpaceMemberStatus struct {
 	Status string `db:"status"`
 }
 
+type UpdateSpaceNameBody struct {
+	Name string `json:"name"`
+}
+
 type UpdateSpaceNameParams struct {
 	SpaceMemberRelationship
 	Name string `db:"name"`

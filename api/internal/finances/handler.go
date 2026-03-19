@@ -75,6 +75,35 @@ func (h *Handler) DeleteSpace(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
+func (h *Handler) UpdateSpaceName(c *gin.Context) {
+	body := &UpdateSpaceNameBody{}
+	err := c.Bind(body)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	space, err := h.service.UpdateSpaceName(&UpdateSpaceNameParams{
+		SpaceMemberRelationship: SpaceMemberRelationship{
+			UserID:  httputil.UserID(c),
+			SpaceID: c.MustGet("spaceID").(int),
+		},
+		Name: body.Name,
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, apperrors.ErrUnauthorized):
+			c.AbortWithError(http.StatusForbidden, err)
+		case errors.Is(err, ErrValidationRequireName):
+			c.AbortWithError(http.StatusBadRequest, err)
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
+		return
+	}
+	c.JSON(http.StatusOK, space)
+}
+
 func (h *Handler) CreateGoal(c *gin.Context) {
 	body := &CreateGoalBody{}
 	err := c.Bind(body)

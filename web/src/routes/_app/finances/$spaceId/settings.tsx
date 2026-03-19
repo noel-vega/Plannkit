@@ -66,7 +66,6 @@ function RenameSpaceDialog(props: { spaceId: number, name: string } & PropsWithC
   const [name, setName] = useState(props.name)
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setName(e.currentTarget.value)
-
   }
   return (
     <Dialog>

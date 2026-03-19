@@ -193,6 +193,9 @@ func (s *Service) DeleteSpaceMember(params *SpaceMemberRelationship) error {
 func (s *Service) UpdateSpaceName(params *UpdateSpaceNameParams) (*Space, error) {
 	member, err := s.GetSpaceMember(&params.SpaceMemberRelationship)
 	if err != nil {
+		if errors.Is(err, ErrSpaceMemberNotFound) {
+			return nil, apperrors.ErrUnauthorized
+		}
 		return nil, err
 	}
 
@@ -205,8 +208,7 @@ func (s *Service) UpdateSpaceName(params *UpdateSpaceNameParams) (*Space, error)
 		return nil, ErrValidationRequireName
 	}
 
-	return s.repository.UpdateSpaceName(&UpdateSpaceNameParams{
-		SpaceMemberRelationship: params.SpaceMemberRelationship,
-		Name:                    trimmedName,
-	})
+	params.Name = trimmedName
+
+	return s.repository.UpdateSpaceName(params)
 }

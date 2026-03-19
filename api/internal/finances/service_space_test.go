@@ -148,6 +148,7 @@ func TestServiceUpdateSpaceName(t *testing.T) {
 	}{
 		{name: "valid", spaceName: "Updated Name", userID: u.ID},
 		{name: "require name", spaceName: "", userID: u.ID, wantErr: finances.ErrValidationRequireName},
+		{name: "no whitespace", spaceName: "  ", userID: u.ID, wantErr: finances.ErrValidationRequireName},
 	}
 
 	for _, tt := range tests {
@@ -224,14 +225,34 @@ func TestServiceUpdateSpaceName_Unauthorized(t *testing.T) {
 		t.Fatalf("failed to invite to space: %v", err)
 	}
 
-	_, err = services.Finances.UpdateSpaceName(&finances.UpdateSpaceNameParams{
-		SpaceMemberRelationship: finances.SpaceMemberRelationship{
-			SpaceID: space.ID,
-			UserID:  editor.ID,
-		},
-		Name: "Should Fail",
-	})
-	if !errors.Is(err, apperrors.ErrUnauthorized) {
-		t.Fatalf("error = %v, want %v", err, apperrors.ErrUnauthorized)
+	tests := []struct {
+		name    string
+		userID  int
+		errWant error
+	}{
+		{name: "not owner", userID: editor.ID, errWant: apperrors.ErrUnauthorized},
+		{name: "not space member", userID: 999, errWant: apperrors.ErrUnauthorized},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err = services.Finances.UpdateSpaceName(&finances.UpdateSpaceNameParams{
+				SpaceMemberRelationship: finances.SpaceMemberRelationship{
+					SpaceID: space.ID,
+					UserID:  tt.userID,
+				},
+				Name: "Should Fail",
+			})
+			if tt.errWant != nil {
+				if !errors.Is(err, tt.errWant) {
+					t.Fatalf("error = %v, want %v", err, tt.errWant)
+				}
+				return
+			}
+
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+		})
 	}
 }
