@@ -56,6 +56,15 @@ export function useDeleteSpace() {
   })
 }
 
+export function useSpaceUpdateNameMutation() {
+  return useMutation({
+    mutationFn: finances.spaces.update.name,
+    onSuccess: () => {
+      invalidateUseListSpaces()
+    }
+  })
+}
+
 // Finance Space Expenses
 export function useCreateExpense() {
   return useMutation({

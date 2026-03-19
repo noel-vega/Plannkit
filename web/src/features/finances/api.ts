@@ -20,6 +20,15 @@ export const finances = {
     delete: async (params: ByIdParams) => {
       return await api.DELETE(`/finances/spaces/${params.id}`)
     },
+    update: {
+      name: async (params: SpaceIdent & { name: string }) => {
+        const response = await api.PATCH(`/finances/spaces/${params.spaceId}/name`, {
+          name: params.name
+        })
+        const data = await response.json()
+        return FinanceSpaceSchema.parse(data)
+      }
+    }
   },
   members: {
     invite: async (params: SpaceIdent & { userId: number; role: SpaceMemberRole }) => {

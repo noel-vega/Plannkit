@@ -1,9 +1,9 @@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from '@/components/ui/item'
-import { useDeleteSpace } from '@/features/finances/hooks'
+import { useDeleteSpace, useSpaceUpdateNameMutation } from '@/features/finances/hooks'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useState, type ChangeEvent, type PropsWithChildren } from 'react'
+import { type FormEvent, type PropsWithChildren } from 'react'
 import z from 'zod/v3'
 import { useTranslation } from 'react-i18next'
 import { Container } from '@/components/layout/container'
@@ -11,6 +11,8 @@ import { Input } from '@/components/ui/input'
 import { Field, FieldLabel } from '@/components/ui/field'
 import { BackButton } from '@/components/back-button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 
 export const Route = createFileRoute('/_app/finances/$spaceId/settings')({
   params: {
@@ -63,10 +65,23 @@ function RouteComponent() {
 
 function RenameSpaceDialog(props: { spaceId: number, name: string } & PropsWithChildren) {
   const { t } = useTranslation()
-  const [name, setName] = useState(props.name)
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setName(e.currentTarget.value)
+  const form = useForm({
+    resolver: zodResolver(z.object({ spaceId: z.number(), name: z.string().min(6) })),
+    defaultValues: {
+      spaceId: props.spaceId,
+      name: props.name
+    }
+  })
+  const updateName = useSpaceUpdateNameMutation()
+
+  //TODO: invalidate the current name in finance switcher
+  const handleSubmit = (e: FormEvent) => {
+    return form.handleSubmit((data) => {
+      updateName.mutate(data)
+    })(e)
   }
+  const isDisabled = !form.formState.isValid || !form.formState.isDirty
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -77,18 +92,18 @@ function RenameSpaceDialog(props: { spaceId: number, name: string } & PropsWithC
           <DialogTitle>Rename space</DialogTitle>
         </DialogHeader>
 
-        <Field>
-          <FieldLabel htmlFor="name">{t("Name")}</FieldLabel>
-          <Input
-            value={name}
-            onChange={handleInputChange}
-            id="name"
-            autoComplete="off"
-          />
-        </Field>
-
+        <form onSubmit={handleSubmit}>
+          <Field>
+            <FieldLabel htmlFor="name">{t("Name")}</FieldLabel>
+            <Input
+              {...form.register("name")}
+              id="name"
+              autoComplete="off"
+            />
+          </Field>
+          <Button type="submit" disabled={isDisabled}>Submit</Button>
+        </form>
       </DialogContent>
-
     </Dialog>
   )
 }
