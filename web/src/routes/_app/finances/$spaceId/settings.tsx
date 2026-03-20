@@ -1,8 +1,8 @@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from '@/components/ui/item'
-import { useDeleteSpace, useSpaceUpdateNameMutation } from '@/features/finances/hooks'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useCurrentSpace, useDeleteSpace, useSpaceUpdateNameMutation } from '@/features/finances/hooks'
+import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router'
 import { type FormEvent, type PropsWithChildren } from 'react'
 import z from 'zod/v3'
 import { useTranslation } from 'react-i18next'
@@ -10,9 +10,10 @@ import { Container } from '@/components/layout/container'
 import { Input } from '@/components/ui/input'
 import { Field, FieldLabel } from '@/components/ui/field'
 import { BackButton } from '@/components/back-button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useDialog } from '@/hooks'
 
 export const Route = createFileRoute('/_app/finances/$spaceId/settings')({
   params: {
@@ -22,9 +23,9 @@ export const Route = createFileRoute('/_app/finances/$spaceId/settings')({
 })
 
 function RouteComponent() {
-  const { currentSpace } = Route.useRouteContext()
-  const { t } = useTranslation()
   const params = Route.useParams()
+  const currentSpace = useCurrentSpace(params)
+  const { t } = useTranslation()
   return (
     <Container className="max-w-3xl flex flex-col gap-4">
       <div className="flex gap-4 items-center">
@@ -35,12 +36,12 @@ function RouteComponent() {
         <ItemContent>
           <ItemTitle>{t("Rename space")}</ItemTitle>
           <ItemDescription>
-            {t("Rename your space name")}
+            {t(currentSpace.data?.name ?? "")}
           </ItemDescription>
         </ItemContent>
 
         <ItemActions>
-          <RenameSpaceDialog spaceId={params.spaceId} name={currentSpace.name}>
+          <RenameSpaceDialog spaceId={params.spaceId} name={currentSpace.data.name}>
             <Button variant="secondary">{t("Rename")}</Button>
           </RenameSpaceDialog>
         </ItemActions>
@@ -64,9 +65,11 @@ function RouteComponent() {
 }
 
 function RenameSpaceDialog(props: { spaceId: number, name: string } & PropsWithChildren) {
+  const dialog = useDialog()
+  const router = useRouter()
   const { t } = useTranslation()
   const form = useForm({
-    resolver: zodResolver(z.object({ spaceId: z.number(), name: z.string().min(6) })),
+    resolver: zodResolver(z.object({ spaceId: z.number(), name: z.string().min(1) })),
     defaultValues: {
       spaceId: props.spaceId,
       name: props.name
@@ -77,22 +80,30 @@ function RenameSpaceDialog(props: { spaceId: number, name: string } & PropsWithC
   //TODO: invalidate the current name in finance switcher
   const handleSubmit = (e: FormEvent) => {
     return form.handleSubmit((data) => {
-      updateName.mutate(data)
+      updateName.mutate(data, {
+        onSuccess: () => {
+          dialog.onOpenChange(false)
+          router.invalidate()
+        }
+      })
     })(e)
   }
   const isDisabled = !form.formState.isValid || !form.formState.isDirty
 
   return (
-    <Dialog>
+    <Dialog {...dialog}>
       <DialogTrigger asChild>
         {props.children}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Rename space</DialogTitle>
+          <DialogTitle>{t("Rename space")}</DialogTitle>
+          <DialogDescription>
+            {t("Update the name of your finance space.")}
+          </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <Field>
             <FieldLabel htmlFor="name">{t("Name")}</FieldLabel>
             <Input
@@ -101,7 +112,7 @@ function RenameSpaceDialog(props: { spaceId: number, name: string } & PropsWithC
               autoComplete="off"
             />
           </Field>
-          <Button type="submit" disabled={isDisabled}>Submit</Button>
+          <Button type="submit" disabled={isDisabled}>{t("Save")}</Button>
         </form>
       </DialogContent>
     </Dialog>

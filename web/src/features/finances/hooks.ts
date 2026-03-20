@@ -1,4 +1,4 @@
-import { queryOptions, useMutation, useQuery } from "@tanstack/react-query";
+import { queryOptions, useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { finances } from "./api";
 import type { Expense, Goal, GoalContribution, GoalIdent, IncomeSource, SpaceIdent, SpaceWithMembership } from "./types";
 import { queryClient } from "@/lib/react-query";
@@ -248,4 +248,13 @@ export function useDeleteSpaceMemberMutation() {
       invalidateListSpaceMembersQuery({ spaceId })
     }
   })
+}
+
+export function useCurrentSpace(params: SpaceIdent) {
+  const spaces = useSuspenseQuery(getUseListSpacesOptions())
+  const currentSpace = spaces.data?.find(x => x.id === params.spaceId)
+  if (!currentSpace) {
+    throw new Error("Space not found")
+  }
+  return { ...spaces, data: currentSpace }
 }

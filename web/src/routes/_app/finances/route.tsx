@@ -19,9 +19,7 @@ export const Route = createFileRoute('/_app/finances')({
       }
       throw redirect({ to: "/finances/$spaceId", params: { spaceId: Number(lastVisitedSpaceId) } })
     }
-    const currentSpace = spaces.find(x => x.id === Number(params.spaceId))
-    if (!currentSpace) throw Error("Space not found")
-    return { spaces, currentSpace }
+    return { spaces }
   },
   component: () => {
     return (
