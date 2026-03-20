@@ -36,7 +36,7 @@ function RouteComponent() {
         <ItemContent>
           <ItemTitle>{t("Rename space")}</ItemTitle>
           <ItemDescription>
-            {t(currentSpace.data?.name ?? "")}
+            {t(currentSpace.data.name)}
           </ItemDescription>
         </ItemContent>
 
