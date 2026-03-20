@@ -3,6 +3,7 @@ package finances_test
 import (
 	"errors"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/jmoiron/sqlx"
@@ -149,6 +150,7 @@ func TestServiceUpdateSpaceName(t *testing.T) {
 		{name: "valid", spaceName: "Updated Name", userID: u.ID},
 		{name: "require name", spaceName: "", userID: u.ID, wantErr: finances.ErrValidationRequireName},
 		{name: "no whitespace", spaceName: "  ", userID: u.ID, wantErr: finances.ErrValidationRequireName},
+		{name: "no whitespace", spaceName: strings.Repeat("Z", 31), userID: u.ID, wantErr: finances.ErrValidationMaxCharacters},
 	}
 
 	for _, tt := range tests {

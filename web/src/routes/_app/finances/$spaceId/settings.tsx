@@ -69,7 +69,7 @@ function RenameSpaceDialog(props: { spaceId: number, name: string } & PropsWithC
   const router = useRouter()
   const { t } = useTranslation()
   const form = useForm({
-    resolver: zodResolver(z.object({ spaceId: z.number(), name: z.string().min(1) })),
+    resolver: zodResolver(z.object({ spaceId: z.number(), name: z.string().min(1).max(30) })),
     defaultValues: {
       spaceId: props.spaceId,
       name: props.name
@@ -77,7 +77,6 @@ function RenameSpaceDialog(props: { spaceId: number, name: string } & PropsWithC
   })
   const updateName = useSpaceUpdateNameMutation()
 
-  //TODO: invalidate the current name in finance switcher
   const handleSubmit = (e: FormEvent) => {
     return form.handleSubmit((data) => {
       updateName.mutate(data, {

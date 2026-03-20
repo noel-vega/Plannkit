@@ -94,7 +94,7 @@ func (h *Handler) UpdateSpaceName(c *gin.Context) {
 		switch {
 		case errors.Is(err, apperrors.ErrUnauthorized):
 			c.AbortWithError(http.StatusForbidden, err)
-		case errors.Is(err, ErrValidationRequireName):
+		case errors.Is(err, ErrValidationRequireName), errors.Is(err, ErrValidationMaxCharacters):
 			c.AbortWithError(http.StatusBadRequest, err)
 		default:
 			c.AbortWithError(http.StatusInternalServerError, err)

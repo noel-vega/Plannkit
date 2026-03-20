@@ -208,6 +208,10 @@ func (s *Service) UpdateSpaceName(params *UpdateSpaceNameParams) (*Space, error)
 		return nil, ErrValidationRequireName
 	}
 
+	if len(trimmedName) > 30 {
+		return nil, ErrValidationMaxCharacters
+	}
+
 	params.Name = trimmedName
 
 	return s.repository.UpdateSpaceName(params)
