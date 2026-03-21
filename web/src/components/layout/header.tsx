@@ -5,10 +5,10 @@ import { Link, useNavigate } from "@tanstack/react-router"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog"
 import { useSignOut } from "@/features/auth/hooks"
 import { queryClient } from "@/lib/react-query"
-import { Input } from "../ui/input"
 import { ButtonGroup } from "../ui/button-group"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip"
 import { useNavigation } from "@/hooks/use-navigation"
+import { InputGroup, InputGroupAddon, InputGroupInput } from "../ui/input-group"
 
 
 export function Header() {
@@ -41,7 +41,12 @@ export function Header() {
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger className="max-w-xl w-full">
-            <Input disabled icon={SearchIcon} placeholder="Search Plannkit..." />
+            <InputGroup>
+              <InputGroupInput placeholder="Search Plannkit..." />
+              <InputGroupAddon>
+                <SearchIcon />
+              </InputGroupAddon>
+            </InputGroup>
           </TooltipTrigger>
 
           <TooltipContent>

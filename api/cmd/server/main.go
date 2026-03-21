@@ -51,6 +51,7 @@ func main() {
 		DB:          db,
 		JwtSecret:   jwtSecret,
 		StoragePath: storageBasePath,
+		Domain:      os.Getenv("DOMAIN"),
 	})
 
 	server.AddRoutes(router, services)

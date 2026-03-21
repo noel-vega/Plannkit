@@ -43,9 +43,10 @@ func (u *User) WithoutPassword() *UserNoPassword {
 }
 
 type CreateUserParams struct {
-	Username  string `json:"username" db:"username"`
-	FirstName string `json:"firstName" db:"first_name"`
-	LastName  string `json:"lastName" db:"last_name"`
-	Email     string `json:"email" db:"email"`
-	Password  string `json:"password" db:"password"`
+	Username  string  `json:"username" db:"username"`
+	FirstName string  `json:"firstName" db:"first_name"`
+	LastName  string  `json:"lastName" db:"last_name"`
+	Email     string  `json:"email" db:"email"`
+	Password  string  `json:"password" db:"password"`
+	Avatar    *string `json:"avatar" db:"avatar"`
 }

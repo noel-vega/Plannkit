@@ -1,5 +1,4 @@
 import z from "zod/v3"
-import { AvatarSchema } from "../user/types"
 
 
 
@@ -9,7 +8,7 @@ export const MeSchema = z.object({
   firstName: z.string(),
   lastName: z.string(),
   email: z.string(),
-  avatar: AvatarSchema,
+  avatar: z.string().nullable(),
   isPrivate: z.boolean(),
 })
 

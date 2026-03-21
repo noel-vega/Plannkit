@@ -38,19 +38,20 @@ func (h *Handler) UpdateAvatar(c *gin.Context) {
 		return
 	}
 
-	filename, err := h.storageService.Put("avatars", ext, file)
+	url, err := h.storageService.Put("avatars", ext, file)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 
 	}
-	err = h.userService.UpdateAvatar(userID, filename)
+
+	err = h.userService.UpdateAvatar(userID, url)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"avatar": filename,
+		"avatar": url,
 	})
 }

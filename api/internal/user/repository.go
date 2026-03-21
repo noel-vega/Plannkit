@@ -21,9 +21,9 @@ func NewRepository(db *sqlx.DB) *Repository {
 func (r *Repository) Create(params CreateUserParams) (*UserNoPassword, error) {
 	user := &UserNoPassword{}
 	query := `
-	   INSERT INTO users (username, first_name, last_name, email, password) 
-	   VALUES (:username, :first_name, :last_name, :email, :password) 
-	   RETURNING id, username, first_name, last_name, email, created_at, updated_at
+	   INSERT INTO users (username, first_name, last_name, email, password, avatar) 
+	   VALUES (:username, :first_name, :last_name, :email, :password, :avatar) 
+	   RETURNING id, username, first_name, last_name, email, avatar, created_at, updated_at
 	`
 
 	query, args, err := sqlx.Named(query, params)
@@ -95,8 +95,8 @@ func (r *Repository) GetUserByUsername(username string) (*UserNoPassword, error)
 	return user, nil
 }
 
-func (r *Repository) UpdateAvatar(userID int, filename string) error {
+func (r *Repository) UpdateAvatar(userID int, url string) error {
 	query := `UPDATE users SET avatar = $1 WHERE id = $2`
-	_, err := r.db.Exec(query, filename, userID)
+	_, err := r.db.Exec(query, url, userID)
 	return err
 }

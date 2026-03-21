@@ -1,5 +1,4 @@
 import { Sheet, SheetContent } from "@/components/ui/sheet"
-import { useDialog } from "@/hooks"
 import { useUserProfile } from "../hooks"
 import type { DialogProps } from "@/types"
 

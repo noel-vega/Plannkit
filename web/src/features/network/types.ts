@@ -1,5 +1,4 @@
 import z from "zod/v3";
-import { AvatarSchema } from "../user/types";
 
 export const DiscoverUsersParamsSchema = z.object({
   search: z.string().trim().nullable(),
@@ -14,7 +13,7 @@ export const UserSchema = z.object({
   firstName: z.string(),
   lastName: z.string(),
   email: z.string(),
-  avatar: AvatarSchema,
+  avatar: z.string().nullable(),
   isPrivate: z.boolean()
 })
 export type User = z.infer<typeof UserSchema>
@@ -50,7 +49,7 @@ export const NetworkUserSchema = z.object({
   firstName: z.string(),
   lastName: z.string(),
   email: z.string(),
-  avatar: AvatarSchema,
+  avatar: z.string().nullable(),
   isPrivate: z.boolean(),
   followStatus: RequestStatusSchema.nullable(),
   createdAt: z.coerce.date(),

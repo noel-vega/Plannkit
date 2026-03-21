@@ -18,11 +18,13 @@ type Service interface {
 
 type localStorage struct {
 	basePath string
+	domain   string
 }
 
-func NewLocalStorage(basePath string) Service {
+func NewLocalStorage(basePath string, domain string) Service {
 	return &localStorage{
 		basePath: basePath,
+		domain:   domain,
 	}
 }
 
@@ -45,7 +47,9 @@ func (l *localStorage) Put(folder, ext string, r io.Reader) (string, error) {
 		return "", err
 	}
 
-	return fileName, nil
+	url := fmt.Sprintf("%v/public/%v/%v", l.domain, folder, fileName)
+
+	return url, nil
 }
 
 func (l *localStorage) Get(folder, fileName string) (io.ReadCloser, error) {

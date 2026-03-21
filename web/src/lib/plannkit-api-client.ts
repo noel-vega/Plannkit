@@ -19,7 +19,7 @@ export async function pkFetch(baseURL: string, path: string, options?: RequestIn
     ...options?.headers
   })
 
-  if (json) {
+  if (json && !(options?.body instanceof FormData)) {
     headers.set("Content-Type", "application/json")
   }
 

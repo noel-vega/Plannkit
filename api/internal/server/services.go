@@ -25,10 +25,11 @@ type NewServicesParams struct {
 	DB          *sqlx.DB
 	JwtSecret   string
 	StoragePath string
+	Domain      string
 }
 
 func NewServices(params *NewServicesParams) *Services {
-	storageService := storage.NewLocalStorage(params.StoragePath)
+	storageService := storage.NewLocalStorage(params.StoragePath, params.Domain)
 	userService := user.NewService(params.DB)
 	networkService := network.NewService(params.DB, userService)
 	financesService := finances.NewService(params.DB, networkService)

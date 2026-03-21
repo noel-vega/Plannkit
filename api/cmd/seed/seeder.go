@@ -43,6 +43,7 @@ func (s *Seeder) ResetDB() error {
 func (s *Seeder) SeedUser(num int) *user.UserNoPassword {
 	firstName := s.faker.FirstName()
 	lastName := s.faker.LastName()
+	avatar := fmt.Sprintf("https://api.dicebear.com/9.x/dylan/png?seed=%v", num)
 	password, err := s.services.Auth.HashPassword("password")
 	if err != nil {
 		panic(err)
@@ -53,6 +54,7 @@ func (s *Seeder) SeedUser(num int) *user.UserNoPassword {
 		FirstName: firstName,
 		LastName:  lastName,
 		Password:  password,
+		Avatar:    &avatar,
 		Email:     fmt.Sprintf("%s.%s.%d.test@gmail.com", firstName, lastName, num),
 	})
 	if err != nil {
@@ -78,12 +80,14 @@ func (s *Seeder) SeedTestUser() *user.UserNoPassword {
 		panic(err)
 	}
 
+	avatar := "https://api.dicebear.com/9.x/dylan/png?seed=testuser"
 	u, err := s.services.User.CreateUser(user.CreateUserParams{
 		Username:  "testuser",
 		FirstName: "Test",
 		LastName:  "User",
 		Password:  password,
 		Email:     "test@test.com",
+		Avatar:    &avatar,
 	})
 	if err != nil {
 		panic(err)
