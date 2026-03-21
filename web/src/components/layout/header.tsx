@@ -28,7 +28,7 @@ export function Header() {
   const { canGoBack, canGoForward, goBack, goForward } = useNavigation()
 
   return (
-    <div className="h-12 border-b flex items-center px-4 xl:px-6 gap-4 bg-sidebar">
+    <div className="h-12 border-b flex items-center px-4 xl:px-6 gap-4 bg-sidebar sticky top-0 shadow-xs">
       <SidebarTrigger />
       <ButtonGroup>
         <Button variant="ghost" size="sm" disabled={!canGoBack} onClick={goBack} >
