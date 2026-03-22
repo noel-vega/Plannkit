@@ -8,6 +8,7 @@ type Habit struct {
 	UserID            int       `json:"userId" db:"user_id"`
 	Name              string    `json:"name" db:"name"`
 	Icon              string    `json:"icon" db:"icon"`
+	RoutineID         *int      `json:"routineId" db:"routine_id"`
 	UnitOfMeasurement string    `json:"unitOfMeasurement" db:"unit_of_measurement"`
 	Description       string    `json:"description" db:"description"`
 	CompletionType    string    `json:"completionType" db:"completion_type"`
@@ -112,4 +113,21 @@ type UpdateContributionCompletionsParams struct {
 type DeleteHabitParams struct {
 	ID     int `json:"id" db:"id"`
 	UserID int `json:"userId" db:"user_id"`
+}
+
+type Routine struct {
+	ID        int       `json:"id" db:"id"`
+	UserID    int       `json:"userId" db:"user_id"`
+	Name      string    `json:"name" db:"name"`
+	CreatedAt time.Time `json:"createdAt" db:"created_at"`
+	UpdatedAt time.Time `json:"updatedAt" db:"updated_at"`
+}
+
+type CreateRoutineBody struct {
+	Name string `json:"name"`
+}
+
+type InsertRoutineParams struct {
+	UserID int    `db:"user_id"`
+	Name   string `db:"name"`
 }

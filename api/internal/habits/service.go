@@ -100,3 +100,7 @@ func (s *Service) ListHabitsWithContributions(userID int) ([]HabitWithContributi
 
 	return result, nil
 }
+
+func (s *Service) CreateRoutine(params *InsertRoutineParams) (*Routine, error) {
+	return s.repository.InsertRoutine(params)
+}

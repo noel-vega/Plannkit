@@ -222,3 +222,13 @@ func (h *Handler) DeleteHabitContribution(c *gin.Context) {
 
 	c.Status(http.StatusNoContent)
 }
+
+func (h *Handler) CreateRoutine(c *gin.Context) {
+	body := &CreateRoutineBody{}
+
+	err := c.Bind(body)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+}
