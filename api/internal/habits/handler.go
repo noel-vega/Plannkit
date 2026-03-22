@@ -1,6 +1,7 @@
 package habits
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -19,8 +20,8 @@ func NewHandler(service *Service) *Handler {
 }
 
 func (h *Handler) CreateHabit(c *gin.Context) {
-	body := &CreateHabitBody{}
-	err := c.Bind(body)
+	var body CreateHabitRequestBody
+	err := c.Bind(&body)
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
@@ -43,13 +44,8 @@ func (h *Handler) CreateHabit(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, HabitWithContributions{
-		ID:                habit.ID,
-		Name:              habit.Name,
-		Icon:              habit.Icon,
-		Description:       habit.Description,
-		CompletionType:    habit.CompletionType,
-		CompletionsPerDay: habit.CompletionsPerDay,
-		Contributions:     []HabitContribution{},
+		Habit:         habit,
+		Contributions: []HabitContribution{},
 	})
 }
 
@@ -228,7 +224,23 @@ func (h *Handler) CreateRoutine(c *gin.Context) {
 
 	err := c.Bind(body)
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
+
+	routine, err := h.service.CreateRoutine(&InsertRoutineParams{
+		UserID: httputil.UserID(c),
+		Name:   body.Name,
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, ErrValidationNameRequired):
+			c.AbortWithError(http.StatusBadRequest, err)
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
+		return
+	}
+
+	c.JSON(http.StatusCreated, routine)
 }

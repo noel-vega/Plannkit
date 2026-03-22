@@ -1,6 +1,10 @@
 package habits
 
-import "github.com/jmoiron/sqlx"
+import (
+	"strings"
+
+	"github.com/jmoiron/sqlx"
+)
 
 type Service struct {
 	repository *Repository
@@ -21,7 +25,7 @@ func (s *Service) ListHabits(userID int) ([]Habit, error) {
 }
 
 func (s *Service) GetHabitWithContributions(params *GetHabitParams) (*HabitWithContributions, error) {
-	h, err := s.repository.GetHabit(params)
+	habit, err := s.repository.GetHabit(params)
 	if err != nil {
 		return nil, err
 	}
@@ -30,13 +34,8 @@ func (s *Service) GetHabitWithContributions(params *GetHabitParams) (*HabitWithC
 		return nil, err
 	}
 	return &HabitWithContributions{
-		ID:                h.ID,
-		Name:              h.Name,
-		Icon:              h.Icon,
-		Description:       h.Description,
-		CompletionType:    h.CompletionType,
-		CompletionsPerDay: h.CompletionsPerDay,
-		Contributions:     contributions,
+		Habit:         habit,
+		Contributions: contributions,
 	}, nil
 }
 
@@ -82,19 +81,14 @@ func (s *Service) ListHabitsWithContributions(userID int) ([]HabitWithContributi
 
 	result := make([]HabitWithContributions, len(habits))
 
-	for i, h := range habits {
-		contribs := contributionsByHabit[h.ID]
+	for i, habit := range habits {
+		contribs := contributionsByHabit[habit.ID]
 		if contribs == nil {
 			contribs = []HabitContribution{}
 		}
 		result[i] = HabitWithContributions{
-			ID:                h.ID,
-			Name:              h.Name,
-			Icon:              h.Icon,
-			Description:       h.Description,
-			CompletionType:    h.CompletionType,
-			CompletionsPerDay: h.CompletionsPerDay,
-			Contributions:     contribs,
+			Habit:         &habit,
+			Contributions: contribs,
 		}
 	}
 
@@ -102,5 +96,11 @@ func (s *Service) ListHabitsWithContributions(userID int) ([]HabitWithContributi
 }
 
 func (s *Service) CreateRoutine(params *InsertRoutineParams) (*Routine, error) {
+	trimmedName := strings.TrimSpace(params.Name)
+	if trimmedName == "" {
+		return nil, ErrValidationNameRequired
+	}
+	params.Name = trimmedName
+
 	return s.repository.InsertRoutine(params)
 }

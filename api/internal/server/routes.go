@@ -66,6 +66,7 @@ func AddRoutes(router *gin.Engine, services *Services) *gin.Engine {
 	financeSpace.GET("/goals/:goalID/contributions", financesHandler.ListGoalContributions)
 	financeSpace.GET("/expenses", financesHandler.ListExpenses)
 
+	protected.POST("/habits/routines", habitsHandler.CreateRoutine)
 	protected.GET("/habits", habitsHandler.ListHabitsWithContributions)
 	protected.POST("/habits", habitsHandler.CreateHabit)
 	protected.GET("/habits/:habitID", habitsHandler.GetHabitWithContributions)
