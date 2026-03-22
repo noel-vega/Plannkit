@@ -1,11 +1,16 @@
 CREATE TABLE IF NOT EXISTS habit_routines (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
 CREATE INDEX idx_habit_routines_created_at 
 ON habit_routines(created_at);
+
+CREATE INDEX idx_habit_routines_user_id 
+ON habit_routines(user_id);
 
 CREATE TABLE IF NOT EXISTS habits (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -26,9 +31,12 @@ CREATE TABLE IF NOT EXISTS habits (
 
 CREATE INDEX idx_habits_created_at 
 ON habits(created_at);
+
+CREATE INDEX idx_habits_user_id 
+ON habits(user_id);
+
 CREATE INDEX idx_habits_routine_id 
 ON habits(routine_id);
-
 
 CREATE TABLE IF NOT EXISTS habit_contributions (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
