@@ -88,8 +88,8 @@ function RouteComponent() {
 function Goals(props: { goals: Goal[], spaceId: number }) {
   const { t } = useTranslation()
   return (
-    <>
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <section className="space-y-4">
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h2 className="text-xl font-medium">{t("Goals")}</h2>
           <p className="text-muted-foreground">
@@ -99,8 +99,7 @@ function Goals(props: { goals: Goal[], spaceId: number }) {
         <CreateGoalDialog spaceId={props.spaceId}>
           <Button variant="secondary" className="w-32" size="sm"><PlusIcon />{t("Goal")}</Button>
         </CreateGoalDialog>
-      </div>
-      {/* Goals Here */}
+      </header>
       {props.goals.length === 0 && (
         <Card>
           <CardContent className="grid place-content-center place-items-center gap-4 h-52">
@@ -115,15 +114,15 @@ function Goals(props: { goals: Goal[], spaceId: number }) {
           <GoalCard key={goal.id} goal={goal} />
         ))}
       </div>
-    </>
+    </section>
   )
 }
 
 function Expenses(props: { expenses: Expense[], spaceId: number }) {
   const { t } = useTranslation()
   return (
-    <>
-      <div className="flex items-end mb-4">
+    <section className="space-y-4">
+      <header className="flex items-end">
         <div>
           <h2 className="text-xl font-medium">{t("Expenses")}</h2>
           <p className="text-muted-foreground">
@@ -136,7 +135,7 @@ function Expenses(props: { expenses: Expense[], spaceId: number }) {
             <PlusIcon /> {t("Expense")}
           </Button>
         </CreateExpenseDialog>
-      </div>
+      </header>
 
       <div className="flex gap-3 items-end mb-4">
         <Field className="w-full">
@@ -157,6 +156,6 @@ function Expenses(props: { expenses: Expense[], spaceId: number }) {
       </div>
 
       <ExpensesTable spaceId={props.spaceId} expenses={props.expenses} />
-    </>
+    </section>
   )
 }
