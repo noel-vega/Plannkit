@@ -12,7 +12,7 @@ import { getListHabitsQueryOptions, useListHabits } from '@/features/habits/hook
 import { WeekDayIndicator } from '@/features/habits/components/week-day-indicator'
 import type { HabitWithContributions } from '@/features/habits/types'
 import { Container } from '@/components/layout/container'
-import { PageHeader } from '@/components/layout/page-header'
+import { CreateRoutineDialogDrawer } from '@/features/habits/components/create-routine-form'
 
 export const Route = createFileRoute('/_app/habits/')({
   loader: async ({ context: { queryClient } }) => {
@@ -27,7 +27,6 @@ function RouteComponent() {
   const habits = useListHabits({ initialData: loaderData.habits })
   return (
     <Page>
-      <PageHeader title="Habits" />
       <Container className="space-y-6">
         <Header />
         <WeekDayIndicator habits={habits.data} />
@@ -63,19 +62,20 @@ function HabitsList({ habits }: { habits: HabitWithContributions[] }) {
 function Header() {
   const { t } = useTranslation()
   const createHabitDialog = useDialog()
+  const createRoutineDialog = useDialog()
   return (
-
     <header >
       <div className="flex items-center gap-4 pb-2">
         <p className="hidden @md:block mr-auto font-medium">
           {format(new Date(), 'EEEE, MMMM d')}
         </p>
-        <Button variant="secondary" className="flex-1 @md:flex-none">
+        <Button onClick={createRoutineDialog.handleOpenDialog} variant="secondary" className="flex-1 @md:flex-none">
           <PlusIcon /><span>{t("Routine")}</span>
         </Button>
         <Button variant="secondary" className="flex-1 @md:flex-none" onClick={createHabitDialog.handleOpenDialog}>
           <PlusIcon /><span>{t("Habit")}</span>
         </Button>
+        <CreateRoutineDialogDrawer {...createRoutineDialog} />
         <CreateHabitDialogDrawer {...createHabitDialog} />
       </div>
     </header>

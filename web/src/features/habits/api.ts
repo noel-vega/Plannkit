@@ -1,4 +1,4 @@
-import { HabitWithContributionsSchema, type ByIdParams, type CreateContributionParams, type CreateHabitParams, type Habit, type UpdateContributionParams } from "./types"
+import { HabitWithContributionsSchema, type ByIdParams, type CreateContributionParams, type CreateHabitParams, type CreateRoutineParams, type Habit, type UpdateContributionParams } from "./types"
 import { api } from "@/lib/plannkit-api-client"
 
 export const habits = {
@@ -25,6 +25,11 @@ export const habits = {
     await api.DELETE(`/habits/${params.id}`)
     // TODO: return id from api
     return params
+  },
+  routines: {
+    create: async (params: CreateRoutineParams) => {
+      await api.POST(`/habits/routines`, params)
+    }
   }
 }
 

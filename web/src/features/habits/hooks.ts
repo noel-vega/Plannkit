@@ -92,3 +92,9 @@ export function useUpdateContribution() {
 export function useListHabits({ initialData }: { initialData: HabitWithContributions[] }) {
   return useQuery({ ...getListHabitsQueryOptions(), initialData })
 }
+
+export function useCreateRoutineMutation() {
+  return useMutation({
+    mutationFn: habits.routines.create
+  })
+}

@@ -37,3 +37,9 @@ export type UpdateContributionParams = {
 }
 
 export type ByIdParams = { id: number }
+
+export const CreateRoutineSchema = z.object({
+  name: z.string().min(1).max(30)
+})
+
+export type CreateRoutineParams = z.infer<typeof CreateRoutineSchema>
