@@ -7,12 +7,17 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { useTranslation } from "react-i18next"
 import type { DialogProps } from "@/types"
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer"
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog"
+import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from "@/components/ui/drawer"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { Button } from "@/components/ui/button"
 
-export function CreateRoutineForm({ onSuccess }: { onSuccess: () => void }) {
+type Props = {
+  onSuccess: () => void
+  onCancel: () => void
+}
+
+export function CreateRoutineForm({ onSuccess, onCancel }: Props) {
   const { t } = useTranslation()
   const createRoutine = useCreateRoutineMutation()
 
@@ -33,9 +38,14 @@ export function CreateRoutineForm({ onSuccess }: { onSuccess: () => void }) {
     })(e)
   }
 
+  const handleCancel = () => {
+    form.reset()
+    onCancel()
+  }
+
   const isDisabled = !form.formState.isValid || createRoutine.isPending || createRoutine.isSuccess
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="space-y-4">
       <Controller control={form.control} name="name"
         render={({ field, fieldState }) => {
           return <Field data-invalid={fieldState.invalid}>
@@ -50,7 +60,10 @@ export function CreateRoutineForm({ onSuccess }: { onSuccess: () => void }) {
           </Field>
         }}
       />
-      <Button disabled={isDisabled}>Submit</Button>
+      <div className="justify-end gap-3 flex">
+        <Button type="button" variant="outline" onClick={handleCancel}>{t("Cancel")}</Button>
+        <Button type="submit" disabled={isDisabled}>{t("Create")}</Button>
+      </div>
     </form>
   )
 }
@@ -64,7 +77,8 @@ export function CreateRoutineDialog(props: DialogProps) {
     <Dialog {...props} modal>
       <DialogContent>
         <DialogTitle>{t("Create Routine")}</DialogTitle>
-        <CreateRoutineForm onSuccess={closeDialog} />
+        <DialogDescription>{t("Group your habits into a routine to track them together.")}</DialogDescription>
+        <CreateRoutineForm onSuccess={closeDialog} onCancel={closeDialog} />
       </DialogContent>
     </Dialog>
   )
@@ -81,9 +95,10 @@ export function CreateRoutineDrawer(props: DialogProps) {
         <div className="overflow-scroll px-3">
           <DrawerHeader>
             <DrawerTitle>{t("Create Routine")}</DrawerTitle>
+            <DrawerDescription>{t("Group your habits into a routine to track them together.")}</DrawerDescription>
           </DrawerHeader>
           <div className="overflow-scroll">
-            <CreateRoutineForm onSuccess={closeDrawer} />
+            <CreateRoutineForm onSuccess={closeDrawer} onCancel={closeDrawer} />
           </div>
         </div>
       </DrawerContent>
