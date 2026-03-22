@@ -73,7 +73,7 @@ func (r *Repository) DeleteHabit(params *DeleteHabitParams) error {
 func (r *Repository) CreateHabitContribution(params *CreateContributionParams) error {
 	query := `
 		INSERT INTO 
-		habits_contributions (habit_id, completions, date, user_id) 
+		habit_contributions (habit_id, completions, date, user_id) 
 		VALUES (:habit_id, :completions, :date, :user_id)
 	`
 	_, err := r.db.NamedExec(query, params)
@@ -85,7 +85,7 @@ func (r *Repository) CreateHabitContribution(params *CreateContributionParams) e
 
 func (r *Repository) ListContributions(userID int) ([]HabitContribution, error) {
 	contributions := []HabitContribution{}
-	err := r.db.Select(&contributions, "SELECT * FROM habits_contributions WHERE user_id = $1", userID)
+	err := r.db.Select(&contributions, "SELECT * FROM habit_contributions WHERE user_id = $1", userID)
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +94,7 @@ func (r *Repository) ListContributions(userID int) ([]HabitContribution, error) 
 
 func (r *Repository) ListHabitContributions(params *GetHabitParams) ([]HabitContribution, error) {
 	contributions := []HabitContribution{}
-	err := r.db.Select(&contributions, "SELECT * FROM habits_contributions WHERE habit_id=$1 AND user_id = $2", params.ID, params.UserID)
+	err := r.db.Select(&contributions, "SELECT * FROM habit_contributions WHERE habit_id=$1 AND user_id = $2", params.ID, params.UserID)
 	if err != nil {
 		return nil, err
 	}
@@ -103,7 +103,7 @@ func (r *Repository) ListHabitContributions(params *GetHabitParams) ([]HabitCont
 
 func (r *Repository) UpdateHabitContributionCompletions(params *UpdateContributionCompletionsParams) error {
 	query := `
-		UPDATE habits_contributions
+		UPDATE habit_contributions
 	  SET completions = $1 
 		WHERE id = $2 AND user_id = $3;
 	`
@@ -117,7 +117,7 @@ func (r *Repository) UpdateHabitContributionCompletions(params *UpdateContributi
 
 func (r *Repository) DeleteHabitContribution(params *DeleteContributionParams) error {
 	query := `
-	DELETE FROM habits_contributions 
+	DELETE FROM habit_contributions 
 	WHERE user_id = :user_id AND habit_id = :habit_id AND id = :id 
 	`
 	_, err := r.db.NamedExec(query, params)
