@@ -58,26 +58,29 @@ function RouteComponent() {
 
 
   return (
-    <Container className="space-y-8">
-      <div className="grid grid-cols-1 @3xl:grid-cols-3 gap-4">
-        <FinanceSpaceSwitcher
-          currentSpace={currentSpace.data}
-          spaces={spaces.data}
-          onSpaceSelect={handleSwitchSpace}
-          onCreate={handleCreate}
-          onSettings={handleSettings}
-        />
-      </div>
-      <div className="grid grid-cols-1 @3xl:grid-cols-3 gap-3.5">
-        <MonthlyIncomeCard spaceId={spaceId} incomeSources={rtCtx.incomeSources} />
-        <MonthlyExpensesCard expenses={expenses.data ?? []} />
-        <MonthlyGoalCommitmentsCard goals={goals.data ?? []} />
+    <Container>
+      <div className="space-y-4 mb-8">
+        <div className="grid grid-cols-1 @3xl:grid-cols-3 gap-4">
+          <FinanceSpaceSwitcher
+            currentSpace={currentSpace.data}
+            spaces={spaces.data}
+            onSpaceSelect={handleSwitchSpace}
+            onCreate={handleCreate}
+            onSettings={handleSettings}
+          />
+        </div>
+        <div className="grid grid-cols-1 @3xl:grid-cols-3 gap-3.5">
+          <MonthlyIncomeCard spaceId={spaceId} incomeSources={rtCtx.incomeSources} />
+          <MonthlyExpensesCard expenses={expenses.data ?? []} />
+          <MonthlyGoalCommitmentsCard goals={goals.data ?? []} />
+        </div>
+        <MarginStatusBanner spaceId={spaceId} />
       </div>
 
-      <MarginStatusBanner spaceId={spaceId} />
-
-      <Goals spaceId={spaceId} goals={goals.data ?? []} />
-      <Expenses spaceId={spaceId} expenses={expenses.data ?? []} />
+      <div className="space-y-8">
+        <Goals spaceId={spaceId} goals={goals.data ?? []} />
+        <Expenses spaceId={spaceId} expenses={expenses.data ?? []} />
+      </div>
     </Container>
   )
 }
