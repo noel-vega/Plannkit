@@ -61,41 +61,27 @@ function RouteComponent() {
 
 
   return (
-    <div className="@container">
-      <Container>
-        <div className="mb-4 grid grid-cols-1 @3xl:grid-cols-3 gap-4">
-          <FinanceSpaceSwitcher
-            currentSpace={currentSpace.data}
-            spaces={spaces.data}
-            onSpaceSelect={handleSwitchSpace}
-            onCreate={handleCreate}
-            onSettings={handleSettings}
-          />
-        </div>
-        <div className="grid grid-cols-1 @3xl:grid-cols-3 gap-3.5 mb-4">
-          <MonthlyIncomeCard spaceId={spaceId} incomeSources={rtCtx.incomeSources} />
-          <MonthlyExpensesCard expenses={expenses.data ?? []} />
-          <MonthlyGoalCommitmentsCard goals={goals.data ?? []} />
-        </div>
-        <div className="mb-4">
-          <MarginStatusBanner spaceId={spaceId} />
-        </div>
+    <Container className="space-y-8">
+      <div className="grid grid-cols-1 @3xl:grid-cols-3 gap-4">
+        <FinanceSpaceSwitcher
+          currentSpace={currentSpace.data}
+          spaces={spaces.data}
+          onSpaceSelect={handleSwitchSpace}
+          onCreate={handleCreate}
+          onSettings={handleSettings}
+        />
+      </div>
+      <div className="grid grid-cols-1 @3xl:grid-cols-3 gap-3.5">
+        <MonthlyIncomeCard spaceId={spaceId} incomeSources={rtCtx.incomeSources} />
+        <MonthlyExpensesCard expenses={expenses.data ?? []} />
+        <MonthlyGoalCommitmentsCard goals={goals.data ?? []} />
+      </div>
 
-        <Tabs defaultValue='goals'>
-          <TabsList className="w-full">
-            <TabsTrigger value="goals">{t("Goals")}</TabsTrigger>
-            <TabsTrigger value="expenses">{t("Expenses")}</TabsTrigger>
-          </TabsList>
-          <Separator className="my-2 bg-transparent" />
-          <TabsContent value="goals" id="goals">
-            <Goals spaceId={spaceId} goals={goals.data ?? []} />
-          </TabsContent>
-          <TabsContent value="expenses">
-            <Expenses spaceId={spaceId} expenses={expenses.data ?? []} />
-          </TabsContent>
-        </Tabs>
-      </Container>
-    </div>
+      <MarginStatusBanner spaceId={spaceId} />
+
+      <Goals spaceId={spaceId} goals={goals.data ?? []} />
+      <Expenses spaceId={spaceId} expenses={expenses.data ?? []} />
+    </Container>
   )
 }
 
@@ -111,7 +97,7 @@ function Goals(props: { goals: Goal[], spaceId: number }) {
           </p>
         </div>
         <CreateGoalDialog spaceId={props.spaceId}>
-          <Button><PlusIcon />{t("Add Goal")}</Button>
+          <Button className="w-32" size="sm"><PlusIcon />{t("Goal")}</Button>
         </CreateGoalDialog>
       </div>
       {/* Goals Here */}
@@ -146,8 +132,8 @@ function Expenses(props: { expenses: Expense[], spaceId: number }) {
         </div>
 
         <CreateExpenseDialog spaceId={props.spaceId}>
-          <Button className="ml-auto">
-            <PlusIcon /> {t("Add Expense")}
+          <Button className="ml-auto w-32" size="sm">
+            <PlusIcon /> {t("Expense")}
           </Button>
         </CreateExpenseDialog>
       </div>
