@@ -97,7 +97,7 @@ function Goals(props: { goals: Goal[], spaceId: number }) {
           </p>
         </div>
         <CreateGoalDialog spaceId={props.spaceId}>
-          <Button className="w-32" size="sm"><PlusIcon />{t("Goal")}</Button>
+          <Button variant="secondary" className="w-32" size="sm"><PlusIcon />{t("Goal")}</Button>
         </CreateGoalDialog>
       </div>
       {/* Goals Here */}
@@ -132,7 +132,7 @@ function Expenses(props: { expenses: Expense[], spaceId: number }) {
         </div>
 
         <CreateExpenseDialog spaceId={props.spaceId}>
-          <Button className="ml-auto w-32" size="sm">
+          <Button variant="secondary" className="ml-auto w-32" size="sm">
             <PlusIcon /> {t("Expense")}
           </Button>
         </CreateExpenseDialog>
