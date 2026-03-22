@@ -4,7 +4,6 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Field, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Separator } from '@/components/ui/separator'
 import { ExpensesTable } from '@/features/finances/components/expenses-table'
 import { MarginStatusBanner } from '@/features/finances/components/margin-status-banner'
 import { MonthlyExpensesCard } from '@/features/finances/components/monthly-expenses-card'
@@ -20,7 +19,6 @@ import { PlusIcon, TargetIcon } from 'lucide-react'
 import z from 'zod/v3'
 import { queryClient } from '@/lib/react-query'
 import { CreateGoalDialog } from '@/features/finances/components/create-goal-form'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useTranslation } from 'react-i18next'
 
 export const Route = createFileRoute('/_app/finances/$spaceId/')({
@@ -40,7 +38,6 @@ export const Route = createFileRoute('/_app/finances/$spaceId/')({
 })
 
 function RouteComponent() {
-  const { t } = useTranslation()
   const { spaceId } = Route.useParams()
   const navigate = useNavigate()
   const rtCtx = Route.useRouteContext()
