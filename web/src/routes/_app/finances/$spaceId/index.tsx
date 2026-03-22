@@ -88,7 +88,7 @@ function Goals(props: { goals: Goal[], spaceId: number }) {
     <>
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 className="text-2xl font-bold">{t("Goals")}</h2>
+          <h2 className="text-xl font-medium">{t("Goals")}</h2>
           <p className="text-muted-foreground">
             {t("Track your progress towards financial goals.")}
           </p>
@@ -122,7 +122,7 @@ function Expenses(props: { expenses: Expense[], spaceId: number }) {
     <>
       <div className="flex items-end mb-4">
         <div>
-          <h2 className="text-2xl font-semibold">{t("Expenses")}</h2>
+          <h2 className="text-xl font-medium">{t("Expenses")}</h2>
           <p className="text-muted-foreground">
             {t("Track and organize your monthly expenses.")}
           </p>
