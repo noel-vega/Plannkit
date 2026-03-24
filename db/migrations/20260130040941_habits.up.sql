@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS habits_routines (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL,
+    position TEXT COLLATE "C" NOT NULL DEFAULT '',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -22,6 +23,7 @@ CREATE TABLE IF NOT EXISTS habits (
     completion_type VARCHAR(20) NOT NULL DEFAULT 'step',
     completions_per_day INT NOT NULL DEFAULT 1,
     unit_of_measurement VARCHAR(20) NOT NULL DEFAULT 'times',
+    position TEXT COLLATE "C" NOT NULL DEFAULT '',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT chk_completion_type CHECK (completion_type IN ('step', 'custom')),
