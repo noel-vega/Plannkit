@@ -147,10 +147,9 @@ type UpdateHabitPositionBody struct {
 }
 
 type UpdateHabitPositionParams struct {
-	ID             int
-	RoutineID      *int
-	AfterPosition  string
-	BeforePosition string
+	ID        int    `db:"id"`
+	RoutineID *int   `db:"routine_id"`
+	Position  string `db:"position"`
 }
 
 type UpdateRoutinePositionBody struct {
@@ -159,7 +158,6 @@ type UpdateRoutinePositionBody struct {
 }
 
 type UpdateRoutinePositionParams struct {
-	ID             int
-	AfterPosition  string
-	BeforePosition string
+	ID       int    `db:"id"`
+	Position string `db:"position"`
 }

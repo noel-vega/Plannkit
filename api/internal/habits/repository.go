@@ -1,6 +1,12 @@
 package habits
 
-import "github.com/jmoiron/sqlx"
+import (
+	"database/sql"
+	"errors"
+
+	"github.com/jmoiron/sqlx"
+	"github.com/noel-vega/habits/api/internal/apperrors"
+)
 
 type Repository struct {
 	db *sqlx.DB
@@ -158,4 +164,115 @@ func (r *Repository) ListHabitsAndContributions(userID int) ([]Habit, []HabitCon
 	}
 
 	return habits, contributions, nil
+}
+
+// ## Step 3: Repository — `api/internal/habits/repository.go`
+//
+// Add `roci.dev/fracdex`, `database/sql`, and `apperrors` imports (reference: `todos/repository.go`).
+//
+// **New methods:**
+// - `GetLastRoutine(userID)` — SELECT last routine by position DESC LIMIT 1, return `apperrors.ErrNotFound` on no rows
+// - `GetLastHabitInGroup(userID, routineID *int)` — SELECT last habit by position in a routine (or standalone when nil), return `apperrors.ErrNotFound` on no rows
+// - `ListRoutines(userID)` — SELECT all routines ORDER BY position ASC
+// - `UpdateHabitPosition(params)` — compute `fracdex.KeyBetween(after, before)`, UPDATE position + routine_id
+// - `UpdateRoutinePosition(params)` — compute `fracdex.KeyBetween(after, before)`, UPDATE position
+//
+//
+// CREATE TABLE IF NOT EXISTS habits_routines (
+//     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+//     user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+//     name VARCHAR(255) NOT NULL,
+//     position TEXT COLLATE "C" NOT NULL DEFAULT '',
+//     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+//     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+// );
+
+func (r *Repository) GetLastRoutine(userID int) (*Routine, error) {
+	query := `
+   SELECT *
+	 FROM habits_routines
+	 WHERE user_id = $1
+	 ORDER BY position
+	 LIMIT 1
+	`
+	routine := &Routine{}
+	err := r.db.Get(routine, query)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, apperrors.ErrNotFound
+		}
+		return nil, err
+	}
+	return routine, nil
+}
+
+func (r *Repository) GetLastHabitInGroup(userID, routineID *int) (*Habit, error) {
+	query := `
+   SELECT *
+	 FROM habits_routines
+	 WHERE user_id = $1 AND routine_id = $2
+	 ORDER BY position
+	 LIMIT 1
+	`
+	habit := &Habit{}
+	err := r.db.Get(habit, query)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, apperrors.ErrNotFound
+		}
+		return nil, err
+	}
+	return habit, nil
+}
+
+func (r *Repository) ListRoutines(userID int) ([]Routine, error) {
+	query := `
+		SELECT * 
+	  FROM habits_routines
+	  WHERE user_id = $1
+	`
+	routines := []Routine{}
+	err := r.db.Get(&routines, query)
+	if err != nil {
+		return nil, err
+	}
+	return routines, nil
+}
+
+func (r *Repository) UpdateHabitPosition(params *UpdateHabitPositionParams) (*Habit, error) {
+	query := `
+		UPDATE habits
+	  WHERE id = :id AND routine_id = :routine_id
+	  SET position = :position
+	  RETURNING *
+	`
+	query, args, err := sqlx.Named(query, params)
+	if err != nil {
+		return nil, err
+	}
+	habit := &Habit{}
+	err = r.db.Get(habit, r.db.Rebind(query), args...)
+	if err != nil {
+		return nil, err
+	}
+	return habit, nil
+}
+
+func (r *Repository) UpdateRoutinePosition(params *UpdateRoutinePositionParams) (*Routine, error) {
+	query := `
+		UPDATE habits_routines
+	  WHERE id = :id
+	  SET position = :position
+	  RETURNING *
+	`
+	query, args, err := sqlx.Named(query, params)
+	if err != nil {
+		return nil, err
+	}
+	routine := &Routine{}
+	err = r.db.Get(routine, r.db.Rebind(query), args...)
+	if err != nil {
+		return nil, err
+	}
+	return routine, nil
 }
