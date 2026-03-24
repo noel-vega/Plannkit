@@ -13,6 +13,7 @@ type Habit struct {
 	Description       string    `json:"description" db:"description"`
 	CompletionType    string    `json:"completionType" db:"completion_type"`
 	CompletionsPerDay int       `json:"completionsPerDay" db:"completions_per_day"`
+	Position          string    `json:"position" db:"position"`
 	CreatedAt         time.Time `json:"createdAt" db:"created_at"`
 	UpdatedAt         time.Time `json:"updatedAt" db:"updated_at"`
 }
@@ -32,6 +33,7 @@ type HabitContribution struct {
 }
 
 type CreateHabitRequestBody struct {
+	RoutineID         *int   `json:"routineId"`
 	Name              string `json:"name"`
 	Icon              string `json:"icon"`
 	UnitOfMeasurement string `json:"unitOfMeasurement"`
@@ -43,6 +45,7 @@ type CreateHabitRequestBody struct {
 type CreateHabitParams struct {
 	Name              string `json:"name" db:"name"`
 	UserID            int    `json:"userId" db:"user_id"`
+	RoutineID         *int   `json:"routineId" db:"routine_id"`
 	Icon              string `json:"icon" db:"icon"`
 	UnitOfMeasurement string `json:"unitOfMeasurement" db:"unit_of_measurement"`
 	Description       string `json:"description" db:"description"`
@@ -112,6 +115,7 @@ type Routine struct {
 	ID        int       `json:"id" db:"id"`
 	UserID    int       `json:"userId" db:"user_id"`
 	Name      string    `json:"name" db:"name"`
+	Position  string    `json:"position" db:"position"`
 	CreatedAt time.Time `json:"createdAt" db:"created_at"`
 	UpdatedAt time.Time `json:"updatedAt" db:"updated_at"`
 }
@@ -121,6 +125,41 @@ type CreateRoutineBody struct {
 }
 
 type InsertRoutineParams struct {
-	UserID int    `db:"user_id"`
-	Name   string `db:"name"`
+	UserID   int    `db:"user_id"`
+	Position string `db:"position"`
+	Name     string `db:"name"`
+}
+
+type RoutineWithHabits struct {
+	Routine
+	Habits []HabitWithContributions
+}
+
+type ListRoutinesResponse struct {
+	Routines []RoutineWithHabits
+	Habits   []HabitWithContributions
+}
+
+type UpdateHabitPositionBody struct {
+	RoutineID      *int   `json:"routineId"`
+	AfterPosition  string `json:"afterPoition"`
+	BeforePosition string `json:"beforePosition"`
+}
+
+type UpdateHabitPositionParams struct {
+	ID             int
+	RoutineID      *int
+	AfterPosition  string
+	BeforePosition string
+}
+
+type UpdateRoutinePositionBody struct {
+	AfterPosition  string `json:"afterPosition"`
+	BeforePosition string `json:"beforePosition"`
+}
+
+type UpdateRoutinePositionParams struct {
+	ID             int
+	AfterPosition  string
+	BeforePosition string
 }
