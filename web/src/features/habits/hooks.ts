@@ -95,7 +95,10 @@ export function useListHabits({ initialData }: { initialData: HabitWithContribut
 
 export function useCreateRoutineMutation() {
   return useMutation({
-    mutationFn: habits.routines.create
+    mutationFn: habits.routines.create,
+    onSuccess: () => {
+      invalidateListRoutinesQuery()
+    }
   })
 }
 
@@ -104,6 +107,11 @@ export function getListRoutinesQueryOptions() {
     queryFn: habits.routines.list,
     queryKey: ["habits", "routines"]
   })
+}
+
+export function invalidateListRoutinesQuery() {
+  return queryClient.invalidateQueries(getListRoutinesQueryOptions())
+
 }
 
 export function useListRoutinesQuery() {

@@ -52,17 +52,28 @@ function HabitsList({ habits }: { habits: HabitWithContributions[] }) {
       </div>
 
       <ul>
-        {routines.data.routines.map(routine => {
-          return <li>{routine.name}</li>
-        })}
-
+        {routines.data.routines.map(routine => (
+          <li>
+            <div>
+              <p>{routine.name}</p>
+              <ul>
+                {routine.habits.map(habit => (
+                  <li>{habit.name}</li>
+                ))}
+              </ul>
+            </div>
+          </li>
+        ))}
       </ul>
+
       <ul className="space-y-4">
-        {habits.map(habit => <li key={habit.id}>
-          <Link key={habit.id} to="/habits/$id" params={{ id: habit.id }}>
-            <HabitCard habit={habit} />
-          </Link>
-        </li>)}
+        {routines.data.habits.map(habit => (
+          <li key={habit.id}>
+            <Link key={habit.id} to="/habits/$id" params={{ id: habit.id }}>
+              <HabitCard habit={habit} />
+            </Link>
+          </li>
+        ))}
       </ul>
     </>
   )
