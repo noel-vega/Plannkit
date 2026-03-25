@@ -18,6 +18,7 @@ import { DeleteHabitDialog } from '@/features/habits/components/delete-habit-dia
 import { useDialog } from '@/hooks'
 import { Page } from '@/components/layout/page'
 import { getHabitByIdQueryOptions, useCreateContribution, useUpdateContribution } from '@/features/habits/hooks'
+import { Container } from '@/components/layout/container'
 
 export const Route = createFileRoute('/_app/habits/$id')({
   params: {
@@ -43,14 +44,14 @@ function RouteComponent() {
 
   return (
     <Page title="Habits">
-      <div className="max-w-5xl">
+      <Container>
         <Header habit={habit} />
         <p>{!habit.description ? t("No Description") : habit.description}</p>
         <div className="py-4 mb-4 overflow-x-auto">
           <ContributionsGrid habit={habit} contributions={contributions} />
         </div>
         <HabitCalendar habit={habit} />
-      </div>
+      </Container>
     </Page>
   )
 }

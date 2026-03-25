@@ -14,7 +14,7 @@ import { CustomContributionCompletionsDialog } from "./habit-card"
 import { cn } from "@/lib/utils"
 import { useDialog } from "@/hooks"
 import { useCreateContribution, useUpdateContribution } from "../hooks"
-import type { RoutineWithHabits, HabitWithContributions, Habit, Contribution } from "../types"
+import type { RoutineWithHabits, HabitWithContributions, Contribution } from "../types"
 import { useTranslation } from "react-i18next"
 
 function getRoutineProgress(habits: HabitWithContributions[]) {
@@ -59,7 +59,7 @@ function RoutineHabitRow({ habit }: { habit: HabitWithContributions }) {
   return (
     <li>
       <Link to="/habits/$id" params={{ id: habit.id }} className="block">
-        <div className="flex items-center h-14 px-5">
+        <div className="flex items-center h-14 px-5 hover:bg-secondary/30 transition-colors">
           <div className="flex items-center gap-3 flex-1">
             <div className={cn(
               "size-9 rounded-md grid place-content-center shrink-0",
@@ -163,9 +163,14 @@ export function RoutineList({ routines, ungroupedHabits }: {
   const { t } = useTranslation()
   return (
     <div className="space-y-6">
-      {routines.map(routine => (
-        <RoutineItem key={routine.id} routine={routine} />
-      ))}
+      <div className="space-y-4">
+        <div className="text-sm font-medium text-muted-foreground px-1">{t("Routines")}</div>
+        <ul className="space-y-6">
+          {routines.map(routine => (
+            <RoutineItem key={routine.id} routine={routine} />
+          ))}
+        </ul>
+      </div>
 
       {ungroupedHabits.length > 0 && (
         <div className="space-y-4">
