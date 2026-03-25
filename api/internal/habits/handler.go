@@ -29,6 +29,7 @@ func (h *Handler) CreateHabit(c *gin.Context) {
 
 	params := &CreateHabitParams{
 		UserID:            httputil.UserID(c),
+		RoutineID:         body.RoutineID,
 		Icon:              body.Icon,
 		Name:              body.Name,
 		Description:       body.Description,

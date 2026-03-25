@@ -22,7 +22,9 @@ export type Habit = z.infer<typeof HabitSchema>
 export const HabitWithContributionsSchema = HabitSchema.merge(z.object({ contributions: ContributionSchema.array() }))
 export type HabitWithContributions = z.infer<typeof HabitWithContributionsSchema>
 
-export const CreateHabitParamsSchema = HabitSchema.omit({ id: true })
+export const CreateHabitParamsSchema = HabitSchema.omit({ id: true }).extend({
+  routineId: z.number().optional(),
+})
 export type CreateHabitParams = z.infer<typeof CreateHabitParamsSchema>
 
 export type CreateContributionParams = {

@@ -7,7 +7,10 @@ import { api } from "@/lib/plannkit-api-client"
 
 export const habits = {
   create: async (params: CreateHabitParams) => {
-    const response = await api.POST("/habits", params)
+    const response = await api.POST("/habits", {
+      ...params,
+      ...(params.routineId != null && { routineId: params.routineId }),
+    })
     const data = await response.json()
     return HabitWithContributionsSchema.parse(data)
   },

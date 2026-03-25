@@ -19,6 +19,7 @@ import { useTranslation } from "react-i18next"
 
 type CreateHabitFormProps =
   {
+    routineId?: number
     onSubmit: () => void
     onCancel: () => void
   }
@@ -33,6 +34,7 @@ export function CreateHabitForm(props: CreateHabitFormProps) {
       description: "",
       completionType: "step" as const,
       completionsPerDay: 1,
+      routineId: props.routineId
     }
   })
 
@@ -40,7 +42,7 @@ export function CreateHabitForm(props: CreateHabitFormProps) {
 
   const handleSubmit = (e: FormEvent) => {
     form.handleSubmit(async data => {
-      createHabit.mutate(data, {
+      createHabit.mutate({ ...data, routineId: props.routineId }, {
         onSuccess: props.onSubmit,
         onError: (e) => {
           console.error("Could not create habit", e.message)
@@ -189,35 +191,37 @@ export function CreateHabitForm(props: CreateHabitFormProps) {
 }
 
 
-export function CreateHabitDialog(props: DialogProps) {
+type CreateHabitDialogProps = DialogProps & { routineId?: number }
+
+export function CreateHabitDialog(props: CreateHabitDialogProps) {
   const { t } = useTranslation()
   const closeDialog = () => {
     props.onOpenChange(false)
   }
   return (
-    <Dialog {...props} modal>
+    <Dialog open={props.open} onOpenChange={props.onOpenChange} modal>
       <DialogContent>
         <DialogTitle>{t("Create Habit")}</DialogTitle>
-        <CreateHabitForm onSubmit={closeDialog} onCancel={closeDialog} />
+        <CreateHabitForm routineId={props.routineId} onSubmit={closeDialog} onCancel={closeDialog} />
       </DialogContent>
     </Dialog>
   )
 }
 
-export function CreateHabitDrawer(props: DialogProps) {
+export function CreateHabitDrawer(props: CreateHabitDialogProps) {
   const { t } = useTranslation()
   const closeDrawer = () => {
     props.onOpenChange(false)
   }
   return (
-    <Drawer  {...props} modal>
+    <Drawer open={props.open} onOpenChange={props.onOpenChange} modal>
       <DrawerContent className="pb-3 min-h-[90%]">
         <div className="overflow-scroll px-3">
           <DrawerHeader>
             <DrawerTitle>{t("Create Habit")}</DrawerTitle>
           </DrawerHeader>
           <div className="overflow-scroll">
-            <CreateHabitForm onSubmit={closeDrawer} onCancel={closeDrawer} />
+            <CreateHabitForm routineId={props.routineId} onSubmit={closeDrawer} onCancel={closeDrawer} />
           </div>
         </div>
       </DrawerContent>
@@ -226,7 +230,7 @@ export function CreateHabitDrawer(props: DialogProps) {
   )
 }
 
-export function CreateHabitDialogDrawer(props: DialogProps) {
+export function CreateHabitDialogDrawer(props: CreateHabitDialogProps) {
   const isDesktop = useMediaQuery('(min-width: 768px)')
   if (isDesktop) {
     return <CreateHabitDialog {...props} />

@@ -48,11 +48,15 @@ export function useDeleteHabit() {
 export function useCreateHabit() {
   return useMutation({
     mutationFn: habits.create,
-    onSuccess: (newHabit) => {
+    onSuccess: (newHabit, variables) => {
+      invalidateListRoutinesQuery()
       const queryKey = getListHabitsQueryOptions().queryKey
       queryClient.setQueryData(queryKey, (oldData) => {
         return oldData ? [...oldData, newHabit] : oldData
       })
+      if (variables.routineId != null) {
+        invalidateListRoutinesQuery()
+      }
     }
   })
 }

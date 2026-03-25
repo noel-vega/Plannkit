@@ -30,13 +30,13 @@ func (r *Repository) GetHabit(params *GetHabitParams) (*Habit, error) {
 
 func (r *Repository) CreateHabit(params *CreateHabitParams) (*Habit, error) {
 	query := `
-        INSERT INTO habits (name, description, completion_type, completions_per_day, icon, user_id) 
-        VALUES ($1, $2, $3, $4, $5, $6)
+        INSERT INTO habits (name, description, completion_type, completions_per_day, icon, user_id, routine_id) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
 				RETURNING *
     `
 	var habit Habit
 
-	err := r.db.Get(&habit, query, params.Name, params.Description, params.CompletionType, params.CompletionsPerDay, params.Icon, params.UserID)
+	err := r.db.Get(&habit, query, params.Name, params.Description, params.CompletionType, params.CompletionsPerDay, params.Icon, params.UserID, params.RoutineID)
 	if err != nil {
 		return nil, err
 	}

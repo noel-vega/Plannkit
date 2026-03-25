@@ -1,5 +1,4 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
-import { HabitCard } from '@/features/habits/components/habit-card'
+import { createFileRoute } from '@tanstack/react-router'
 import { CreateHabitDialogDrawer } from '@/features/habits/components/create-habit-form'
 import { Button } from '@/components/ui/button'
 import { PlusIcon } from 'lucide-react'
@@ -13,6 +12,7 @@ import { WeekDayIndicator } from '@/features/habits/components/week-day-indicato
 import { Container } from '@/components/layout/container'
 import { CreateRoutineDialogDrawer } from '@/features/habits/components/create-routine-form'
 import { Suspense } from 'react'
+import { RoutineList } from '@/features/habits/components/routine-list'
 
 export const Route = createFileRoute('/_app/habits/')({
   loader: async ({ context: { queryClient } }) => {
@@ -42,6 +42,8 @@ function RouteComponent() {
 function HabitsList() {
   const { t } = useTranslation()
   const routines = useListRoutinesQuery()
+  const { routines: routinesList, habits: ungroupedHabits } = routines.data
+
   return (
     <>
       <div className="text-lg font-medium flex items-center">
@@ -52,30 +54,7 @@ function HabitsList() {
         <div className="h-px w-full flex-1 bg-border" />
       </div>
 
-      <ul>
-        {routines.data.routines.map(routine => (
-          <li>
-            <div>
-              <p>{routine.name}</p>
-              <ul>
-                {routine.habits.map(habit => (
-                  <li>{habit.name}</li>
-                ))}
-              </ul>
-            </div>
-          </li>
-        ))}
-      </ul>
-
-      <ul className="space-y-4">
-        {routines.data.habits.map(habit => (
-          <li key={habit.id}>
-            <Link key={habit.id} to="/habits/$id" params={{ id: habit.id }}>
-              <HabitCard habit={habit} />
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <RoutineList routines={routinesList} ungroupedHabits={ungroupedHabits} />
     </>
   )
 }

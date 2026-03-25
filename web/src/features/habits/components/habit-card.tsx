@@ -61,7 +61,7 @@ export function HabitCard(props: { habit: HabitWithContributions }) {
 
 
 // TODO: the contributions map should not be the day of year
-function HabitContributionButton(props: { habit: Habit, contributions: Map<number, Contribution> }) {
+export function HabitContributionButton(props: { habit: Habit, contributions: Map<number, Contribution> }) {
   const contributionsDialog = useDialog()
   const { habit, contributions } = props
   const todaysContribution = contributions.get(getDayOfYear(new Date()))
