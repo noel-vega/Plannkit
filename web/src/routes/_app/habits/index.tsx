@@ -10,9 +10,9 @@ import { Page } from '@/components/layout/page'
 import { useTranslation } from 'react-i18next'
 import { getListHabitsQueryOptions, useListHabits, useListRoutinesQuery } from '@/features/habits/hooks'
 import { WeekDayIndicator } from '@/features/habits/components/week-day-indicator'
-import type { HabitWithContributions } from '@/features/habits/types'
 import { Container } from '@/components/layout/container'
 import { CreateRoutineDialogDrawer } from '@/features/habits/components/create-routine-form'
+import { Suspense } from 'react'
 
 export const Route = createFileRoute('/_app/habits/')({
   loader: async ({ context: { queryClient } }) => {
@@ -31,15 +31,16 @@ function RouteComponent() {
         <Header />
         <WeekDayIndicator habits={habits.data} />
         <TodaysProgress habits={habits.data} />
-        <HabitsList habits={habits.data} />
+        <Suspense fallback="loading">
+          <HabitsList />
+        </Suspense>
       </Container>
     </Page>
   )
 }
 
-function HabitsList({ habits }: { habits: HabitWithContributions[] }) {
+function HabitsList() {
   const { t } = useTranslation()
-
   const routines = useListRoutinesQuery()
   return (
     <>

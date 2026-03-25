@@ -1,4 +1,4 @@
-import { HabitWithContributionsSchema, ListRoutinesResponseSchema, RoutineWithHabitsSchema, type ByIdParams, type CreateContributionParams, type CreateHabitParams, type CreateRoutineParams, type Habit, type UpdateContributionParams } from "./types"
+import { HabitWithContributionsSchema, ListRoutinesResponseSchema, type ByIdParams, type CreateContributionParams, type CreateHabitParams, type CreateRoutineParams, type Habit, type UpdateContributionParams } from "./types"
 import { api } from "@/lib/plannkit-api-client"
 
 // protected.GET("/habits/routines", habitsHandler.ListRoutines)
