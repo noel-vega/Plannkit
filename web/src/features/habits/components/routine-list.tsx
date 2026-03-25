@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { DynamicIcon } from "@/components/ui/dynamic-icon"
-import { HabitCard } from "./habit-card"
 import { CreateHabitDialogDrawer } from "./create-habit-form"
 import { CircularProgress } from "@/components/ui/circle-progress"
 import { CustomContributionCompletionsDialog } from "./habit-card"
@@ -59,7 +58,7 @@ function RoutineHabitRow({ habit }: { habit: HabitWithContributions }) {
   return (
     <li>
       <Link to="/habits/$id" params={{ id: habit.id }} className="block">
-        <div className="flex items-center h-14 px-5 hover:bg-secondary/30 transition-colors">
+        <div className="flex items-center h-16 px-5 hover:bg-secondary/30 transition-colors">
           <div className="flex items-center gap-3 flex-1">
             <div className={cn(
               "size-9 rounded-md grid place-content-center shrink-0",
