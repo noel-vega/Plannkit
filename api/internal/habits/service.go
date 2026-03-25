@@ -1,9 +1,12 @@
 package habits
 
 import (
+	"maps"
+	"slices"
 	"strings"
 
 	"github.com/jmoiron/sqlx"
+	"roci.dev/fracdex"
 )
 
 type Service struct {
@@ -103,4 +106,64 @@ func (s *Service) CreateRoutine(params *InsertRoutineParams) (*Routine, error) {
 	params.Name = trimmedName
 
 	return s.repository.InsertRoutine(params)
+}
+
+func (s *Service) ListRoutinesWithHabits(userID int) (*HabitGroups, error) {
+	routinesList, err := s.repository.ListRoutines(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	habitsList, err := s.ListHabitsWithContributions(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	habits := []HabitWithContributions{}
+	routines := map[int]*RoutineWithHabits{}
+
+	for _, routine := range routinesList {
+		routines[routine.ID] = &RoutineWithHabits{
+			Routine: routine,
+			Habits:  []HabitWithContributions{},
+		}
+	}
+
+	for _, habit := range habitsList {
+		if habit.RoutineID == nil {
+			habits = append(habits, habit)
+		} else {
+			routines[*habit.RoutineID].Habits = append(routines[*habit.RoutineID].Habits, habit)
+		}
+	}
+
+	return &HabitGroups{
+		Routines: slices.Collect(maps.Values(routines)),
+		Habits:   habits,
+	}, nil
+}
+
+func (s *Service) UpdateHabitPosition(params *UpdateHabitPositionParams) (*Habit, error) {
+	newPosition, err := fracdex.KeyBetween(params.AfterPosition, params.BeforePosition)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.repository.UpdateHabitPosition(&UpdateHabitPositionRepoParams{
+		ID:        params.ID,
+		RoutineID: params.RoutineID,
+		Position:  newPosition,
+	})
+}
+
+func (s *Service) UpdateRoutinePosition(params *UpdateRoutinePositionParams) (*Routine, error) {
+	newPosition, err := fracdex.KeyBetween(params.AfterPosition, params.BeforePosition)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.repository.UpdateRoutinePosition(&UpdateRoutinePositionRepoParams{
+		ID:       params.ID,
+		Position: newPosition,
+	})
 }

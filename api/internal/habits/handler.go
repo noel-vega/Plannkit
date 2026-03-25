@@ -244,3 +244,69 @@ func (h *Handler) CreateRoutine(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, routine)
 }
+
+func (h *Handler) ListRoutines(c *gin.Context) {
+	userID := httputil.UserID(c)
+	routines, err := h.service.ListRoutinesWithHabits(userID)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, routines)
+}
+
+func (h *Handler) UpdateRoutinePosition(c *gin.Context) {
+	routineID, err := strconv.Atoi(c.Param("routineID"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	body := &UpdateRoutinePositionBody{}
+	err = c.Bind(body)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	routine, err := h.service.UpdateRoutinePosition(&UpdateRoutinePositionParams{
+		ID:             routineID,
+		AfterPosition:  body.AfterPosition,
+		BeforePosition: body.BeforePosition,
+	})
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, routine)
+}
+
+func (h *Handler) UpdateHabitPosition(c *gin.Context) {
+	habitID, err := strconv.Atoi(c.Param("habitID"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	body := &UpdateHabitPositionBody{}
+	err = c.Bind(body)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	routine, err := h.service.UpdateHabitPosition(&UpdateHabitPositionParams{
+		ID:             habitID,
+		RoutineID:      body.RoutineID,
+		AfterPosition:  body.AfterPosition,
+		BeforePosition: body.BeforePosition,
+	})
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, routine)
+}

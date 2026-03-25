@@ -1,4 +1,4 @@
-import { queryOptions, useMutation, useQuery } from "@tanstack/react-query"
+import { queryOptions, useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { queryClient } from "@/lib/react-query"
 import { contributions, habits } from "./api"
 import type { HabitWithContributions } from "./types"
@@ -97,4 +97,15 @@ export function useCreateRoutineMutation() {
   return useMutation({
     mutationFn: habits.routines.create
   })
+}
+
+export function getListRoutinesQueryOptions() {
+  return queryOptions({
+    queryFn: habits.routines.list,
+    queryKey: ["habits", "routines"]
+  })
+}
+
+export function useListRoutinesQuery() {
+  return useSuspenseQuery(getListRoutinesQueryOptions())
 }

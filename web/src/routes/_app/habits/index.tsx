@@ -8,7 +8,7 @@ import { format } from 'date-fns'
 import { TodaysProgress } from '@/features/habits/components/today-progress'
 import { Page } from '@/components/layout/page'
 import { useTranslation } from 'react-i18next'
-import { getListHabitsQueryOptions, useListHabits } from '@/features/habits/hooks'
+import { getListHabitsQueryOptions, useListHabits, useListRoutinesQuery } from '@/features/habits/hooks'
 import { WeekDayIndicator } from '@/features/habits/components/week-day-indicator'
 import type { HabitWithContributions } from '@/features/habits/types'
 import { Container } from '@/components/layout/container'
@@ -39,6 +39,8 @@ function RouteComponent() {
 
 function HabitsList({ habits }: { habits: HabitWithContributions[] }) {
   const { t } = useTranslation()
+
+  const routines = useListRoutinesQuery()
   return (
     <>
       <div className="text-lg font-medium flex items-center">
@@ -48,6 +50,13 @@ function HabitsList({ habits }: { habits: HabitWithContributions[] }) {
         </p>
         <div className="h-px w-full flex-1 bg-border" />
       </div>
+
+      <ul>
+        {routines.data.routines.map(routine => {
+          return <li>{routine.name}</li>
+        })}
+
+      </ul>
       <ul className="space-y-4">
         {habits.map(habit => <li key={habit.id}>
           <Link key={habit.id} to="/habits/$id" params={{ id: habit.id }}>

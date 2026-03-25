@@ -43,3 +43,18 @@ export const CreateRoutineSchema = z.object({
 })
 
 export type CreateRoutineParams = z.infer<typeof CreateRoutineSchema>
+
+export const RoutineWithHabitsSchema = z.object({
+  id: z.number(),
+  userId: z.number(),
+  name: z.string(),
+  position: z.string(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
+  habits: HabitWithContributionsSchema.array()
+})
+
+export type RoutineWithHabits = z.infer<typeof RoutineWithHabitsSchema>
+
+export const ListRoutinesResponseSchema = z.object({ routines: RoutineWithHabitsSchema.array(), habits: HabitWithContributionsSchema.array() })
+export type ListRoutinesResponse = z.infer<typeof ListRoutinesResponseSchema>

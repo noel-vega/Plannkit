@@ -132,12 +132,12 @@ type InsertRoutineParams struct {
 
 type RoutineWithHabits struct {
 	Routine
-	Habits []HabitWithContributions
+	Habits []HabitWithContributions `json:"habits"`
 }
 
-type ListRoutinesResponse struct {
-	Routines []RoutineWithHabits
-	Habits   []HabitWithContributions
+type HabitGroups struct {
+	Routines []*RoutineWithHabits     `json:"routines"`
+	Habits   []HabitWithContributions `json:"habits"`
 }
 
 type UpdateHabitPositionBody struct {
@@ -147,9 +147,17 @@ type UpdateHabitPositionBody struct {
 }
 
 type UpdateHabitPositionParams struct {
+	ID             int
+	RoutineID      *int
+	AfterPosition  string
+	BeforePosition string
+}
+
+type UpdateHabitPositionRepoParams struct {
 	ID        int    `db:"id"`
+	UserID    int    `db:"user_id"`
 	RoutineID *int   `db:"routine_id"`
-	Position  string `db:"position"`
+	Position  string `json:"position"`
 }
 
 type UpdateRoutinePositionBody struct {
@@ -158,6 +166,13 @@ type UpdateRoutinePositionBody struct {
 }
 
 type UpdateRoutinePositionParams struct {
+	ID             int    `db:"id"`
+	AfterPosition  string `json:"afterPoition"`
+	BeforePosition string `json:"beforePosition"`
+}
+
+type UpdateRoutinePositionRepoParams struct {
 	ID       int    `db:"id"`
+	UserID   int    `db:"user_id"`
 	Position string `db:"position"`
 }

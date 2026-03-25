@@ -45,8 +45,14 @@ func (r *Repository) CreateHabit(params *CreateHabitParams) (*Habit, error) {
 }
 
 func (r *Repository) ListHabits(userID int) ([]Habit, error) {
+	query := `
+  SELECT * 
+	FROM habits 
+	WHERE user_id = $1
+	ORDER by position asc
+	`
 	habits := []Habit{}
-	err := r.db.Select(&habits, "SELECT * FROM habits WHERE user_id = $1", userID)
+	err := r.db.Select(&habits, query, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -192,11 +198,11 @@ func (r *Repository) GetLastRoutine(userID int) (*Routine, error) {
    SELECT *
 	 FROM habits_routines
 	 WHERE user_id = $1
-	 ORDER BY position
+	 ORDER BY position DESC
 	 LIMIT 1
 	`
 	routine := &Routine{}
-	err := r.db.Get(routine, query)
+	err := r.db.Get(routine, query, userID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, apperrors.ErrNotFound
@@ -206,16 +212,16 @@ func (r *Repository) GetLastRoutine(userID int) (*Routine, error) {
 	return routine, nil
 }
 
-func (r *Repository) GetLastHabitInGroup(userID, routineID *int) (*Habit, error) {
+func (r *Repository) GetLastHabitInGroup(userID int, routineID *int) (*Habit, error) {
 	query := `
    SELECT *
-	 FROM habits_routines
+	 FROM habits
 	 WHERE user_id = $1 AND routine_id = $2
-	 ORDER BY position
+	 ORDER BY position DESC
 	 LIMIT 1
 	`
 	habit := &Habit{}
-	err := r.db.Get(habit, query)
+	err := r.db.Get(habit, query, userID, routineID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, apperrors.ErrNotFound
@@ -230,20 +236,21 @@ func (r *Repository) ListRoutines(userID int) ([]Routine, error) {
 		SELECT * 
 	  FROM habits_routines
 	  WHERE user_id = $1
+	  ORDER by position ASC
 	`
 	routines := []Routine{}
-	err := r.db.Get(&routines, query)
+	err := r.db.Select(&routines, query, userID)
 	if err != nil {
 		return nil, err
 	}
 	return routines, nil
 }
 
-func (r *Repository) UpdateHabitPosition(params *UpdateHabitPositionParams) (*Habit, error) {
+func (r *Repository) UpdateHabitPosition(params *UpdateHabitPositionRepoParams) (*Habit, error) {
 	query := `
 		UPDATE habits
-	  WHERE id = :id AND routine_id = :routine_id
 	  SET position = :position
+	  WHERE id = :id AND routine_id = :routine_id AND user_id = :user_id
 	  RETURNING *
 	`
 	query, args, err := sqlx.Named(query, params)
@@ -258,11 +265,11 @@ func (r *Repository) UpdateHabitPosition(params *UpdateHabitPositionParams) (*Ha
 	return habit, nil
 }
 
-func (r *Repository) UpdateRoutinePosition(params *UpdateRoutinePositionParams) (*Routine, error) {
+func (r *Repository) UpdateRoutinePosition(params *UpdateRoutinePositionRepoParams) (*Routine, error) {
 	query := `
 		UPDATE habits_routines
-	  WHERE id = :id
 	  SET position = :position
+	  WHERE id = :id and user_id = :user_id
 	  RETURNING *
 	`
 	query, args, err := sqlx.Named(query, params)

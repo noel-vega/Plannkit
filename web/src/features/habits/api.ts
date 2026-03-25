@@ -1,5 +1,9 @@
-import { HabitWithContributionsSchema, type ByIdParams, type CreateContributionParams, type CreateHabitParams, type CreateRoutineParams, type Habit, type UpdateContributionParams } from "./types"
+import { HabitWithContributionsSchema, ListRoutinesResponseSchema, RoutineWithHabitsSchema, type ByIdParams, type CreateContributionParams, type CreateHabitParams, type CreateRoutineParams, type Habit, type UpdateContributionParams } from "./types"
 import { api } from "@/lib/plannkit-api-client"
+
+// protected.GET("/habits/routines", habitsHandler.ListRoutines)
+// protected.POST("/habits/routines", habitsHandler.CreateRoutine)
+// protected.PATCH("/habits/routines/:routineID", habitsHandler.UpdateRoutinePosition)
 
 export const habits = {
   create: async (params: CreateHabitParams) => {
@@ -29,9 +33,15 @@ export const habits = {
   routines: {
     create: async (params: CreateRoutineParams) => {
       await api.POST(`/habits/routines`, params)
+    },
+    list: async () => {
+      const response = await api.GET("/habits/routines")
+      const data = await response.json()
+      return ListRoutinesResponseSchema.parse(data)
     }
   }
 }
+
 
 export const contributions = {
   create: async (params: CreateContributionParams) => {

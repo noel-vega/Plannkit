@@ -1,9 +1,11 @@
 # Routines Implementation Plan
 
 ## Overview
+
 Add a `GET /habits/routines` endpoint that returns routines with nested habits and standalone habits, all ordered via fractional indexing (`fracdex`). Add position update endpoints for reordering.
 
 **Target response shape for `GET /habits/routines`:**
+
 ```json
 {
   "routines": [
@@ -28,6 +30,7 @@ Create `db/migrations/20260323000000_habits_position.up.sql` and `.down.sql`.
 ## Step 2: Types — `api/internal/habits/types.go`
 
 **Modify existing structs:**
+
 - `Habit` — add `Position` (string, db:"position")
 - `Routine` — add `Position` (string, db:"position")
 - `CreateHabitRequestBody` — add `RoutineID` (*int)
@@ -35,6 +38,7 @@ Create `db/migrations/20260323000000_habits_position.up.sql` and `.down.sql`.
 - `InsertRoutineParams` — add `Position` (string, db:"position")
 
 **Add new types:**
+
 - `RoutineWithHabits` — embeds `Routine` + `Habits []HabitWithContributions`
 - `ListRoutinesResponse` — `Routines []RoutineWithHabits` + `Habits []HabitWithContributions`
 - `UpdateHabitPositionBody` — `AfterPosition`, `BeforePosition`, `RoutineID` (*int, for moving between groups)
@@ -49,6 +53,7 @@ Create `db/migrations/20260323000000_habits_position.up.sql` and `.down.sql`.
 Add `roci.dev/fracdex`, `database/sql`, and `apperrors` imports (reference: `todos/repository.go`).
 
 **New methods:**
+
 - `GetLastRoutine(userID)` — SELECT last routine by position DESC LIMIT 1, return `apperrors.ErrNotFound` on no rows
 - `GetLastHabitInGroup(userID, routineID *int)` — SELECT last habit by position in a routine (or standalone when nil), return `apperrors.ErrNotFound` on no rows
 - `ListRoutines(userID)` — SELECT all routines ORDER BY position ASC
@@ -56,6 +61,7 @@ Add `roci.dev/fracdex`, `database/sql`, and `apperrors` imports (reference: `tod
 - `UpdateRoutinePosition(params)` — compute `fracdex.KeyBetween(after, before)`, UPDATE position
 
 **Modify existing methods:**
+
 - `CreateHabit` — before insert, call `GetLastHabitInGroup` to compute position via `fracdex.KeyBetween`. Add `routine_id` and `position` to the INSERT query
 - `InsertRoutine` — before insert, call `GetLastRoutine` to compute position via `fracdex.KeyBetween`. Add `position` to the INSERT query
 - `ListHabits` — add `ORDER BY position ASC`
@@ -65,6 +71,7 @@ Add `roci.dev/fracdex`, `database/sql`, and `apperrors` imports (reference: `tod
 ## Step 4: Service — `api/internal/habits/service.go`
 
 **New methods:**
+
 - `ListRoutinesWithHabits(userID)` — calls `ListRoutines`, `ListHabitsAndContributions`. Groups contributions by habit (existing pattern). Partitions habits: those with `routine_id` go into their routine's habits slice, those without go into top-level habits. Returns `ListRoutinesResponse`
 - `UpdateHabitPosition(params)` — delegates to repository
 - `UpdateRoutinePosition(params)` — delegates to repository
@@ -74,11 +81,13 @@ Add `roci.dev/fracdex`, `database/sql`, and `apperrors` imports (reference: `tod
 ## Step 5: Handler — `api/internal/habits/handler.go`
 
 **New handlers:**
+
 - `ListRoutinesWithHabits` — call service, return JSON 200
 - `UpdateHabitPosition` — parse habitID param, bind body, build params, call service, return 204
 - `UpdateRoutinePosition` — parse routineID param, bind body, build params, call service, return 204
 
 **Modify:**
+
 - `CreateHabit` — pass `body.RoutineID` into `CreateHabitParams`
 
 ---
