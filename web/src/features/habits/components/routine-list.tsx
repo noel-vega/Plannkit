@@ -174,16 +174,16 @@ export function RoutineList({ routines, ungroupedHabits }: {
 
       {ungroupedHabits.length > 0 && (
         <div className="space-y-4">
-          <div className="text-sm font-medium text-muted-foreground px-1">{t("Other Habits")}</div>
-          <ul className="space-y-4">
-            {ungroupedHabits.map(habit => (
-              <li key={habit.id}>
-                <Link to="/habits/$id" params={{ id: habit.id }}>
-                  <HabitCard habit={habit} />
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <div className="text-sm font-medium text-muted-foreground px-1">{t("Habits")}</div>
+          <Card className="p-0 overflow-hidden">
+            <CardContent className="px-0 py-0">
+              <ul className="divide-y">
+                {ungroupedHabits.map(habit => (
+                  <RoutineHabitRow key={habit.id} habit={habit} />
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
         </div>
       )}
     </div>
