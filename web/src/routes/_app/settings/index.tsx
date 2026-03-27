@@ -1,3 +1,4 @@
+import { Container } from '@/components/layout/container'
 import { Page } from '@/components/layout/page'
 import { PageHeader } from '@/components/layout/page-header'
 import { Field, FieldLabel } from '@/components/ui/field'
@@ -9,16 +10,17 @@ export const Route = createFileRoute('/_app/settings/')({
   component: RouteComponent,
 })
 
-
 function RouteComponent() {
   const { t } = useTranslation()
   return (
     <Page>
       <PageHeader title="Settings" />
-      <Field>
-        <FieldLabel>{t("Language")}</FieldLabel>
-        <LanguageSelect />
-      </Field>
+      <Container>
+        <Field>
+          <FieldLabel>{t("Language")}</FieldLabel>
+          <LanguageSelect />
+        </Field>
+      </Container>
     </Page>
   )
 }
