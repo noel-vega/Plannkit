@@ -12,9 +12,7 @@ import { WeekDayIndicator } from '@/features/habits/components/week-day-indicato
 import { Container } from '@/components/layout/container'
 import { CreateRoutineDialogDrawer } from '@/features/habits/components/create-routine-form'
 import { Suspense } from 'react'
-import { RoutineList } from '@/features/habits/components/routine-list'
 import { RoutineListV2 } from '@/features/habits/components/routine-list-v2'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 export const Route = createFileRoute('/_app/habits/')({
   loader: async ({ context: { queryClient } }) => {
@@ -42,23 +40,11 @@ function RouteComponent() {
 }
 
 function HabitsList() {
-  const { t } = useTranslation()
   const routines = useListRoutinesQuery()
   const { routines: routinesList, habits: ungroupedHabits } = routines.data
 
   return (
-    <Tabs defaultValue="after">
-      <TabsList variant="line">
-        <TabsTrigger value="before">{t("Before")}</TabsTrigger>
-        <TabsTrigger value="after">{t("After")}</TabsTrigger>
-      </TabsList>
-      <TabsContent value="before">
-        <RoutineList routines={routinesList} ungroupedHabits={ungroupedHabits} />
-      </TabsContent>
-      <TabsContent value="after">
-        <RoutineListV2 routines={routinesList} ungroupedHabits={ungroupedHabits} />
-      </TabsContent>
-    </Tabs>
+    <RoutineListV2 routines={routinesList} ungroupedHabits={ungroupedHabits} />
   )
 }
 

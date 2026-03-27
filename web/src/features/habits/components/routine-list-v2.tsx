@@ -3,7 +3,6 @@ import { getDayOfYear } from "date-fns"
 import { CheckIcon, ChevronDownIcon, LayoutListIcon, PlusIcon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DynamicIcon } from "@/components/ui/dynamic-icon"
 import { CreateHabitDialogDrawer } from "./create-habit-form"
@@ -16,12 +15,12 @@ import type { RoutineWithHabits, HabitWithContributions, Contribution } from "..
 import { useTranslation } from "react-i18next"
 
 const ROUTINE_COLORS = [
-  { border: "border-l-blue-500", bg: "bg-blue-500/10", text: "text-blue-600", stroke: "stroke-blue-500" },
-  { border: "border-l-violet-500", bg: "bg-violet-500/10", text: "text-violet-600", stroke: "stroke-violet-500" },
-  { border: "border-l-amber-500", bg: "bg-amber-500/10", text: "text-amber-600", stroke: "stroke-amber-500" },
-  { border: "border-l-emerald-500", bg: "bg-emerald-500/10", text: "text-emerald-600", stroke: "stroke-emerald-500" },
-  { border: "border-l-rose-500", bg: "bg-rose-500/10", text: "text-rose-600", stroke: "stroke-rose-500" },
-  { border: "border-l-cyan-500", bg: "bg-cyan-500/10", text: "text-cyan-600", stroke: "stroke-cyan-500" },
+  { bg: "bg-blue-500/10", text: "text-blue-600" },
+  { bg: "bg-violet-500/10", text: "text-violet-600" },
+  { bg: "bg-amber-500/10", text: "text-amber-600" },
+  { bg: "bg-emerald-500/10", text: "text-emerald-600" },
+  { bg: "bg-rose-500/10", text: "text-rose-600" },
+  { bg: "bg-cyan-500/10", text: "text-cyan-600" },
 ]
 
 type ColorScheme = (typeof ROUTINE_COLORS)[number]
@@ -38,11 +37,11 @@ function getRoutineProgress(habits: HabitWithContributions[]) {
   return { completed, total: habits.length }
 }
 
-function getMicroCopy(completed: number, total: number, t: (key: string) => string) {
-  if (total === 0) return t("Add habits to get started")
-  if (completed === 0) return t("Ready to start")
-  if (completed < total) return t("Keep it up") + ` — ${completed} / ${total}`
-  return t("All done — nice work!")
+function getSubtitle(completed: number, total: number, t: (key: string) => string) {
+  if (total === 0) return t("No habits yet")
+  if (completed === 0) return `${total} ${t("habits")}`
+  if (completed < total) return `${completed} ${t("of")} ${total} ${t("complete")}`
+  return null
 }
 
 function RoutineHabitRowV2({ habit, colorScheme }: { habit: HabitWithContributions; colorScheme: ColorScheme }) {
@@ -76,38 +75,35 @@ function RoutineHabitRowV2({ habit, colorScheme }: { habit: HabitWithContributio
     <li>
       <Link to="/habits/$id" params={{ id: habit.id }} className="block">
         <div className={cn(
-          "flex items-center h-16 px-5 hover:bg-secondary/30 transition-all duration-300",
-          isDone && "opacity-75"
+          "flex items-center h-13 px-5 hover:bg-secondary/30 transition-all duration-300",
+          isDone && "opacity-60"
         )}>
           <div className="flex items-center gap-3 flex-1">
-            <div className={cn(
-              "size-9 rounded-md grid place-content-center shrink-0 transition-colors duration-300",
-              isDone ? "bg-green-100" : colorScheme.bg
-            )}>
-              <DynamicIcon className="size-4" name={habit.icon} />
+            <div className="size-8 rounded-md grid place-content-center shrink-0 bg-secondary/50">
+              <DynamicIcon className="size-3.5" name={habit.icon} />
             </div>
             <span className={cn(
-              "text-sm font-medium transition-all duration-300",
-              isDone && "text-muted-foreground line-through"
+              "text-sm transition-all duration-300",
+              isDone ? "text-muted-foreground" : "font-medium"
             )}>
               {habit.name}
             </span>
           </div>
           <button
-            className="cursor-pointer relative size-10 rounded-full grid place-content-center shrink-0"
+            className="cursor-pointer relative size-9 rounded-full grid place-content-center shrink-0"
             onClick={handleContribution}
           >
             {isDone ? (
-              <CheckIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 stroke-green-600" size={16} />
+              <CheckIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 stroke-green-600" size={14} />
             ) : (
-              <PlusIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2" size={16} />
+              <PlusIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2" size={14} />
             )}
             <CircularProgress
               progress={progress}
-              size={40}
-              strokeWidth={3}
+              size={36}
+              strokeWidth={2.5}
               showPercentage={false}
-              primaryColor={isDone ? "stroke-green-600" : colorScheme.stroke}
+              primaryColor="stroke-green-600"
             />
           </button>
         </div>
@@ -129,28 +125,30 @@ function RoutineItemV2({ routine, colorScheme }: { routine: RoutineWithHabits; c
   const { completed, total } = getRoutineProgress(routine.habits)
   const allDone = completed === total && total > 0
   const progressPercent = total > 0 ? (completed / total) * 100 : 0
+  const subtitle = getSubtitle(completed, total, t)
 
   return (
     <Card className={cn(
-      "p-0 gap-0 overflow-hidden border-l-4 transition-all duration-500",
-      colorScheme.border
+      "p-0 gap-0 overflow-hidden transition-all duration-500"
     )}>
       <CardHeader
-        className="px-5 py-4 gap-1 grid-rows-[auto] cursor-pointer hover:bg-secondary/20 transition-colors"
+        className="px-5 py-3.5 gap-1 grid-rows-[auto] cursor-pointer hover:bg-secondary/20 transition-colors"
         onClick={() => setOpen(o => !o)}
       >
         <div className="flex items-center gap-3">
           <div className={cn(
-            "size-9 rounded-md grid place-content-center shrink-0 transition-colors duration-300",
+            "size-9 rounded-md grid place-content-center shrink-0",
             colorScheme.bg
           )}>
             <LayoutListIcon className={cn("size-4", colorScheme.text)} />
           </div>
           <div className="flex-1 min-w-0">
-            <CardTitle className="text-base font-semibold">{routine.name}</CardTitle>
-            <p className="text-xs mt-0.5 text-muted-foreground">
-              {getMicroCopy(completed, total, t)}
-            </p>
+            <CardTitle className="text-sm font-semibold">{routine.name}</CardTitle>
+            {subtitle && (
+              <p className="text-xs mt-0.5 text-muted-foreground">
+                {subtitle}
+              </p>
+            )}
           </div>
           {allDone ? (
             <Badge className="bg-green-100 border border-green-500 text-green-800 gap-1">
@@ -161,18 +159,27 @@ function RoutineItemV2({ routine, colorScheme }: { routine: RoutineWithHabits; c
             <div className="relative shrink-0 grid place-content-center">
               <CircularProgress
                 progress={progressPercent}
-                size={44}
-                strokeWidth={4}
+                size={40}
+                strokeWidth={3}
                 showPercentage={false}
-                primaryColor={colorScheme.stroke}
+                primaryColor="stroke-green-600"
               />
-              <span className="absolute inset-0 flex items-center justify-center text-xs font-medium text-muted-foreground">
+              <span className="absolute inset-0 flex items-center justify-center text-[10px] font-medium text-muted-foreground">
                 {completed}/{total}
               </span>
             </div>
           )}
+          <button
+            className="cursor-pointer size-7 rounded-full grid place-content-center shrink-0 text-muted-foreground hover:bg-secondary/50 transition-colors"
+            onClick={(e) => {
+              e.stopPropagation()
+              createHabitDialog.handleOpenDialog()
+            }}
+          >
+            <PlusIcon size={14} />
+          </button>
           <ChevronDownIcon
-            size={18}
+            size={16}
             className={cn(
               "transition-transform shrink-0 text-muted-foreground",
               !open && "-rotate-90"
@@ -187,22 +194,11 @@ function RoutineItemV2({ routine, colorScheme }: { routine: RoutineWithHabits; c
       )}>
         <div className="overflow-hidden min-h-0">
           <CardContent className="px-0 pb-0">
-            <ul className="divide-y">
+            <ul className="divide-y divide-border/50">
               {routine.habits.map(habit => (
                 <RoutineHabitRowV2 key={habit.id} habit={habit} colorScheme={colorScheme} />
               ))}
             </ul>
-            <div className="border-t px-5 py-3">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-full text-muted-foreground"
-                onClick={createHabitDialog.handleOpenDialog}
-              >
-                <PlusIcon size={16} />
-                <span>{t("Add Habit")}</span>
-              </Button>
-            </div>
             <CreateHabitDialogDrawer routineId={routine.id} {...createHabitDialog} />
           </CardContent>
         </div>
@@ -220,7 +216,7 @@ export function RoutineListV2({ routines, ungroupedHabits }: {
     <div className="space-y-6">
       <div className="space-y-4">
         <div className="text-sm font-medium text-muted-foreground px-1">{t("Routines")}</div>
-        <ul className="space-y-6">
+        <ul className="space-y-4">
           {routines.map((routine, index) => (
             <RoutineItemV2
               key={routine.id}
@@ -236,12 +232,12 @@ export function RoutineListV2({ routines, ungroupedHabits }: {
           <div className="text-sm font-medium text-muted-foreground px-1">{t("Habits")}</div>
           <Card className="p-0 overflow-hidden">
             <CardContent className="px-0 py-0">
-              <ul className="divide-y">
+              <ul className="divide-y divide-border/50">
                 {ungroupedHabits.map(habit => (
                   <RoutineHabitRowV2
                     key={habit.id}
                     habit={habit}
-                    colorScheme={{ border: "", bg: "bg-secondary/50", text: "text-muted-foreground", stroke: "stroke-green-600" }}
+                    colorScheme={{ bg: "bg-secondary/50", text: "text-muted-foreground" }}
                   />
                 ))}
               </ul>
