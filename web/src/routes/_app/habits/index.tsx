@@ -13,6 +13,8 @@ import { Container } from '@/components/layout/container'
 import { CreateRoutineDialogDrawer } from '@/features/habits/components/create-routine-form'
 import { Suspense } from 'react'
 import { RoutineList } from '@/features/habits/components/routine-list'
+import { RoutineListV2 } from '@/features/habits/components/routine-list-v2'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 export const Route = createFileRoute('/_app/habits/')({
   loader: async ({ context: { queryClient } }) => {
@@ -40,22 +42,23 @@ function RouteComponent() {
 }
 
 function HabitsList() {
-  // const { t } = useTranslation()
+  const { t } = useTranslation()
   const routines = useListRoutinesQuery()
   const { routines: routinesList, habits: ungroupedHabits } = routines.data
 
   return (
-    <>
-      {/* <div className="text-lg font-medium flex items-center"> */}
-      {/*   <div className="h-px w-4.5 bg-border" /> */}
-      {/*   <p className="px-2"> */}
-      {/*     {t("My Daily Habits")} */}
-      {/*   </p> */}
-      {/*   <div className="h-px w-full flex-1 bg-border" /> */}
-      {/* </div> */}
-
-      <RoutineList routines={routinesList} ungroupedHabits={ungroupedHabits} />
-    </>
+    <Tabs defaultValue="after">
+      <TabsList variant="line">
+        <TabsTrigger value="before">{t("Before")}</TabsTrigger>
+        <TabsTrigger value="after">{t("After")}</TabsTrigger>
+      </TabsList>
+      <TabsContent value="before">
+        <RoutineList routines={routinesList} ungroupedHabits={ungroupedHabits} />
+      </TabsContent>
+      <TabsContent value="after">
+        <RoutineListV2 routines={routinesList} ungroupedHabits={ungroupedHabits} />
+      </TabsContent>
+    </Tabs>
   )
 }
 
