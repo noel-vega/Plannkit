@@ -40,19 +40,19 @@ function RouteComponent() {
 }
 
 function HabitsList() {
-  const { t } = useTranslation()
+  // const { t } = useTranslation()
   const routines = useListRoutinesQuery()
   const { routines: routinesList, habits: ungroupedHabits } = routines.data
 
   return (
     <>
-      <div className="text-lg font-medium flex items-center">
-        <div className="h-px w-4.5 bg-border" />
-        <p className="px-2">
-          {t("My Daily Habits")}
-        </p>
-        <div className="h-px w-full flex-1 bg-border" />
-      </div>
+      {/* <div className="text-lg font-medium flex items-center"> */}
+      {/*   <div className="h-px w-4.5 bg-border" /> */}
+      {/*   <p className="px-2"> */}
+      {/*     {t("My Daily Habits")} */}
+      {/*   </p> */}
+      {/*   <div className="h-px w-full flex-1 bg-border" /> */}
+      {/* </div> */}
 
       <RoutineList routines={routinesList} ungroupedHabits={ungroupedHabits} />
     </>
