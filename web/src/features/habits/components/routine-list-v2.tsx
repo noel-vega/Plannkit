@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { getDayOfYear } from "date-fns"
-import { CheckIcon, ChevronDownIcon, LayoutListIcon, PlusIcon } from "lucide-react"
+import { CheckIcon, LayoutListIcon, PlusIcon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -89,23 +89,37 @@ function RoutineHabitRowV2({ habit, colorScheme }: { habit: HabitWithContributio
               {habit.name}
             </span>
           </div>
-          <button
-            className="cursor-pointer relative size-9 rounded-full grid place-content-center shrink-0"
-            onClick={handleContribution}
-          >
-            {isDone ? (
-              <CheckIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 stroke-green-600" size={14} />
-            ) : (
-              <PlusIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2" size={14} />
-            )}
-            <CircularProgress
-              progress={progress}
-              size={36}
-              strokeWidth={2.5}
-              showPercentage={false}
-              primaryColor="stroke-green-600"
-            />
-          </button>
+          {habit.completionsPerDay === 1 ? (
+            <button
+              className={cn(
+                "cursor-pointer size-9 rounded-full border-2 grid place-content-center shrink-0 transition-all duration-300",
+                isDone
+                  ? "bg-green-600 border-green-600"
+                  : "border-border hover:border-green-400"
+              )}
+              onClick={handleContribution}
+            >
+              {isDone && <CheckIcon className="stroke-white" size={14} />}
+            </button>
+          ) : (
+            <button
+              className="cursor-pointer relative size-9 rounded-full grid place-content-center shrink-0"
+              onClick={handleContribution}
+            >
+              {isDone ? (
+                <CheckIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 stroke-green-600" size={14} />
+              ) : (
+                <PlusIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2" size={14} />
+              )}
+              <CircularProgress
+                progress={progress}
+                size={36}
+                strokeWidth={2.5}
+                showPercentage={false}
+                primaryColor="stroke-green-600"
+              />
+            </button>
+          )}
         </div>
       </Link>
       <CustomContributionCompletionsDialog
@@ -170,7 +184,7 @@ function RoutineItemV2({ routine, colorScheme }: { routine: RoutineWithHabits; c
             </div>
           )}
           <button
-            className="cursor-pointer size-7 rounded-full grid place-content-center shrink-0 text-muted-foreground hover:bg-secondary/50 transition-colors"
+            className="cursor-pointer size-9 rounded-full border-2 border-dashed border-border grid place-content-center shrink-0 text-muted-foreground hover:border-foreground/30 transition-colors"
             onClick={(e) => {
               e.stopPropagation()
               createHabitDialog.handleOpenDialog()
@@ -178,13 +192,6 @@ function RoutineItemV2({ routine, colorScheme }: { routine: RoutineWithHabits; c
           >
             <PlusIcon size={14} />
           </button>
-          <ChevronDownIcon
-            size={16}
-            className={cn(
-              "transition-transform shrink-0 text-muted-foreground",
-              !open && "-rotate-90"
-            )}
-          />
         </div>
       </CardHeader>
 
