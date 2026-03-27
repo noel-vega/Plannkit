@@ -1,11 +1,11 @@
 package habits
 
 import (
-	"maps"
-	"slices"
+	"errors"
 	"strings"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/noel-vega/habits/api/internal/apperrors"
 	"roci.dev/fracdex"
 )
 
@@ -105,6 +105,26 @@ func (s *Service) CreateRoutine(params *InsertRoutineParams) (*Routine, error) {
 	}
 	params.Name = trimmedName
 
+	lastRoutine, err := s.repository.GetLastRoutine(params.UserID)
+	if err != nil {
+		if !errors.Is(err, apperrors.ErrNotFound) {
+			return nil, err
+		}
+	}
+
+	var position string
+
+	if lastRoutine == nil {
+		position, err = fracdex.KeyBetween("", "")
+	} else {
+		position, err = fracdex.KeyBetween(lastRoutine.Position, "")
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	params.Position = position
 	return s.repository.InsertRoutine(params)
 }
 
@@ -137,8 +157,13 @@ func (s *Service) ListRoutinesWithHabits(userID int) (*HabitGroups, error) {
 		}
 	}
 
+	routineSlice := make([]*RoutineWithHabits, 0, len(routinesList))
+	for _, routine := range routinesList {
+		routineSlice = append(routineSlice, routines[routine.ID])
+	}
+
 	return &HabitGroups{
-		Routines: slices.Collect(maps.Values(routines)),
+		Routines: routineSlice,
 		Habits:   habits,
 	}, nil
 }

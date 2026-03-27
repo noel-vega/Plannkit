@@ -85,8 +85,8 @@ func (r *Repository) DeleteHabit(params *DeleteHabitParams) error {
 func (r *Repository) InsertRoutine(params *InsertRoutineParams) (*Routine, error) {
 	query := `
 		INSERT INTO
-	  habits_routines (user_id, name)
-	  VALUES (:user_id, :name)
+	  habits_routines (user_id, name, position)
+	  VALUES (:user_id, :name, :position)
 	  RETURNING *
 	`
 	query, args, err := sqlx.Named(query, params)
