@@ -184,7 +184,7 @@ function RoutineItemV2({ routine, colorScheme }: { routine: RoutineWithHabits; c
             </div>
           )}
           <button
-            className="cursor-pointer size-9 rounded-full border-2 border-dashed border-border grid place-content-center shrink-0 text-muted-foreground hover:border-foreground/30 transition-colors"
+            className="cursor-pointer size-10 rounded-full border-2 border-dashed border-border grid place-content-center shrink-0 text-muted-foreground hover:border-foreground/30 transition-colors"
             onClick={(e) => {
               e.stopPropagation()
               createHabitDialog.handleOpenDialog()
