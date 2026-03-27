@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { getDayOfYear } from "date-fns"
-import { CheckIcon, LayoutListIcon, PlusIcon } from "lucide-react"
+import { CheckIcon, ChevronDownIcon, LayoutListIcon, PlusIcon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -92,24 +92,33 @@ function RoutineHabitRowV2({ habit, colorScheme }: { habit: HabitWithContributio
           {habit.completionsPerDay === 1 ? (
             <button
               className={cn(
-                "cursor-pointer size-10 rounded-full border-2 grid place-content-center shrink-0 transition-all duration-300",
+                "cursor-pointer size-10 rounded-full border-2 grid place-content-center shrink-0 transition-all duration-300 group/check",
                 isDone
                   ? "bg-green-600 border-green-600"
-                  : "border-border hover:border-green-400"
+                  : "border-muted-foreground/30 hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-950/20"
               )}
               onClick={handleContribution}
             >
-              {isDone && <CheckIcon className="stroke-white" size={18} strokeWidth={2.5} />}
+              <CheckIcon
+                className={cn(
+                  "transition-all duration-300",
+                  isDone
+                    ? "stroke-white opacity-100"
+                    : "stroke-muted-foreground/25 group-hover/check:stroke-green-500 group-hover/check:opacity-80"
+                )}
+                size={18}
+                strokeWidth={2.5}
+              />
             </button>
           ) : (
             <button
-              className="cursor-pointer relative size-10 rounded-full grid place-content-center shrink-0"
+              className="cursor-pointer relative size-10 rounded-full grid place-content-center shrink-0 transition-all duration-300"
               onClick={handleContribution}
             >
               {isDone ? (
                 <CheckIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 stroke-green-600" size={14} />
               ) : (
-                <PlusIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2" size={14} />
+                <PlusIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 text-muted-foreground/50 transition-colors duration-300" size={14} />
               )}
               <CircularProgress
                 progress={progress}
@@ -117,6 +126,7 @@ function RoutineHabitRowV2({ habit, colorScheme }: { habit: HabitWithContributio
                 strokeWidth={2.5}
                 showPercentage={false}
                 primaryColor="stroke-green-600"
+                secondaryColor="color-mix(in oklch, var(--muted-foreground) 30%, transparent)"
               />
             </button>
           )}
@@ -138,7 +148,6 @@ function RoutineItemV2({ routine, colorScheme }: { routine: RoutineWithHabits; c
   const createHabitDialog = useDialog()
   const { completed, total } = getRoutineProgress(routine.habits)
   const allDone = completed === total && total > 0
-  const progressPercent = total > 0 ? (completed / total) * 100 : 0
   const subtitle = getSubtitle(completed, total, t)
 
   return (
@@ -164,34 +173,18 @@ function RoutineItemV2({ routine, colorScheme }: { routine: RoutineWithHabits; c
               </p>
             )}
           </div>
-          {allDone ? (
+          {allDone && (
             <Badge className="bg-green-100 border border-green-500 text-green-800 gap-1">
               <CheckIcon size={12} />
               {t("Complete")}
             </Badge>
-          ) : (
-            <div className="relative shrink-0 grid place-content-center">
-              <CircularProgress
-                progress={progressPercent}
-                size={40}
-                strokeWidth={3}
-                showPercentage={false}
-                primaryColor="stroke-green-600"
-              />
-              <span className="absolute inset-0 flex items-center justify-center text-[10px] font-medium text-muted-foreground">
-                {completed}/{total}
-              </span>
-            </div>
           )}
-          <button
-            className="cursor-pointer size-10 rounded-full border-2 border-dashed border-border grid place-content-center shrink-0 text-muted-foreground hover:border-foreground/30 transition-colors"
-            onClick={(e) => {
-              e.stopPropagation()
-              createHabitDialog.handleOpenDialog()
-            }}
-          >
-            <PlusIcon size={14} />
-          </button>
+          <ChevronDownIcon
+            className={cn(
+              "size-4 text-muted-foreground transition-transform duration-300",
+              !open && "-rotate-90"
+            )}
+          />
         </div>
       </CardHeader>
 
@@ -208,6 +201,15 @@ function RoutineItemV2({ routine, colorScheme }: { routine: RoutineWithHabits; c
                 <RoutineHabitRowV2 key={habit.id} habit={habit} colorScheme={colorScheme} />
               ))}
             </ul>
+            <button
+              className="flex items-center gap-3 w-full h-13 px-5 text-muted-foreground hover:bg-secondary/30 transition-all duration-300 cursor-pointer border-t border-border/50"
+              onClick={() => createHabitDialog.handleOpenDialog()}
+            >
+              <div className="size-8 grid place-content-center shrink-0">
+                <PlusIcon className="size-4" />
+              </div>
+              <span className="text-sm">{t("Add habit")}</span>
+            </button>
             <CreateHabitDialogDrawer routineId={routine.id} {...createHabitDialog} />
           </CardContent>
         </div>
