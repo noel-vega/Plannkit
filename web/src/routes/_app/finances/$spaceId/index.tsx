@@ -108,7 +108,7 @@ function Goals(props: { goals: Goal[], spaceId: number }) {
           </CardContent>
         </Card>
       )}
-      <div className="grid-cols-1 grid @6xl:grid-cols-2 gap-4">
+      <div className="grid-cols-1 grid @5xl:grid-cols-2 gap-4">
         {props.goals.map((goal) => (
           <GoalCard key={goal.id} goal={goal} />
         ))}

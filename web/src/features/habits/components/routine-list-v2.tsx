@@ -104,7 +104,7 @@ function RoutineHabitRowV2({ habit, colorScheme }: { habit: HabitWithContributio
                   "transition-all duration-300",
                   isDone
                     ? "stroke-white opacity-100"
-                    : "stroke-muted-foreground/25 group-hover/check:stroke-green-500 group-hover/check:opacity-80"
+                    : "stroke-muted-foreground/50 group-hover/check:stroke-green-500 group-hover/check:opacity-80"
                 )}
                 size={18}
                 strokeWidth={2.5}
@@ -116,14 +116,14 @@ function RoutineHabitRowV2({ habit, colorScheme }: { habit: HabitWithContributio
               onClick={handleContribution}
             >
               {isDone ? (
-                <CheckIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 stroke-green-600" size={14} />
+                <CheckIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 stroke-green-600" size={18} />
               ) : (
-                <PlusIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 text-muted-foreground/50 transition-colors duration-300" size={14} />
+                <PlusIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 text-muted-foreground/50 transition-colors duration-300" size={18} />
               )}
               <CircularProgress
                 progress={progress}
                 size={40}
-                strokeWidth={2.5}
+                strokeWidth={2}
                 showPercentage={false}
                 primaryColor="stroke-green-600"
                 secondaryColor="color-mix(in oklch, var(--muted-foreground) 30%, transparent)"
