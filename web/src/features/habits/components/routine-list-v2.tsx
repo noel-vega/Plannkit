@@ -74,17 +74,17 @@ function RoutineHabitRowV2({ habit, colorScheme }: { habit: HabitWithContributio
   return (
     <li>
       <Link to="/habits/$id" params={{ id: habit.id }} className="block">
-        <div className={cn(
-          "flex items-center h-13 px-5 hover:bg-secondary/30 transition-all duration-300",
-          isDone && "opacity-60"
-        )}>
-          <div className="flex items-center gap-3 flex-1">
-            <div className="size-8 rounded-md grid place-content-center shrink-0 bg-secondary/50">
-              <DynamicIcon className="size-3.5" name={habit.icon} />
+        <div className="flex items-center h-13 px-5 hover:bg-secondary/30 transition-all duration-300">
+          <div className={cn(
+            "flex items-center gap-3 flex-1",
+            isDone && "opacity-60"
+          )}>
+            <div className="size-8 grid place-content-center shrink-0 text-muted-foreground">
+              <DynamicIcon className="size-4" name={habit.icon} />
             </div>
             <span className={cn(
               "text-sm transition-all duration-300",
-              isDone ? "text-muted-foreground" : "font-medium"
+              isDone ? "text-muted-foreground line-through" : "font-medium"
             )}>
               {habit.name}
             </span>
@@ -92,18 +92,18 @@ function RoutineHabitRowV2({ habit, colorScheme }: { habit: HabitWithContributio
           {habit.completionsPerDay === 1 ? (
             <button
               className={cn(
-                "cursor-pointer size-9 rounded-full border-2 grid place-content-center shrink-0 transition-all duration-300",
+                "cursor-pointer size-10 rounded-full border-2 grid place-content-center shrink-0 transition-all duration-300",
                 isDone
                   ? "bg-green-600 border-green-600"
                   : "border-border hover:border-green-400"
               )}
               onClick={handleContribution}
             >
-              {isDone && <CheckIcon className="stroke-white" size={14} />}
+              {isDone && <CheckIcon className="stroke-white" size={18} strokeWidth={2.5} />}
             </button>
           ) : (
             <button
-              className="cursor-pointer relative size-9 rounded-full grid place-content-center shrink-0"
+              className="cursor-pointer relative size-10 rounded-full grid place-content-center shrink-0"
               onClick={handleContribution}
             >
               {isDone ? (
@@ -113,7 +113,7 @@ function RoutineHabitRowV2({ habit, colorScheme }: { habit: HabitWithContributio
               )}
               <CircularProgress
                 progress={progress}
-                size={36}
+                size={40}
                 strokeWidth={2.5}
                 showPercentage={false}
                 primaryColor="stroke-green-600"
@@ -194,6 +194,8 @@ function RoutineItemV2({ routine, colorScheme }: { routine: RoutineWithHabits; c
           </button>
         </div>
       </CardHeader>
+
+      <hr className="border-border/50" />
 
       <div className={cn(
         "grid transition-[grid-template-rows] duration-300 ease-out",
