@@ -37,6 +37,9 @@ export const habits = {
       const response = await api.GET("/habits/routines")
       const data = await response.json()
       return ListRoutinesResponseSchema.parse(data)
+    },
+    delete: async (params: ByIdParams) => {
+      await api.DELETE(`/habits/routines/${params.id}`)
     }
   },
 

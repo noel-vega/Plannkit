@@ -4,17 +4,17 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Spinner } from "@/components/ui/spinner"
 import { buttonVariants } from "@/components/ui/button"
 import type { DialogProps } from "@/types"
-import { useDeleteHabit } from "../hooks"
+import { useDeleteHabitMutation } from "../hooks"
 import { useTranslation } from "react-i18next"
 
 type Props = {
   id: number
 } & PropsWithChildren & DialogProps
 
-export function DeleteHabitDialog(props: Props) {
+export function ConfirmDeleteHabitDialog(props: Props) {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const deleteHabit = useDeleteHabit()
+  const deleteHabit = useDeleteHabitMutation()
 
   const handleDelete = () => {
     deleteHabit.mutate({ id: props.id }, {

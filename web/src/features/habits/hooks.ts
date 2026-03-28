@@ -31,7 +31,7 @@ function removeHabitFromQueryCache(params: { id: number }) {
   })
 }
 
-export function useDeleteHabit() {
+export function useDeleteHabitMutation() {
   return useMutation({
     mutationFn: habits.delete,
     onMutate: (vars) => {
@@ -119,4 +119,13 @@ export function invalidateListRoutinesQuery() {
 
 export function useListRoutinesQuery() {
   return useSuspenseQuery(getListRoutinesQueryOptions())
+}
+
+export function useDeleteRoutineMutation() {
+  return useMutation({
+    mutationFn: habits.routines.delete,
+    onSuccess: () => {
+      invalidateListRoutinesQuery()
+    }
+  })
 }

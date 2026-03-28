@@ -1,13 +1,14 @@
 import { useState } from "react"
 import { getDayOfYear } from "date-fns"
-import { CheckIcon, ChevronDownIcon, PlusIcon } from "lucide-react"
+import { CheckIcon, ChevronDownIcon, LayoutListIcon, MoreVerticalIcon, PencilIcon, PlusIcon, TrashIcon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { DynamicIcon } from "@/components/ui/dynamic-icon"
 import { CreateHabitDialogDrawer } from "./create-habit-form"
+import { CreateRoutineDialogDrawer } from "./create-routine-form"
 import { CircularProgress } from "@/components/ui/circle-progress"
 import { CustomContributionCompletionsDialog } from "./habit-card"
 import { cn } from "@/lib/utils"
@@ -15,6 +16,18 @@ import { useDialog } from "@/hooks"
 import { useCreateContribution, useUpdateContribution } from "../hooks"
 import type { RoutineWithHabits, HabitWithContributions, Contribution } from "../types"
 import { useTranslation } from "react-i18next"
+import { ConfirmDeleteRoutineDialog } from "./dialog-confirm-delete-routine"
+
+const ROUTINE_COLORS = [
+  { bg: "bg-blue-500/10", text: "text-blue-600" },
+  { bg: "bg-violet-500/10", text: "text-violet-600" },
+  { bg: "bg-amber-500/10", text: "text-amber-600" },
+  { bg: "bg-emerald-500/10", text: "text-emerald-600" },
+  { bg: "bg-rose-500/10", text: "text-rose-600" },
+  { bg: "bg-cyan-500/10", text: "text-cyan-600" },
+]
+
+type ColorScheme = (typeof ROUTINE_COLORS)[number]
 
 function getRoutineProgress(habits: HabitWithContributions[]) {
   const today = getDayOfYear(new Date())
@@ -28,7 +41,14 @@ function getRoutineProgress(habits: HabitWithContributions[]) {
   return { completed, total: habits.length }
 }
 
-function RoutineHabitRow({ habit }: { habit: HabitWithContributions }) {
+function getSubtitle(completed: number, total: number, t: (key: string) => string) {
+  if (total === 0) return t("No habits yet")
+  if (completed === 0) return `${total} ${t("habits")}`
+  if (completed < total) return `${completed} ${t("of")} ${total} ${t("complete")}`
+  return null
+}
+
+function RoutineHabitRow({ habit }: { habit: HabitWithContributions; }) {
   const contributionsDialog = useDialog()
   const contributions = new Map<number, Contribution>(
     habit.contributions.map(c => [getDayOfYear(c.date), c])
@@ -58,32 +78,62 @@ function RoutineHabitRow({ habit }: { habit: HabitWithContributions }) {
   return (
     <li>
       <Link to="/habits/$id" params={{ id: habit.id }} className="block">
-        <div className="flex items-center h-16 px-5 hover:bg-secondary/30 transition-colors">
-          <div className="flex items-center gap-3 flex-1">
-            <div className={cn(
-              "size-9 rounded-md grid place-content-center shrink-0",
-              isDone ? "bg-green-100" : "bg-secondary/50"
-            )}>
+        <div className="flex items-center h-13 px-5 hover:bg-secondary/30 transition-all duration-300">
+          <div className={cn(
+            "flex items-center gap-3 flex-1",
+            isDone && "opacity-60"
+          )}>
+            <div className="size-8 grid place-content-center shrink-0 text-muted-foreground">
               <DynamicIcon className="size-4" name={habit.icon} />
             </div>
             <span className={cn(
-              "text-sm font-medium",
-              isDone && "text-muted-foreground line-through"
+              "text-sm transition-all duration-300",
+              isDone ? "text-muted-foreground line-through" : "font-medium"
             )}>
               {habit.name}
             </span>
           </div>
-          <button
-            className="cursor-pointer relative size-10 rounded-full grid place-content-center shrink-0"
-            onClick={handleContribution}
-          >
-            {isDone ? (
-              <CheckIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 stroke-green-600" size={16} />
-            ) : (
-              <PlusIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2" size={16} />
-            )}
-            <CircularProgress progress={progress} size={40} strokeWidth={3} showPercentage={false} />
-          </button>
+          {habit.completionsPerDay === 1 ? (
+            <button
+              className={cn(
+                "cursor-pointer size-10 rounded-full border-2 grid place-content-center shrink-0 transition-all duration-300 group/check",
+                isDone
+                  ? "bg-green-600 border-green-600"
+                  : "border-muted-foreground/30 hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-950/20"
+              )}
+              onClick={handleContribution}
+            >
+              <CheckIcon
+                className={cn(
+                  "transition-all duration-300",
+                  isDone
+                    ? "stroke-white opacity-100"
+                    : "stroke-muted-foreground/50 group-hover/check:stroke-green-500 group-hover/check:opacity-80"
+                )}
+                size={18}
+                strokeWidth={2.5}
+              />
+            </button>
+          ) : (
+            <button
+              className="cursor-pointer relative size-10 rounded-full grid place-content-center shrink-0 transition-all duration-300"
+              onClick={handleContribution}
+            >
+              {isDone ? (
+                <CheckIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 stroke-green-600" size={18} />
+              ) : (
+                <PlusIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 text-muted-foreground/50 transition-colors duration-300" size={18} />
+              )}
+              <CircularProgress
+                progress={progress}
+                size={40}
+                strokeWidth={2}
+                showPercentage={false}
+                primaryColor="stroke-green-600"
+                secondaryColor="color-mix(in oklch, var(--muted-foreground) 30%, transparent)"
+              />
+            </button>
+          )}
         </div>
       </Link>
       <CustomContributionCompletionsDialog
@@ -96,61 +146,99 @@ function RoutineHabitRow({ habit }: { habit: HabitWithContributions }) {
   )
 }
 
-function RoutineItem({ routine }: { routine: RoutineWithHabits }) {
+function RoutineItem({ routine, colorScheme, onDelete }: { routine: RoutineWithHabits; colorScheme: ColorScheme, onDelete: (routineId: number) => void }) {
   const { t } = useTranslation()
   const [open, setOpen] = useState(true)
   const createHabitDialog = useDialog()
   const { completed, total } = getRoutineProgress(routine.habits)
   const allDone = completed === total && total > 0
-  const progressPercent = total > 0 ? (completed / total) * 100 : 0
+  const subtitle = getSubtitle(completed, total, t)
 
   return (
-    <Card className="p-0 overflow-hidden">
+    <Card className={cn(
+      "p-0 gap-0 overflow-hidden transition-all duration-500"
+    )}>
       <CardHeader
-        className="px-5 py-4 gap-3 cursor-pointer hover:bg-secondary/20 transition-colors"
+        className="px-5 py-3.5 gap-1 grid-rows-[auto] cursor-pointer hover:bg-secondary/20 transition-colors"
         onClick={() => setOpen(o => !o)}
       >
         <div className="flex items-center gap-3">
+          <div className={cn(
+            "size-9 rounded-md grid place-content-center shrink-0",
+            colorScheme.bg
+          )}>
+            <LayoutListIcon className={cn("size-4", colorScheme.text)} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <CardTitle className="text-sm font-semibold">{routine.name}</CardTitle>
+            {subtitle && (
+              <p className="text-xs mt-0.5 text-muted-foreground">
+                {subtitle}
+              </p>
+            )}
+          </div>
+          {allDone && (
+            <Badge className="bg-green-100 border border-green-500 text-green-800 gap-1">
+              <CheckIcon size={12} />
+              {t("Complete")}
+            </Badge>
+          )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+              <button className="size-8 grid place-content-center rounded-md hover:bg-secondary/50 transition-colors cursor-pointer">
+                <MoreVerticalIcon className="size-4 text-muted-foreground" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem>
+                <PencilIcon className="size-4" />
+                {t("Edit")}
+              </DropdownMenuItem>
+
+              <DropdownMenuItem variant="destructive" onClick={(e) => {
+                e.stopPropagation()
+                onDelete(routine.id)
+              }}>
+                <TrashIcon className="size-4" />
+                {t("Delete")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <ChevronDownIcon
-            size={18}
             className={cn(
-              "transition-transform shrink-0 text-muted-foreground",
+              "size-4 text-muted-foreground transition-transform duration-300",
               !open && "-rotate-90"
             )}
           />
-          <CardTitle className="flex-1 text-base">{routine.name}</CardTitle>
-          {allDone ? (
-            <Badge className="bg-green-100 border border-green-500 text-green-800">
-              {t("Complete")}
-            </Badge>
-          ) : (
-            <span className="text-sm text-muted-foreground">{completed}/{total}</span>
-          )}
         </div>
-        <Progress className="h-1.5" value={progressPercent} />
       </CardHeader>
 
-      {open && (
-        <CardContent className="px-0 pb-0">
-          <ul className="divide-y">
-            {routine.habits.map(habit => (
-              <RoutineHabitRow key={habit.id} habit={habit} />
-            ))}
-          </ul>
-          <div className="border-t px-5 py-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="w-full text-muted-foreground"
-              onClick={createHabitDialog.handleOpenDialog}
+      <hr className="border-border/50" />
+
+      <div className={cn(
+        "grid transition-[grid-template-rows] duration-300 ease-out",
+        open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+      )}>
+        <div className="overflow-hidden min-h-0">
+          <CardContent className="px-0 pb-0">
+            <ul className="divide-y divide-border/50">
+              {routine.habits.map(habit => (
+                <RoutineHabitRow key={habit.id} habit={habit} />
+              ))}
+            </ul>
+            <button
+              className="flex items-center gap-3 w-full h-13 px-5 text-muted-foreground hover:bg-secondary/30 transition-all duration-300 cursor-pointer border-t border-border/50"
+              onClick={() => createHabitDialog.handleOpenDialog()}
             >
-              <PlusIcon size={16} />
-              <span>{t("Add Habit")}</span>
-            </Button>
-          </div>
-          <CreateHabitDialogDrawer routineId={routine.id} {...createHabitDialog} />
-        </CardContent>
-      )}
+              <div className="size-8 grid place-content-center shrink-0">
+                <PlusIcon className="size-4" />
+              </div>
+              <span className="text-sm">{t("Add habit")}</span>
+            </button>
+            <CreateHabitDialogDrawer routineId={routine.id} {...createHabitDialog} />
+          </CardContent>
+        </div>
+      </div>
     </Card>
   )
 }
@@ -160,31 +248,71 @@ export function RoutineList({ routines, ungroupedHabits }: {
   ungroupedHabits: HabitWithContributions[]
 }) {
   const { t } = useTranslation()
-  return (
-    <div className="space-y-6">
-      <div className="space-y-4">
-        <div className="text-sm font-medium text-muted-foreground px-1">{t("Routines")}</div>
-        <ul className="space-y-6">
-          {routines.map(routine => (
-            <RoutineItem key={routine.id} routine={routine} />
-          ))}
-        </ul>
-      </div>
+  const createRoutineDialog = useDialog()
+  const createHabitDialog = useDialog()
+  const deleteRoutineDialog = useDialog()
 
-      {ungroupedHabits.length > 0 && (
-        <div className="space-y-4">
-          <div className="text-sm font-medium text-muted-foreground px-1">{t("Habits")}</div>
-          <Card className="p-0 overflow-hidden">
-            <CardContent className="px-0 py-0">
-              <ul className="divide-y">
-                {ungroupedHabits.map(habit => (
-                  <RoutineHabitRow key={habit.id} habit={habit} />
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-        </div>
+  const [routineId, setRoutineId] = useState<number | null>(null)
+
+  console.log("ROUTINE ID:", routineId)
+
+
+  return (
+    <>
+      {routineId !== null && (
+        <ConfirmDeleteRoutineDialog routineId={routineId} {...deleteRoutineDialog} />
       )}
-    </div>
+      <div className="space-y-6">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between px-1">
+            <div className="text-sm font-medium text-muted-foreground">{t("Routines")}</div>
+            <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground" onClick={createRoutineDialog.handleOpenDialog}>
+              <PlusIcon className="size-3.5" />
+              <span>{t("Routine")}</span>
+            </Button>
+            <CreateRoutineDialogDrawer {...createRoutineDialog} />
+          </div>
+          <ul className="space-y-4">
+            {routines.map((routine, index) => (
+              <RoutineItem
+                key={routine.id}
+                routine={routine}
+                colorScheme={ROUTINE_COLORS[index % ROUTINE_COLORS.length]}
+                onDelete={(id) => {
+                  console.log("DELETE ROUTINE:", id)
+                  setRoutineId(id)
+                  deleteRoutineDialog.handleOpenDialog()
+                }}
+              />
+            ))}
+          </ul>
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex items-center justify-between px-1">
+            <div className="text-sm font-medium text-muted-foreground">{t("Habits")}</div>
+            <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground" onClick={createHabitDialog.handleOpenDialog}>
+              <PlusIcon className="size-3.5" />
+              <span>{t("Habit")}</span>
+            </Button>
+            <CreateHabitDialogDrawer {...createHabitDialog} />
+          </div>
+          {ungroupedHabits.length > 0 && (
+            <Card className="p-0 overflow-hidden">
+              <CardContent className="px-0 py-0">
+                <ul className="divide-y divide-border/50">
+                  {ungroupedHabits.map(habit => (
+                    <RoutineHabitRow
+                      key={habit.id}
+                      habit={habit}
+                    />
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </div>
+    </>
   )
 }

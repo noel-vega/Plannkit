@@ -14,11 +14,11 @@ import { CustomContributionCompletionsDialog } from '@/features/habits/component
 import { Progress } from '@/components/ui/progress'
 import { cn } from '@/lib/utils'
 import type { Contribution, HabitWithContributions } from '@/features/habits/types'
-import { DeleteHabitDialog } from '@/features/habits/components/delete-habit-dialog'
 import { useDialog } from '@/hooks'
 import { Page } from '@/components/layout/page'
 import { getHabitByIdQueryOptions, useCreateContribution, useUpdateContribution } from '@/features/habits/hooks'
 import { Container } from '@/components/layout/container'
+import { ConfirmDeleteHabitDialog } from '@/features/habits/components/dialog-confirm-delete-habit'
 
 export const Route = createFileRoute('/_app/habits/$id')({
   params: {
@@ -81,7 +81,7 @@ function Header({ habit }: { habit: HabitWithContributions }) {
       </header>
 
       <EditHabitDialog habit={habit} {...editDialog} />
-      <DeleteHabitDialog id={habit.id} {...deleteDialog} />
+      <ConfirmDeleteHabitDialog id={habit.id} {...deleteDialog} />
     </>
   )
 }
