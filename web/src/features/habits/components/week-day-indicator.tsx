@@ -1,5 +1,5 @@
 import { cn, getCompletedHabits, getDaysAround } from "@/lib/utils"
-import { format, getDayOfYear } from "date-fns"
+import { format } from "date-fns"
 import { CheckIcon, TriangleIcon } from "lucide-react"
 import type { HabitWithContributions } from "../types"
 

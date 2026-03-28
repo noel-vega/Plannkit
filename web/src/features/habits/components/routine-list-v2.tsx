@@ -1,10 +1,11 @@
 import { useState } from "react"
 import { getDayOfYear } from "date-fns"
-import { CheckIcon, ChevronDownIcon, LayoutListIcon, PlusIcon } from "lucide-react"
+import { CheckIcon, ChevronDownIcon, LayoutListIcon, MoreVerticalIcon, PencilIcon, PlusIcon, TrashIcon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { DynamicIcon } from "@/components/ui/dynamic-icon"
 import { CreateHabitDialogDrawer } from "./create-habit-form"
 import { CreateRoutineDialogDrawer } from "./create-routine-form"
@@ -181,6 +182,23 @@ function RoutineItemV2({ routine, colorScheme }: { routine: RoutineWithHabits; c
               {t("Complete")}
             </Badge>
           )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+              <button className="size-8 grid place-content-center rounded-md hover:bg-secondary/50 transition-colors cursor-pointer">
+                <MoreVerticalIcon className="size-4 text-muted-foreground" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem>
+                <PencilIcon className="size-4" />
+                {t("Edit")}
+              </DropdownMenuItem>
+              <DropdownMenuItem variant="destructive">
+                <TrashIcon className="size-4" />
+                {t("Delete")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <ChevronDownIcon
             className={cn(
               "size-4 text-muted-foreground transition-transform duration-300",
