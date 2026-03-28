@@ -15,11 +15,12 @@ import { getUseListExpensesOptions, getUseListGoalsOptions, getUseListIncomeSour
 import type { Expense, FinanceSpace, Goal } from '@/features/finances/types'
 import { GoalCard } from '@/features/finances/components/goal-card'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { PlusIcon, TargetIcon } from 'lucide-react'
+import { PlusIcon, SearchIcon, TargetIcon } from 'lucide-react'
 import z from 'zod/v3'
 import { queryClient } from '@/lib/react-query'
 import { CreateGoalDialog } from '@/features/finances/components/create-goal-form'
 import { useTranslation } from 'react-i18next'
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
 
 export const Route = createFileRoute('/_app/finances/$spaceId/')({
   beforeLoad: async ({ params }) => {
@@ -139,7 +140,12 @@ function Expenses(props: { expenses: Expense[], spaceId: number }) {
       <div className="flex gap-3 items-end mb-4">
         <Field className="w-full">
           <FieldLabel>{t("Search")}</FieldLabel>
-          <Input className="w-full" placeholder={t("Search expenses...")} />
+          <InputGroup>
+            <InputGroupInput placeholder={t("Search expenses...")} />
+            <InputGroupAddon>
+              <SearchIcon />
+            </InputGroupAddon>
+          </InputGroup>
         </Field>
         <Select>
           <SelectTrigger className="w-full max-w-52">

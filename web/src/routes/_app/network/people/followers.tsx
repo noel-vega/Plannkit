@@ -35,10 +35,10 @@ function RouteComponent() {
       <ul className="divide-y">
         {users.data.map(user => (
           <li key={user.id} >
-            <Link to="/u/$username" params={{ username: user.username }} className="p-4 block">
+            <Link to="/u/$username" params={{ username: user.username }} className="block">
               <Item>
                 <ItemMedia>
-                  <Avatar className="size-16">
+                  <Avatar className="size-12">
                     {user.avatar && (
                       <AvatarImage src={user.avatar} alt="@shadcn" />
                     )}
