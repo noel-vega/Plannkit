@@ -68,7 +68,11 @@ func (s *Service) ListSpaces(userID int) ([]SpaceWithMembership, error) {
 }
 
 func (s *Service) DeleteSpace(spaceID int) error {
-	return s.repository.DeleteSpace(spaceID)
+	err := s.repository.DeleteSpace(spaceID)
+	if errors.Is(err, apperrors.ErrNotFound) {
+		return ErrSpaceNotFound
+	}
+	return err
 }
 
 func (s *Service) CreateGoal(params *CreateGoalParams) (*Goal, error) {
@@ -91,8 +95,12 @@ func (s *Service) ListGoalContributions(params *ListGoalContributionsParams) ([]
 	return s.repository.ListGoalContributions(params)
 }
 
-func (s *Service) DeleteGoalContribution(params *DeleteGoalContributionParams) error {
-	return s.repository.DeleteGoalContribution(params)
+func (s *Service) DeleteGoalContribution(id int) error {
+	err := s.repository.DeleteGoalContribution(id)
+	if errors.Is(err, apperrors.ErrNotFound) {
+		return ErrGoalContributionNotFound
+	}
+	return err
 }
 
 func (s *Service) CreateExpense(params *CreateExpenseParams) (*Expense, error) {
@@ -103,8 +111,12 @@ func (s *Service) ListExpenses(params *ListExpensesParams) ([]Expense, error) {
 	return s.repository.ListExpenses(params)
 }
 
-func (s *Service) DeleteExpense(params *DeleteExpenseParams) error {
-	return s.repository.DeleteExpense(params)
+func (s *Service) DeleteExpense(id int) error {
+	err := s.repository.DeleteExpense(id)
+	if errors.Is(err, apperrors.ErrNotFound) {
+		return ErrExpenseNotFound
+	}
+	return err
 }
 
 func (s *Service) CreateIncomeSource(params *InsertIncomeSourceParams) (*IncomeSource, error) {
@@ -115,8 +127,12 @@ func (s *Service) ListIncomeSources(params *ListIncomeSourcesParams) ([]IncomeSo
 	return s.repository.ListIncomeSources(params)
 }
 
-func (s *Service) DeleteIncomeSource(params *DeleteIncomeSourceParams) error {
-	return s.repository.DeleteIncomeSource(params)
+func (s *Service) DeleteIncomeSource(id int) error {
+	err := s.repository.DeleteIncomeSource(id)
+	if errors.Is(err, apperrors.ErrNotFound) {
+		return ErrIncomeSourceNotFound
+	}
+	return err
 }
 
 func (s *Service) InviteToSpace(params *InviteToSpaceParams) (*SpaceMember, error) {
@@ -187,7 +203,12 @@ func (s *Service) DeleteSpaceMember(params *SpaceMemberRelationship) error {
 	if member.Role == RoleOwner {
 		return ErrCannotDeleteOwner
 	}
-	return s.repository.DeleteSpaceMember(params)
+
+	err = s.repository.DeleteSpaceMember(params)
+	if errors.Is(err, apperrors.ErrNotFound) {
+		return ErrSpaceMemberNotFound
+	}
+	return err
 }
 
 func (s *Service) UpdateSpaceName(params *UpdateSpaceNameParams) (*Space, error) {

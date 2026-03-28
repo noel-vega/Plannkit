@@ -66,6 +66,8 @@ func (h *Handler) DeleteSpace(c *gin.Context) {
 		switch {
 		case errors.Is(err, ErrSpaceMemberNotFound):
 			c.AbortWithStatus(http.StatusForbidden)
+		case errors.Is(err, ErrSpaceNotFound):
+			c.AbortWithStatus(http.StatusNotFound)
 		default:
 			c.AbortWithError(http.StatusInternalServerError, err)
 		}
@@ -218,27 +220,20 @@ func (h *Handler) ListGoalContributions(c *gin.Context) {
 }
 
 func (h *Handler) DeleteGoalContribution(c *gin.Context) {
-	goalID, err := strconv.Atoi(c.Param("goalID"))
-	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
-
 	contributionID, err := strconv.Atoi(c.Param("contributionID"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	params := &DeleteGoalContributionParams{
-		ID:      contributionID,
-		SpaceID: c.MustGet("spaceID").(int),
-		GoalID:  goalID,
-	}
-
-	err = h.service.DeleteGoalContribution(params)
+	err = h.service.DeleteGoalContribution(contributionID)
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		switch {
+		case errors.Is(err, ErrGoalContributionNotFound):
+			c.AbortWithError(http.StatusNotFound, err)
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
 		return
 	}
 	c.Status(http.StatusNoContent)
@@ -293,17 +288,16 @@ func (h *Handler) DeleteExpense(c *gin.Context) {
 		return
 	}
 
-	params := &DeleteExpenseParams{
-		ID:      expenseID,
-		SpaceID: c.MustGet("spaceID").(int),
-		UserID:  httputil.UserID(c),
-	}
-	err = h.service.DeleteExpense(params)
+	err = h.service.DeleteExpense(expenseID)
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		switch {
+		case errors.Is(err, ErrExpenseNotFound):
+			c.AbortWithError(http.StatusNotFound, err)
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
 		return
 	}
-
 	c.Status(http.StatusNoContent)
 }
 
@@ -345,22 +339,22 @@ func (h *Handler) ListIncomes(c *gin.Context) {
 }
 
 func (h *Handler) DeleteIncome(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("incomeSourceID"))
+	incomeSourceID, err := strconv.Atoi(c.Param("incomeSourceID"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	params := &DeleteIncomeSourceParams{
-		ID:      id,
-		SpaceID: c.MustGet("spaceID").(int),
-	}
 
-	err = h.service.DeleteIncomeSource(params)
+	err = h.service.DeleteIncomeSource(incomeSourceID)
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		switch {
+		case errors.Is(err, ErrIncomeSourceNotFound):
+			c.AbortWithError(http.StatusNotFound, err)
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
 		return
 	}
-
 	c.Status(http.StatusNoContent)
 }
 

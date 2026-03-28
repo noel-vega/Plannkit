@@ -105,7 +105,7 @@ func (h *Handler) RemoveFollow(c *gin.Context) {
 		switch {
 		case errors.Is(err, ErrUnFollowSelf):
 			c.AbortWithError(http.StatusBadRequest, err)
-		case errors.Is(err, apperrors.ErrNotFound):
+		case errors.Is(err, ErrFollowNotFound):
 			c.AbortWithError(http.StatusNotFound, err)
 		default:
 			c.AbortWithError(http.StatusInternalServerError, err)

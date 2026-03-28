@@ -1,6 +1,6 @@
 import { queryOptions, useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { queryClient } from "@/lib/react-query"
-import { contributions, habits } from "./api"
+import { habits } from "./api"
 import type { HabitWithContributions } from "./types"
 
 export function getHabitByIdQueryOptions(params: { id: number }) {
@@ -30,7 +30,6 @@ function removeHabitFromQueryCache(params: { id: number }) {
     return !oldData ? oldData : oldData.filter(x => x.id !== params.id)
   })
 }
-
 
 export function useDeleteHabit() {
   return useMutation({
@@ -75,7 +74,7 @@ export function useUpdateHabit() {
 
 export function useCreateContribution() {
   return useMutation({
-    mutationFn: contributions.create,
+    mutationFn: habits.contributions.create,
     onSuccess: (_, { habitId }) => {
       invalidateListHabits()
       invalidateHabitById(habitId)
@@ -85,7 +84,7 @@ export function useCreateContribution() {
 
 export function useUpdateContribution() {
   return useMutation({
-    mutationFn: contributions.update,
+    mutationFn: habits.contributions.update,
     onSuccess: (_, { habitId }) => {
       invalidateListHabits()
       invalidateHabitById(habitId)

@@ -46,8 +46,25 @@ func (s *Service) UpdateHabit(params *UpdateHabitParams) error {
 	return s.repository.UpdateHabit(params)
 }
 
+func (s *Service) UpdateHabitPosition(params *UpdateHabitPositionParams) (*Habit, error) {
+	newPosition, err := fracdex.KeyBetween(params.AfterPosition, params.BeforePosition)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.repository.UpdateHabitPosition(&UpdateHabitPositionRepoParams{
+		ID:        params.ID,
+		RoutineID: params.RoutineID,
+		Position:  newPosition,
+	})
+}
+
 func (s *Service) DeleteHabit(params *DeleteHabitParams) error {
-	return s.repository.DeleteHabit(params)
+	err := s.repository.DeleteHabit(params)
+	if errors.Is(err, apperrors.ErrNotFound) {
+		return ErrHabitNotFound
+	}
+	return err
 }
 
 func (s *Service) CreateContribution(params *CreateContributionParams) error {
@@ -63,7 +80,11 @@ func (s *Service) UpdateContributionCompletions(params *UpdateContributionComple
 }
 
 func (s *Service) DeleteContribution(params *DeleteContributionParams) error {
-	return s.repository.DeleteHabitContribution(params)
+	err := s.repository.DeleteHabitContribution(params)
+	if errors.Is(err, apperrors.ErrNotFound) {
+		return ErrContributionNotFound
+	}
+	return err
 }
 
 func (s *Service) ListHabitContributions(params *GetHabitParams) ([]HabitContribution, error) {
@@ -168,19 +189,6 @@ func (s *Service) ListRoutinesWithHabits(userID int) (*HabitGroups, error) {
 	}, nil
 }
 
-func (s *Service) UpdateHabitPosition(params *UpdateHabitPositionParams) (*Habit, error) {
-	newPosition, err := fracdex.KeyBetween(params.AfterPosition, params.BeforePosition)
-	if err != nil {
-		return nil, err
-	}
-
-	return s.repository.UpdateHabitPosition(&UpdateHabitPositionRepoParams{
-		ID:        params.ID,
-		RoutineID: params.RoutineID,
-		Position:  newPosition,
-	})
-}
-
 func (s *Service) UpdateRoutinePosition(params *UpdateRoutinePositionParams) (*Routine, error) {
 	newPosition, err := fracdex.KeyBetween(params.AfterPosition, params.BeforePosition)
 	if err != nil {
@@ -191,4 +199,17 @@ func (s *Service) UpdateRoutinePosition(params *UpdateRoutinePositionParams) (*R
 		ID:       params.ID,
 		Position: newPosition,
 	})
+}
+
+type DeleteRoutineParams struct {
+	ID     int `db:"id"`
+	UserID int `db:"user_id"`
+}
+
+func (s *Service) DeleteRoutine(params *DeleteRoutineParams) error {
+	err := s.repository.DeleteRoutine(params)
+	if errors.Is(err, apperrors.ErrNotFound) {
+		return ErrRoutineNotFound
+	}
+	return err
 }

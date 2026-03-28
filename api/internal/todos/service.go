@@ -1,6 +1,11 @@
 package todos
 
-import "github.com/jmoiron/sqlx"
+import (
+	"errors"
+
+	"github.com/jmoiron/sqlx"
+	"github.com/noel-vega/habits/api/internal/apperrors"
+)
 
 type Service struct {
 	repository *Repository
@@ -29,5 +34,9 @@ func (s *Service) UpdateTodoPosition(params *UpdatePositionParams) error {
 }
 
 func (s *Service) DeleteTodo(params *DeleteTodoParams) error {
-	return s.repository.DeleteTodo(params)
+	err := s.repository.DeleteTodo(params)
+	if errors.Is(err, apperrors.ErrNotFound) {
+		return ErrTodoNotFound
+	}
+	return err
 }

@@ -156,8 +156,20 @@ func (r *Repository) DeleteFollow(params *RemoveFollowParams) error {
 	DELETE FROM network_followers
 	WHERE follower_user_id = :follower_user_id AND following_user_id = :following_user_id
 	`
-	_, err := r.db.NamedExec(query, params)
-	return err
+	result, err := r.db.NamedExec(query, params)
+	if err != nil {
+		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return apperrors.ErrNotFound
+	}
+	return nil
 }
 
 func (r *Repository) AcceptFollow(params *AcceptFollowParams) error {
@@ -222,8 +234,21 @@ func (r *Repository) AcceptConnection(ID int) error {
 
 func (r *Repository) DeleteConnection(ID int) error {
 	query := `
-		DELETE FROM network_connections WHERE id = $1
+		DELETE FROM network_connections
+	  WHERE id = $1
 	`
-	_, err := r.db.Exec(query, ID)
-	return err
+	result, err := r.db.Exec(query, ID)
+	if err != nil {
+		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return apperrors.ErrNotFound
+	}
+	return nil
 }

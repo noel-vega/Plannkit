@@ -10,5 +10,8 @@ var (
 	ErrInvalidRole                = errors.New("not a valid role")
 	ErrCannotDeleteOwner          = errors.New("cannot delete space owner")
 	ErrValidationRequireName      = errors.New("name required")
+	ErrGoalContributionNotFound   = errors.New("goal contribution not found")
 	ErrValidationMaxCharacters    = errors.New("max characters")
+	ErrExpenseNotFound            = errors.New("expense not found")
+	ErrIncomeSourceNotFound       = errors.New("income source not found")
 )

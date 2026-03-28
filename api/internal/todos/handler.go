@@ -1,6 +1,7 @@
 package todos
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -115,7 +116,12 @@ func (h *Handler) DeleteTodo(c *gin.Context) {
 	}
 	err = h.service.DeleteTodo(params)
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		switch {
+		case errors.Is(err, ErrTodoNotFound):
+			c.AbortWithError(http.StatusNotFound, err)
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
 		return
 	}
 	c.Status(http.StatusNoContent)

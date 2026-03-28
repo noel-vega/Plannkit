@@ -201,9 +201,7 @@ type CreateGoalContributionParams struct {
 }
 
 type DeleteGoalContributionParams struct {
-	ID      int `db:"id"`
-	GoalID  int `db:"finance_space_goal_id"`
-	SpaceID int `db:"finance_space_id"`
+	ID int `db:"id"`
 }
 
 type DeleteExpenseParams struct {

@@ -91,9 +91,8 @@ type CreateContributionParams struct {
 }
 
 type DeleteContributionParams struct {
-	ID      int `json:"id" db:"id"`
-	HabitID int `json:"habitId" db:"habit_id"`
-	UserID  int `json:"userId" db:"user_id"`
+	ID     int `db:"id"`
+	UserID int `db:"user_id"`
 }
 
 type UpdateCompletionsBody struct {
@@ -107,8 +106,8 @@ type UpdateContributionCompletionsParams struct {
 }
 
 type DeleteHabitParams struct {
-	ID     int `json:"id" db:"id"`
-	UserID int `json:"userId" db:"user_id"`
+	ID     int `db:"id"`
+	UserID int `db:"user_id"`
 }
 
 type Routine struct {

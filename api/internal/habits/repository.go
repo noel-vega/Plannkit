@@ -74,11 +74,23 @@ func (r *Repository) UpdateHabit(params *UpdateHabitParams) error {
 }
 
 func (r *Repository) DeleteHabit(params *DeleteHabitParams) error {
-	query := `DELETE FROM habits WHERE id = $1 AND user_id = $2;`
-	_, err := r.db.Exec(query, params.ID, params.UserID)
+	query := `
+	DELETE FROM habits
+	WHERE id = :id AND user_id = :user_id`
+	result, err := r.db.NamedExec(query, params)
 	if err != nil {
 		return err
 	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return apperrors.ErrNotFound
+	}
+
 	return nil
 }
 
@@ -150,12 +162,22 @@ func (r *Repository) UpdateHabitContributionCompletions(params *UpdateContributi
 func (r *Repository) DeleteHabitContribution(params *DeleteContributionParams) error {
 	query := `
 	DELETE FROM habits_contributions 
-	WHERE user_id = :user_id AND habit_id = :habit_id AND id = :id 
+	WHERE id = :id AND user_id = :user_id
 	`
-	_, err := r.db.NamedExec(query, params)
+	result, err := r.db.NamedExec(query, params)
 	if err != nil {
 		return err
 	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return apperrors.ErrNotFound
+	}
+
 	return nil
 }
 
@@ -231,21 +253,6 @@ func (r *Repository) GetLastHabitInGroup(userID int, routineID *int) (*Habit, er
 	return habit, nil
 }
 
-func (r *Repository) ListRoutines(userID int) ([]Routine, error) {
-	query := `
-		SELECT * 
-	  FROM habits_routines
-	  WHERE user_id = $1
-	  ORDER by position ASC
-	`
-	routines := []Routine{}
-	err := r.db.Select(&routines, query, userID)
-	if err != nil {
-		return nil, err
-	}
-	return routines, nil
-}
-
 func (r *Repository) UpdateHabitPosition(params *UpdateHabitPositionRepoParams) (*Habit, error) {
 	query := `
 		UPDATE habits
@@ -265,6 +272,21 @@ func (r *Repository) UpdateHabitPosition(params *UpdateHabitPositionRepoParams) 
 	return habit, nil
 }
 
+func (r *Repository) ListRoutines(userID int) ([]Routine, error) {
+	query := `
+		SELECT * 
+	  FROM habits_routines
+	  WHERE user_id = $1
+	  ORDER by position ASC
+	`
+	routines := []Routine{}
+	err := r.db.Select(&routines, query, userID)
+	if err != nil {
+		return nil, err
+	}
+	return routines, nil
+}
+
 func (r *Repository) UpdateRoutinePosition(params *UpdateRoutinePositionRepoParams) (*Routine, error) {
 	query := `
 		UPDATE habits_routines
@@ -282,4 +304,26 @@ func (r *Repository) UpdateRoutinePosition(params *UpdateRoutinePositionRepoPara
 		return nil, err
 	}
 	return routine, nil
+}
+
+func (r *Repository) DeleteRoutine(params *DeleteRoutineParams) error {
+	query := `
+		DELETE FROM habits_routines
+	  WHERE id = :id AND user_id = :user_id 
+	`
+	result, err := r.db.NamedExec(query, params)
+	if err != nil {
+		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return apperrors.ErrNotFound
+	}
+
+	return nil
 }

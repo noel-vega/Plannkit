@@ -135,10 +135,22 @@ func (r *Repository) UpdatePosition(params *UpdatePositionParams) error {
 }
 
 func (r *Repository) DeleteTodo(params *DeleteTodoParams) error {
-	query := `DELETE FROM todos WHERE id = :id and user_id = :user_id`
-	_, err := r.db.NamedExec(query, params)
+	query := `
+	  DELETE FROM todos
+	  WHERE id = :id and user_id = :user_id
+	`
+	result, err := r.db.NamedExec(query, params)
 	if err != nil {
 		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return apperrors.ErrNotFound
 	}
 	return nil
 }

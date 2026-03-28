@@ -130,18 +130,11 @@ func (s *Service) RemoveFollow(params *RemoveFollowParams) error {
 		return ErrUnFollowSelf
 	}
 
-	isFollowing, err := s.IsFollowing(&GetFollowerParams{
-		FollowerUserID:  params.FollowerUserID,
-		FollowingUserID: params.FollowingUserID,
-	})
-	if err != nil {
-		return err
+	err := s.repository.DeleteFollow(params)
+	if errors.Is(err, apperrors.ErrNotFound) {
+		return ErrFollowNotFound
 	}
-
-	if !isFollowing {
-		return apperrors.ErrNotFound
-	}
-	return s.repository.DeleteFollow(params)
+	return err
 }
 
 func OrderUserIDs(user1ID, user2ID int) (int, int) {
@@ -230,5 +223,9 @@ func (s *Service) RemoveConnection(user1ID, user2ID int) error {
 		return err
 	}
 
-	return s.repository.DeleteConnection(connection.ID)
+	err = s.repository.DeleteConnection(connection.ID)
+	if errors.Is(err, apperrors.ErrNotFound) {
+		return ErrConnectionNotFound
+	}
+	return err
 }

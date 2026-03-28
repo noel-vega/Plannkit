@@ -129,7 +129,12 @@ func (h *Handler) DeleteHabit(c *gin.Context) {
 
 	err = h.service.DeleteHabit(params)
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		switch {
+		case errors.Is(err, ErrHabitNotFound):
+			c.AbortWithError(http.StatusNotFound, err)
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
 		return
 	}
 	c.Status(http.StatusNoContent)
@@ -193,13 +198,35 @@ func (h *Handler) UpdateHabitContribution(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
-func (h *Handler) DeleteHabitContribution(c *gin.Context) {
+func (h *Handler) UpdateHabitPosition(c *gin.Context) {
 	habitID, err := strconv.Atoi(c.Param("habitID"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
+	body := &UpdateHabitPositionBody{}
+	err = c.Bind(body)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	routine, err := h.service.UpdateHabitPosition(&UpdateHabitPositionParams{
+		ID:             habitID,
+		RoutineID:      body.RoutineID,
+		AfterPosition:  body.AfterPosition,
+		BeforePosition: body.BeforePosition,
+	})
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, routine)
+}
+
+func (h *Handler) DeleteHabitContribution(c *gin.Context) {
 	contributionID, err := strconv.Atoi(c.Param("contributionID"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -207,13 +234,17 @@ func (h *Handler) DeleteHabitContribution(c *gin.Context) {
 	}
 
 	params := &DeleteContributionParams{
-		ID:      contributionID,
-		HabitID: habitID,
-		UserID:  httputil.UserID(c),
+		ID:     contributionID,
+		UserID: httputil.UserID(c),
 	}
 	err = h.service.DeleteContribution(params)
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		switch {
+		case errors.Is(err, ErrContributionNotFound):
+			c.AbortWithError(http.StatusNotFound, err)
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
 		return
 	}
 
@@ -284,30 +315,24 @@ func (h *Handler) UpdateRoutinePosition(c *gin.Context) {
 	c.JSON(http.StatusOK, routine)
 }
 
-func (h *Handler) UpdateHabitPosition(c *gin.Context) {
-	habitID, err := strconv.Atoi(c.Param("habitID"))
+func (h *Handler) DeleteRoutine(c *gin.Context) {
+	routineID, err := strconv.Atoi(c.Param("routineID"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-
-	body := &UpdateHabitPositionBody{}
-	err = c.Bind(body)
-	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
-
-	routine, err := h.service.UpdateHabitPosition(&UpdateHabitPositionParams{
-		ID:             habitID,
-		RoutineID:      body.RoutineID,
-		AfterPosition:  body.AfterPosition,
-		BeforePosition: body.BeforePosition,
+	err = h.service.DeleteRoutine(&DeleteRoutineParams{
+		ID:     routineID,
+		UserID: httputil.UserID(c),
 	})
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		switch {
+		case errors.Is(err, ErrRoutineNotFound):
+			c.AbortWithError(http.StatusNotFound, err)
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
 		return
 	}
-
-	c.JSON(http.StatusOK, routine)
+	c.Status(http.StatusNoContent)
 }
