@@ -1,16 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { CreateHabitDialogDrawer } from '@/features/habits/components/create-habit-form'
-import { Button } from '@/components/ui/button'
-import { PlusIcon } from 'lucide-react'
-import { useDialog } from '@/hooks'
 import { format } from 'date-fns'
 import { TodaysProgress } from '@/features/habits/components/today-progress'
 import { Page } from '@/components/layout/page'
-import { useTranslation } from 'react-i18next'
 import { getListHabitsQueryOptions, useListHabits, useListRoutinesQuery } from '@/features/habits/hooks'
 import { WeekDayIndicator } from '@/features/habits/components/week-day-indicator'
 import { Container } from '@/components/layout/container'
-import { CreateRoutineDialogDrawer } from '@/features/habits/components/create-routine-form'
 import { Suspense } from 'react'
 import { RoutineListV2 } from '@/features/habits/components/routine-list-v2'
 
@@ -49,24 +43,11 @@ function HabitsList() {
 }
 
 function Header() {
-  const { t } = useTranslation()
-  const createHabitDialog = useDialog()
-  const createRoutineDialog = useDialog()
   return (
-    <header >
-      <div className="flex items-center gap-4 pb-2">
-        <p className="hidden @md:block mr-auto font-medium">
-          {format(new Date(), 'EEEE, MMMM d')}
-        </p>
-        <Button onClick={createRoutineDialog.handleOpenDialog} variant="secondary" className="flex-1 @md:flex-none">
-          <PlusIcon /><span>{t("Routine")}</span>
-        </Button>
-        <Button variant="secondary" className="flex-1 @md:flex-none" onClick={createHabitDialog.handleOpenDialog}>
-          <PlusIcon /><span>{t("Habit")}</span>
-        </Button>
-        <CreateRoutineDialogDrawer {...createRoutineDialog} />
-        <CreateHabitDialogDrawer {...createHabitDialog} />
-      </div>
+    <header>
+      <p className="font-medium">
+        {format(new Date(), 'EEEE, MMMM d')}
+      </p>
     </header>
   )
 }

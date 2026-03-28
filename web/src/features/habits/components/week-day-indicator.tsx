@@ -12,9 +12,7 @@ export function WeekdayIndicatorInternal(props: { habits: HabitWithContributions
         const { isDone } = getCompletedHabits({ day, habits: props.habits })
         return (
           <li key={i} className="flex-1">
-            <div className={cn("p-4 rounded-lg hover:bg-secondary/30 flex flex-col items-center gap-3 border", {
-              "bg-secondary hover:bg-secondary": getDayOfYear(day) === getDayOfYear(new Date())
-            })}>
+            <div className={cn("p-4 rounded-lg flex flex-col items-center gap-3 border bg-card")}>
               {day.getDate() === new Date().getDate() && (
                 <TriangleIcon className="rotate-180 absolute top-1 -translate-y-3/4 fill-blue-500 stroke-blue-500" size={16} />
               )}

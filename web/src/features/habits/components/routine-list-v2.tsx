@@ -3,9 +3,11 @@ import { getDayOfYear } from "date-fns"
 import { CheckIcon, ChevronDownIcon, LayoutListIcon, PlusIcon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DynamicIcon } from "@/components/ui/dynamic-icon"
 import { CreateHabitDialogDrawer } from "./create-habit-form"
+import { CreateRoutineDialogDrawer } from "./create-routine-form"
 import { CircularProgress } from "@/components/ui/circle-progress"
 import { CustomContributionCompletionsDialog } from "./habit-card"
 import { cn } from "@/lib/utils"
@@ -223,10 +225,20 @@ export function RoutineListV2({ routines, ungroupedHabits }: {
   ungroupedHabits: HabitWithContributions[]
 }) {
   const { t } = useTranslation()
+  const createRoutineDialog = useDialog()
+  const createHabitDialog = useDialog()
+
   return (
     <div className="space-y-6">
       <div className="space-y-4">
-        <div className="text-sm font-medium text-muted-foreground px-1">{t("Routines")}</div>
+        <div className="flex items-center justify-between px-1">
+          <div className="text-sm font-medium text-muted-foreground">{t("Routines")}</div>
+          <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground" onClick={createRoutineDialog.handleOpenDialog}>
+            <PlusIcon className="size-3.5" />
+            <span>{t("Routine")}</span>
+          </Button>
+          <CreateRoutineDialogDrawer {...createRoutineDialog} />
+        </div>
         <ul className="space-y-4">
           {routines.map((routine, index) => (
             <RoutineItemV2
@@ -238,9 +250,16 @@ export function RoutineListV2({ routines, ungroupedHabits }: {
         </ul>
       </div>
 
-      {ungroupedHabits.length > 0 && (
-        <div className="space-y-4">
-          <div className="text-sm font-medium text-muted-foreground px-1">{t("Habits")}</div>
+      <div className="space-y-4">
+        <div className="flex items-center justify-between px-1">
+          <div className="text-sm font-medium text-muted-foreground">{t("Habits")}</div>
+          <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground" onClick={createHabitDialog.handleOpenDialog}>
+            <PlusIcon className="size-3.5" />
+            <span>{t("Habit")}</span>
+          </Button>
+          <CreateHabitDialogDrawer {...createHabitDialog} />
+        </div>
+        {ungroupedHabits.length > 0 && (
           <Card className="p-0 overflow-hidden">
             <CardContent className="px-0 py-0">
               <ul className="divide-y divide-border/50">
@@ -254,8 +273,8 @@ export function RoutineListV2({ routines, ungroupedHabits }: {
               </ul>
             </CardContent>
           </Card>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }
