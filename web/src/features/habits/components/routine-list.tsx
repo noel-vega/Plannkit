@@ -17,6 +17,7 @@ import { useCreateContribution, useUpdateContribution } from "../hooks"
 import type { RoutineWithHabits, HabitWithContributions, Contribution } from "../types"
 import { useTranslation } from "react-i18next"
 import { ConfirmDeleteRoutineDialog } from "./dialog-confirm-delete-routine"
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
 
 const ROUTINE_COLORS = [
   { bg: "bg-blue-500/10", text: "text-blue-600" },
@@ -262,18 +263,34 @@ export function RoutineList({ routines }: { routines: RoutineWithHabits[] }) {
           </Button>
           <CreateRoutineDialogDrawer {...createRoutineDialog} />
         </div>
-        <ul className="space-y-4">
-          {routines.map((routine, index) => (
-            <RoutineItem
-              key={routine.id}
-              routine={routine}
-              colorScheme={ROUTINE_COLORS[index % ROUTINE_COLORS.length]}
-              onDelete={(id) => {
-                setRoutineAction({ id, action: "delete" })
-              }}
-            />
-          ))}
-        </ul>
+        {routines.length === 0 ? (
+          <Empty className="py-8">
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <LayoutListIcon />
+              </EmptyMedia>
+              <EmptyTitle>{t("No routines yet")}</EmptyTitle>
+              <EmptyDescription>{t("Group your habits into routines to build a structured daily flow.")}</EmptyDescription>
+            </EmptyHeader>
+            <Button variant="outline" size="sm" onClick={createRoutineDialog.handleOpenDialog}>
+              <PlusIcon className="size-3.5" />
+              {t("Create routine")}
+            </Button>
+          </Empty>
+        ) : (
+          <ul className="space-y-4">
+            {routines.map((routine, index) => (
+              <RoutineItem
+                key={routine.id}
+                routine={routine}
+                colorScheme={ROUTINE_COLORS[index % ROUTINE_COLORS.length]}
+                onDelete={(id) => {
+                  setRoutineAction({ id, action: "delete" })
+                }}
+              />
+            ))}
+          </ul>
+        )}
       </div>
       {routineAction?.action === "delete" && (
         <ConfirmDeleteRoutineDialog
@@ -299,9 +316,23 @@ export function HabitsList({ habits }: { habits: HabitWithContributions[] }) {
         </Button>
         <CreateHabitDialogDrawer {...createHabitDialog} />
       </div>
-      {habits.length > 0 && (
+      {habits.length === 0 ? (
+        <Empty className="py-8">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <CheckIcon />
+            </EmptyMedia>
+            <EmptyTitle>{t("No habits yet")}</EmptyTitle>
+            <EmptyDescription>{t("Start tracking a habit to build consistency over time.")}</EmptyDescription>
+          </EmptyHeader>
+          <Button variant="outline" size="sm" onClick={createHabitDialog.handleOpenDialog}>
+            <PlusIcon className="size-3.5" />
+            {t("Create habit")}
+          </Button>
+        </Empty>
+      ) : (
         <Card className="p-0 overflow-hidden">
-          <CardContent className="px-0 py-0">
+          <CardContent className="px-0 py-1.75">
             <ul className="divide-y divide-border/50">
               {habits.map(habit => (
                 <RoutineHabitRow
