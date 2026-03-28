@@ -243,76 +243,76 @@ function RoutineItem({ routine, colorScheme, onDelete }: { routine: RoutineWithH
   )
 }
 
-export function RoutineList({ routines, ungroupedHabits }: {
-  routines: RoutineWithHabits[]
-  ungroupedHabits: HabitWithContributions[]
-}) {
+type RoutineAction = { id: number; action: "delete" } | null
+
+export function RoutineList({ routines }: { routines: RoutineWithHabits[] }) {
   const { t } = useTranslation()
   const createRoutineDialog = useDialog()
-  const createHabitDialog = useDialog()
-  const deleteRoutineDialog = useDialog()
 
-  const [routineId, setRoutineId] = useState<number | null>(null)
-
-  console.log("ROUTINE ID:", routineId)
-
+  const [routineAction, setRoutineAction] = useState<RoutineAction>(null)
 
   return (
     <>
-      {routineId !== null && (
-        <ConfirmDeleteRoutineDialog routineId={routineId} {...deleteRoutineDialog} />
-      )}
-      <div className="space-y-6">
-        <div className="space-y-4">
-          <div className="flex items-center justify-between px-1">
-            <div className="text-sm font-medium text-muted-foreground">{t("Routines")}</div>
-            <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground" onClick={createRoutineDialog.handleOpenDialog}>
-              <PlusIcon className="size-3.5" />
-              <span>{t("Routine")}</span>
-            </Button>
-            <CreateRoutineDialogDrawer {...createRoutineDialog} />
-          </div>
-          <ul className="space-y-4">
-            {routines.map((routine, index) => (
-              <RoutineItem
-                key={routine.id}
-                routine={routine}
-                colorScheme={ROUTINE_COLORS[index % ROUTINE_COLORS.length]}
-                onDelete={(id) => {
-                  console.log("DELETE ROUTINE:", id)
-                  setRoutineId(id)
-                  deleteRoutineDialog.handleOpenDialog()
-                }}
-              />
-            ))}
-          </ul>
+      <div className="space-y-4">
+        <div className="flex items-center justify-between px-1">
+          <div className="text-sm font-medium text-muted-foreground">{t("Routines")}</div>
+          <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground" onClick={createRoutineDialog.handleOpenDialog}>
+            <PlusIcon className="size-3.5" />
+            <span>{t("Routine")}</span>
+          </Button>
+          <CreateRoutineDialogDrawer {...createRoutineDialog} />
         </div>
-
-        <div className="space-y-4">
-          <div className="flex items-center justify-between px-1">
-            <div className="text-sm font-medium text-muted-foreground">{t("Habits")}</div>
-            <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground" onClick={createHabitDialog.handleOpenDialog}>
-              <PlusIcon className="size-3.5" />
-              <span>{t("Habit")}</span>
-            </Button>
-            <CreateHabitDialogDrawer {...createHabitDialog} />
-          </div>
-          {ungroupedHabits.length > 0 && (
-            <Card className="p-0 overflow-hidden">
-              <CardContent className="px-0 py-0">
-                <ul className="divide-y divide-border/50">
-                  {ungroupedHabits.map(habit => (
-                    <RoutineHabitRow
-                      key={habit.id}
-                      habit={habit}
-                    />
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          )}
-        </div>
+        <ul className="space-y-4">
+          {routines.map((routine, index) => (
+            <RoutineItem
+              key={routine.id}
+              routine={routine}
+              colorScheme={ROUTINE_COLORS[index % ROUTINE_COLORS.length]}
+              onDelete={(id) => {
+                setRoutineAction({ id, action: "delete" })
+              }}
+            />
+          ))}
+        </ul>
       </div>
+      {routineAction?.action === "delete" && (
+        <ConfirmDeleteRoutineDialog
+          routineId={routineAction.id}
+          open
+          onOpenChange={() => setRoutineAction(null)}
+        />
+      )}
     </>
+  )
+}
+
+export function HabitsList({ habits }: { habits: HabitWithContributions[] }) {
+  const { t } = useTranslation()
+  const createHabitDialog = useDialog()
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between px-1">
+        <div className="text-sm font-medium text-muted-foreground">{t("Habits")}</div>
+        <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground" onClick={createHabitDialog.handleOpenDialog}>
+          <PlusIcon className="size-3.5" />
+          <span>{t("Habit")}</span>
+        </Button>
+        <CreateHabitDialogDrawer {...createHabitDialog} />
+      </div>
+      {habits.length > 0 && (
+        <Card className="p-0 overflow-hidden">
+          <CardContent className="px-0 py-0">
+            <ul className="divide-y divide-border/50">
+              {habits.map(habit => (
+                <RoutineHabitRow
+                  key={habit.id}
+                  habit={habit}
+                />
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
+    </div>
   )
 }
