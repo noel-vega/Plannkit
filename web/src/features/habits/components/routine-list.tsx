@@ -14,10 +14,11 @@ import { CustomContributionCompletionsDialog } from "./habit-card"
 import { cn } from "@/lib/utils"
 import { useDialog } from "@/hooks"
 import { useCreateContribution, useUpdateContribution } from "../hooks"
-import type { RoutineWithHabits, HabitWithContributions, Contribution } from "../types"
+import type { RoutineWithHabits, HabitWithContributions, Contribution, Routine } from "../types"
 import { useTranslation } from "react-i18next"
 import { ConfirmDeleteRoutineDialog } from "./dialog-confirm-delete-routine"
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
+import { EditRoutineDialog } from "./edit-routine-form"
 
 const ROUTINE_COLORS = [
   { bg: "bg-blue-500/10", text: "text-blue-600" },
@@ -147,7 +148,14 @@ function RoutineHabitRow({ habit }: { habit: HabitWithContributions; }) {
   )
 }
 
-function RoutineItem({ routine, colorScheme, onDelete }: { routine: RoutineWithHabits; colorScheme: ColorScheme, onDelete: (routineId: number) => void }) {
+type RoutineItemProps = {
+  routine: RoutineWithHabits;
+  colorScheme: ColorScheme,
+  onDelete: (routineId: number) => void
+  onEdit: (routineId: number) => void
+}
+
+function RoutineItem({ routine, colorScheme, onDelete, onEdit }: RoutineItemProps) {
   const { t } = useTranslation()
   const [open, setOpen] = useState(true)
   const createHabitDialog = useDialog()
@@ -191,7 +199,10 @@ function RoutineItem({ routine, colorScheme, onDelete }: { routine: RoutineWithH
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={e => {
+                e.stopPropagation()
+                onEdit(routine.id)
+              }}>
                 <PencilIcon className="size-4" />
                 {t("Edit")}
               </DropdownMenuItem>
@@ -244,12 +255,11 @@ function RoutineItem({ routine, colorScheme, onDelete }: { routine: RoutineWithH
   )
 }
 
-type RoutineAction = { id: number; action: "delete" } | null
+type RoutineAction = { routine: Routine; action: "delete" | "edit" } | null
 
 export function RoutineList({ routines }: { routines: RoutineWithHabits[] }) {
   const { t } = useTranslation()
   const createRoutineDialog = useDialog()
-
   const [routineAction, setRoutineAction] = useState<RoutineAction>(null)
 
   return (
@@ -284,8 +294,11 @@ export function RoutineList({ routines }: { routines: RoutineWithHabits[] }) {
                 key={routine.id}
                 routine={routine}
                 colorScheme={ROUTINE_COLORS[index % ROUTINE_COLORS.length]}
-                onDelete={(id) => {
-                  setRoutineAction({ id, action: "delete" })
+                onDelete={() => {
+                  setRoutineAction({ routine, action: "delete" })
+                }}
+                onEdit={() => {
+                  setRoutineAction({ routine, action: "edit" })
                 }}
               />
             ))}
@@ -294,7 +307,15 @@ export function RoutineList({ routines }: { routines: RoutineWithHabits[] }) {
       </div>
       {routineAction?.action === "delete" && (
         <ConfirmDeleteRoutineDialog
-          routineId={routineAction.id}
+          routineId={routineAction.routine.id}
+          open
+          onOpenChange={() => setRoutineAction(null)}
+        />
+      )}
+
+      {routineAction?.action === "edit" && (
+        <EditRoutineDialog
+          routine={routineAction.routine}
           open
           onOpenChange={() => setRoutineAction(null)}
         />

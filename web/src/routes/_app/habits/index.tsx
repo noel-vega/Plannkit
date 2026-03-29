@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { TodaysProgress } from '@/features/habits/components/today-progress'
 import { Page } from '@/components/layout/page'
-import { getListHabitsQueryOptions, useListHabits, useListRoutinesQuery } from '@/features/habits/hooks'
+import { getListRoutinesQueryOptions, useListRoutinesQuery } from '@/features/habits/hooks'
 import { WeekDayIndicator } from '@/features/habits/components/week-day-indicator'
 import { Container } from '@/components/layout/container'
 import { Suspense } from 'react'
@@ -16,11 +16,35 @@ import { useTranslation } from 'react-i18next'
 
 export const Route = createFileRoute('/_app/habits/')({
   loader: async ({ context: { queryClient } }) => {
-    const habits = await queryClient.ensureQueryData(getListHabitsQueryOptions())
-    return { habits }
+    await queryClient.ensureQueryData(getListRoutinesQueryOptions())
   },
   component: RouteComponent,
 })
+
+function RouteComponent() {
+  const { data: { routines, habits } } = useListRoutinesQuery()
+  const allHabits = [...habits, ...routines.flatMap(x => x.habits)]
+  const isEmpty = routines.length === 0 && habits.length === 0
+
+  return (
+    <Page>
+      <Container className="space-y-6 pt-8">
+        <WeekDayIndicator habits={allHabits} />
+        <TodaysProgress habits={allHabits} />
+        <Suspense fallback="loading">
+          {isEmpty ? (
+            <EmptyHabitsPage />
+          ) : (
+            <section className="space-y-8">
+              <RoutineList routines={routines} />
+              <HabitsList habits={habits} />
+            </section>
+          )}
+        </Suspense>
+      </Container>
+    </Page>
+  )
+}
 
 function EmptyHabitsPage() {
   const { t } = useTranslation()
@@ -52,29 +76,3 @@ function EmptyHabitsPage() {
   )
 }
 
-function RouteComponent() {
-  const loaderData = Route.useLoaderData()
-  const habits = useListHabits({ initialData: loaderData.habits })
-  const routines = useListRoutinesQuery()
-  const { routines: routinesList, habits: ungroupedHabits } = routines.data
-  const isEmpty = routinesList.length === 0 && ungroupedHabits.length === 0
-
-  return (
-    <Page>
-      <Container className="space-y-6 pt-8">
-        <WeekDayIndicator habits={habits.data} />
-        <TodaysProgress habits={habits.data} />
-        <Suspense fallback="loading">
-          {isEmpty ? (
-            <EmptyHabitsPage />
-          ) : (
-            <section className="space-y-8">
-              <RoutineList routines={routinesList} />
-              <HabitsList habits={ungroupedHabits} />
-            </section>
-          )}
-        </Suspense>
-      </Container>
-    </Page>
-  )
-}

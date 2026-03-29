@@ -40,23 +40,37 @@ export type UpdateContributionParams = {
 
 export type ByIdParams = { id: number }
 
-export const CreateRoutineSchema = z.object({
-  name: z.string().min(1).max(30)
-})
-
-export type CreateRoutineParams = z.infer<typeof CreateRoutineSchema>
-
-export const RoutineWithHabitsSchema = z.object({
+export const RoutineSchema = z.object({
   id: z.number(),
   userId: z.number(),
   name: z.string(),
   position: z.string(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
-  habits: HabitWithContributionsSchema.array()
 })
+
+export type Routine = z.infer<typeof RoutineSchema>
+
+
+export const RoutineWithHabitsSchema = z.object({
+  habits: HabitWithContributionsSchema.array()
+}).merge(RoutineSchema)
 
 export type RoutineWithHabits = z.infer<typeof RoutineWithHabitsSchema>
 
 export const ListRoutinesResponseSchema = z.object({ routines: RoutineWithHabitsSchema.array(), habits: HabitWithContributionsSchema.array() })
 export type ListRoutinesResponse = z.infer<typeof ListRoutinesResponseSchema>
+
+
+export const CreateRoutineSchema = z.object({
+  name: z.string().min(1).max(30)
+})
+
+export type CreateRoutineParams = z.infer<typeof CreateRoutineSchema>
+
+export const UpdateRoutineSchema = z.object({
+  id: z.number(),
+  name: z.string()
+})
+
+export type UpdateRoutineParams = z.infer<typeof UpdateRoutineSchema>
