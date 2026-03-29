@@ -42,7 +42,7 @@ export function FinanceSpaceSwitcher(props: Props) {
         <PopoverTrigger asChild>
           <Button
             variant="outline"
-            className="h-9  max-w-96 w-full justify-start gap-2 border-border bg-background px-3 text-sm font-medium text-foreground shadow-sm text-left"
+            className="h-9  max-w-96 w-full justify-start gap-2 border-border px-3 text-sm font-medium text-foreground text-left bg-card"
           >
             <WalletIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
             <span className="truncate max-w-45">
