@@ -287,6 +287,30 @@ func (r *Repository) ListRoutines(userID int) ([]Routine, error) {
 	return routines, nil
 }
 
+func (r *Repository) UpdateRoutine(params *UpdateRoutineParams) error {
+	query := `
+		UPDATE habits_routines
+	  SET name = :name
+	  WHERE id = :id AND user_id = :user_id
+	`
+
+	result, err := r.db.NamedExec(query, params)
+	if err != nil {
+		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return apperrors.ErrNotFound
+	}
+
+	return nil
+}
+
 func (r *Repository) UpdateRoutinePosition(params *UpdateRoutinePositionRepoParams) (*Routine, error) {
 	query := `
 		UPDATE habits_routines

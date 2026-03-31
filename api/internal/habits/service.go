@@ -189,6 +189,20 @@ func (s *Service) ListRoutinesWithHabits(userID int) (*HabitGroups, error) {
 	}, nil
 }
 
+func (s *Service) UpdateRoutine(params *UpdateRoutineParams) error {
+	trimmedName := strings.TrimSpace(params.Name)
+	if trimmedName == "" {
+		return ErrValidationNameRequired
+	}
+	params.Name = trimmedName
+
+	err := s.repository.UpdateRoutine(params)
+	if errors.Is(err, apperrors.ErrNotFound) {
+		return ErrRoutineNotFound
+	}
+	return err
+}
+
 func (s *Service) UpdateRoutinePosition(params *UpdateRoutinePositionParams) (*Routine, error) {
 	newPosition, err := fracdex.KeyBetween(params.AfterPosition, params.BeforePosition)
 	if err != nil {

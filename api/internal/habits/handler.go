@@ -288,6 +288,39 @@ func (h *Handler) ListRoutines(c *gin.Context) {
 	c.JSON(http.StatusOK, routines)
 }
 
+func (h *Handler) UpdateRoutine(c *gin.Context) {
+	routineID, err := strconv.Atoi(c.Param("routineID"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	var body UpdateRoutineBody
+	err = c.Bind(&body)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	err = h.service.UpdateRoutine(&UpdateRoutineParams{
+		ID:     routineID,
+		UserID: httputil.UserID(c),
+		Name:   body.Name,
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, ErrRoutineNotFound):
+			c.AbortWithError(http.StatusNotFound, err)
+		case errors.Is(err, ErrValidationNameRequired):
+			c.AbortWithError(http.StatusBadRequest, err)
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
+		return
+	}
+	c.Status(http.StatusNoContent)
+}
+
 func (h *Handler) UpdateRoutinePosition(c *gin.Context) {
 	routineID, err := strconv.Atoi(c.Param("routineID"))
 	if err != nil {

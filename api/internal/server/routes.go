@@ -68,8 +68,9 @@ func AddRoutes(router *gin.Engine, services *Services) *gin.Engine {
 
 	protected.GET("/habits/routines", habitsHandler.ListRoutines)
 	protected.POST("/habits/routines", habitsHandler.CreateRoutine)
-	protected.PATCH("/habits/routines/:routineID", habitsHandler.UpdateRoutinePosition)
+	protected.PATCH("/habits/routines/:routineID", habitsHandler.UpdateRoutine)
 	protected.DELETE("/habits/routines/:routineID", habitsHandler.DeleteRoutine)
+	protected.PATCH("/habits/routines/:routineID/position", habitsHandler.UpdateRoutinePosition)
 	protected.GET("/habits", habitsHandler.ListHabitsWithContributions)
 	protected.POST("/habits", habitsHandler.CreateHabit)
 	protected.DELETE("/habits/contributions/:contributionID", habitsHandler.DeleteHabitContribution)

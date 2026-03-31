@@ -119,6 +119,16 @@ type Routine struct {
 	UpdatedAt time.Time `json:"updatedAt" db:"updated_at"`
 }
 
+type UpdateRoutineBody struct {
+	Name string `json:"name"`
+}
+
+type UpdateRoutineParams struct {
+	ID     int    `db:"id"`
+	UserID int    `db:"user_id"`
+	Name   string `db:"name"`
+}
+
 type CreateRoutineBody struct {
 	Name string `json:"name"`
 }
@@ -141,7 +151,7 @@ type HabitGroups struct {
 
 type UpdateHabitPositionBody struct {
 	RoutineID      *int   `json:"routineId"`
-	AfterPosition  string `json:"afterPoition"`
+	AfterPosition  string `json:"afterPosition"`
 	BeforePosition string `json:"beforePosition"`
 }
 
@@ -166,7 +176,7 @@ type UpdateRoutinePositionBody struct {
 
 type UpdateRoutinePositionParams struct {
 	ID             int    `db:"id"`
-	AfterPosition  string `json:"afterPoition"`
+	AfterPosition  string `json:"afterPosition"`
 	BeforePosition string `json:"beforePosition"`
 }
 
