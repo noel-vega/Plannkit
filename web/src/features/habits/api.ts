@@ -1,4 +1,4 @@
-import { HabitWithContributionsSchema, ListRoutinesResponseSchema, RoutineSchema, type ByIdParams, type CreateContributionParams, type CreateHabitParams, type CreateRoutineParams, type Habit, type UpdateContributionParams, type UpdateRoutineParams } from "./types"
+import { HabitWithContributionsSchema, ListRoutinesResponseSchema, type ByIdParams, type CreateContributionParams, type CreateHabitParams, type CreateRoutineParams, type Habit, type UpdateContributionParams, type UpdateRoutineParams } from "./types"
 import { api } from "@/lib/plannkit-api-client"
 
 export const habits = {
