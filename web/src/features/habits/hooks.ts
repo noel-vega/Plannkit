@@ -121,6 +121,15 @@ export function useListRoutinesQuery() {
   return useSuspenseQuery(getListRoutinesQueryOptions())
 }
 
+export function useUpdateRoutineMutation() {
+  return useMutation({
+    mutationFn: habits.routines.update,
+    onSuccess: () => {
+      invalidateListRoutinesQuery()
+    }
+  })
+}
+
 export function useDeleteRoutineMutation() {
   return useMutation({
     mutationFn: habits.routines.delete,

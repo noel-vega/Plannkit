@@ -8,9 +8,11 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
+import { useUpdateRoutineMutation } from "../hooks"
 
 type EditRoutineFormProps = {
   routine: Routine
+  onSuccess: () => void
 }
 
 export function EditRoutineForm(props: EditRoutineFormProps) {
@@ -20,9 +22,14 @@ export function EditRoutineForm(props: EditRoutineFormProps) {
     defaultValues: props.routine
   })
 
+  const updateRoutine = useUpdateRoutineMutation()
+
   const handleSubmit = (e: FormEvent) => {
     return form.handleSubmit((data) => {
-      console.log(data)
+      updateRoutine.mutate(data, {
+        onSuccess: props.onSuccess,
+        onError: (e) => console.log(e.message)
+      })
     })(e)
   }
 
@@ -63,7 +70,7 @@ export function EditRoutineDialog({ routine, ...dialog }: { routine: Routine } &
         <DialogHeader>
           <DialogTitle>Edit Routine</DialogTitle>
         </DialogHeader>
-        <EditRoutineForm routine={routine} />
+        <EditRoutineForm routine={routine} onSuccess={() => dialog.onOpenChange(false)} />
       </DialogContent>
     </Dialog>
   )

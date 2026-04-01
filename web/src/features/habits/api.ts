@@ -39,11 +39,9 @@ export const habits = {
       return ListRoutinesResponseSchema.parse(data)
     },
     update: async (params: UpdateRoutineParams) => {
-      const response = await api.PATCH(`/habits/routines/${params.id}`, {
+      await api.PATCH(`/habits/routines/${params.id}`, {
         name: params.name
       })
-      const data = await response.json()
-      return RoutineSchema.parse(data)
     },
 
     // updatePosition: async (params: UpdateRoutineParams) => {
