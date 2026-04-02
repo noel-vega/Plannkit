@@ -1,10 +1,15 @@
 import { cn, getCompletedHabits, getDaysAround } from "@/lib/utils"
 import { format } from "date-fns"
+import { es } from "date-fns/locale/es"
 import { CheckIcon, TriangleIcon } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import type { HabitWithContributions } from "../types"
 
+const dateFnsLocales: Record<string, Locale> = { es }
 
 export function WeekdayIndicatorInternal(props: { habits: HabitWithContributions[], day: Date, around: number, className?: string }) {
+  const { i18n } = useTranslation()
+  const locale = dateFnsLocales[i18n.language]
   const days = getDaysAround(props.day, props.around)
   return (
     <ul className={cn("flex gap-3 relative", props.className)}>
@@ -16,7 +21,7 @@ export function WeekdayIndicatorInternal(props: { habits: HabitWithContributions
               {day.getDate() === new Date().getDate() && (
                 <TriangleIcon className="rotate-180 absolute top-1 -translate-y-3/4 fill-blue-500 stroke-blue-500" size={16} />
               )}
-              <p>{format(day, 'EEE')}</p>
+              <p>{format(day, 'EEE', { locale })}</p>
               <p>{day.getDate()}</p>
               <div className={cn("size-10 rounded-full bg-white border-2 flex items-center justify-center", {
                 "bg-green-600 text-white border-green-600": isDone
