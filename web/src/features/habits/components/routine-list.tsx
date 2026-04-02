@@ -17,7 +17,6 @@ import { useCreateContribution, useUpdateContribution } from "../hooks"
 import type { RoutineWithHabits, HabitWithContributions, Contribution, Routine } from "../types"
 import { useTranslation } from "react-i18next"
 import { ConfirmDeleteRoutineDialog } from "./dialog-confirm-delete-routine"
-import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
 import { EditRoutineDialog } from "./edit-routine-form"
 
 const ROUTINE_COLORS = [
@@ -274,19 +273,13 @@ export function RoutineList({ routines }: { routines: RoutineWithHabits[] }) {
           <CreateRoutineDialogDrawer {...createRoutineDialog} />
         </div>
         {routines.length === 0 ? (
-          <Empty className="py-8">
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <LayoutListIcon />
-              </EmptyMedia>
-              <EmptyTitle>{t("No routines yet")}</EmptyTitle>
-              <EmptyDescription>{t("Group your habits into routines to build a structured daily flow.")}</EmptyDescription>
-            </EmptyHeader>
-            <Button variant="outline" size="sm" onClick={createRoutineDialog.handleOpenDialog}>
-              <PlusIcon className="size-3.5" />
-              {t("Create routine")}
-            </Button>
-          </Empty>
+          <button
+            onClick={createRoutineDialog.handleOpenDialog}
+            className="flex flex-col items-center gap-2 py-6 w-full text-center rounded-lg border border-dashed border-muted-foreground/25 hover:border-muted-foreground/50 hover:bg-secondary/30 transition-all duration-200 cursor-pointer"
+          >
+            <p className="text-sm text-muted-foreground">{t("No routines yet")}</p>
+            <span className="text-xs text-muted-foreground">{t("Create routine")}</span>
+          </button>
         ) : (
           <ul className="space-y-4">
             {routines.map((routine, index) => (
@@ -338,19 +331,13 @@ export function HabitsList({ habits }: { habits: HabitWithContributions[] }) {
         <CreateHabitDialogDrawer {...createHabitDialog} />
       </div>
       {habits.length === 0 ? (
-        <Empty className="py-8">
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <CheckIcon />
-            </EmptyMedia>
-            <EmptyTitle>{t("No habits yet")}</EmptyTitle>
-            <EmptyDescription>{t("Start tracking a habit to build consistency over time.")}</EmptyDescription>
-          </EmptyHeader>
-          <Button variant="outline" size="sm" onClick={createHabitDialog.handleOpenDialog}>
-            <PlusIcon className="size-3.5" />
-            {t("Create habit")}
-          </Button>
-        </Empty>
+        <button
+          onClick={createHabitDialog.handleOpenDialog}
+          className="flex flex-col items-center gap-2 py-6 w-full text-center rounded-lg border border-dashed border-muted-foreground/25 hover:border-muted-foreground/50 hover:bg-secondary/30 transition-all duration-200 cursor-pointer"
+        >
+          <p className="text-sm text-muted-foreground">{t("No habits yet")}</p>
+          <span className="text-xs text-muted-foreground">{t("Create habit")}</span>
+        </button>
       ) : (
         <Card className="p-0 overflow-hidden">
           <CardContent className="px-0 py-1.75">
