@@ -12,14 +12,17 @@ import { CreateExpenseDialog } from '@/features/finances/components/create-expen
 import { FinanceSpaceSwitcher } from '@/features/finances/components/finance-space-switcher'
 import { getUseListExpensesOptions, getUseListGoalsOptions, getUseListIncomeSourcesOptions, useCurrentSpace, useListExpenses, useListGoals, useListSpacesQuery } from '@/features/finances/hooks'
 import type { Expense, FinanceSpace, Goal } from '@/features/finances/types'
-import { GoalCard } from '@/features/finances/components/goal-card'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { GoalCard, type GoalAction } from '@/features/finances/components/goal-card'
+import { createFileRoute, Navigate, useNavigate } from '@tanstack/react-router'
 import { PlusIcon, SearchIcon, TargetIcon } from 'lucide-react'
 import z from 'zod/v3'
 import { queryClient } from '@/lib/react-query'
 import { CreateGoalDialog } from '@/features/finances/components/create-goal-form'
 import { useTranslation } from 'react-i18next'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
+import { useState } from 'react'
+import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogFooter } from '@/components/ui/alert-dialog'
 
 export const Route = createFileRoute('/_app/finances/$spaceId/')({
   beforeLoad: async ({ params }) => {
@@ -85,8 +88,10 @@ function RouteComponent() {
   )
 }
 
+
 function Goals(props: { goals: Goal[], spaceId: number }) {
   const { t } = useTranslation()
+  const [goalAction, setGoalAction] = useState<GoalAction>(null)
   return (
     <section className="space-y-4">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -110,8 +115,34 @@ function Goals(props: { goals: Goal[], spaceId: number }) {
       )}
       <div className="grid-cols-1 grid @5xl:grid-cols-2 gap-4">
         {props.goals.map((goal) => (
-          <GoalCard key={goal.id} goal={goal} />
+          <GoalCard key={goal.id} goal={goal} onAction={setGoalAction} />
         ))}
+
+        {goalAction?.action === "details" && (
+          <Navigate to={`/finances/$spaceId/goals/$goalId`} params={{ spaceId: props.spaceId, goalId: goalAction.goal.id }} />
+        )}
+
+        {goalAction?.action === "edit" && (
+          <Dialog open onOpenChange={() => setGoalAction(null)}>
+            <DialogContent>
+              Edit Goal
+            </DialogContent>
+          </Dialog>
+        )}
+
+
+        {goalAction?.action === "delete" && (
+          <AlertDialog open onOpenChange={() => setGoalAction(null)}>
+            <AlertDialogContent>
+              Delete Goal
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction>Delete</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
+
       </div>
     </section>
   )

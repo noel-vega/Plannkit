@@ -14,11 +14,15 @@ const statusConfig = {
   'on-hold': { icon: PauseIcon, color: 'text-gray-500', labelKey: 'On Hold' },
 }
 
+
+export type GoalAction = { goal: Goal, action: "details" | "edit" | "delete" } | null
+
 type GoalCardProps = {
   goal: Goal
+  onAction: (action: GoalAction) => void
 }
 
-export function GoalCard({ goal }: GoalCardProps) {
+export function GoalCard({ goal, onAction }: GoalCardProps) {
   const { t } = useTranslation()
   const progress = Math.min((goal.totalContributions / goal.amount) * 100, 100)
   const isComplete = progress >= 100
@@ -28,6 +32,12 @@ export function GoalCard({ goal }: GoalCardProps) {
     : goal.monthlyCommitment > 0
       ? statusConfig.active
       : statusConfig['on-hold']
+
+  const handleActionClick = (action: NonNullable<GoalAction>["action"]) => {
+    return () => {
+      onAction({ goal, action })
+    }
+  }
 
   return (
     <Link
@@ -60,9 +70,9 @@ export function GoalCard({ goal }: GoalCardProps) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent onClick={e => e.preventDefault()}>
-                <DropdownMenuItem>Details</DropdownMenuItem>
-                <DropdownMenuItem>Edit</DropdownMenuItem>
-                <DropdownMenuItem>Delete</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleActionClick("details")}>Details</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleActionClick("edit")}>Edit</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleActionClick("delete")}>Delete</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
