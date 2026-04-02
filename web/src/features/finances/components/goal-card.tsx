@@ -2,9 +2,11 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { formatCurrency } from '@/lib/format'
 import type { Goal } from '../types'
-import { CheckCircle2Icon, CircleIcon, PauseIcon } from 'lucide-react'
+import { CheckCircle2Icon, CircleIcon, MoreVerticalIcon, PauseIcon } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
+import { Button } from '@/components/ui/button'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 
 const statusConfig = {
   active: { icon: CircleIcon, color: 'text-blue-600', labelKey: 'Active' },
@@ -33,7 +35,7 @@ export function GoalCard({ goal }: GoalCardProps) {
       params={{ spaceId: goal.spaceId, goalId: goal.id }}
       resetScroll={true}
     >
-      <Card className="cursor-pointer transition-colors hover:bg-accent/50">
+      <Card className="cursor-pointer">
         <CardContent className="space-y-4">
           <div className="flex items-start justify-between">
             <div className="flex-1">
@@ -51,6 +53,18 @@ export function GoalCard({ goal }: GoalCardProps) {
                   : t('Not set')}
               </div>
             </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <Button variant="ghost">
+                  <MoreVerticalIcon />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent onClick={e => e.preventDefault()}>
+                <DropdownMenuItem>Details</DropdownMenuItem>
+                <DropdownMenuItem>Edit</DropdownMenuItem>
+                <DropdownMenuItem>Delete</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           <div className="space-y-2">
