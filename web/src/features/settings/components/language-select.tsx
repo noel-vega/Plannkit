@@ -7,13 +7,12 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-import i18n from "@/i18n"
 import { useTranslation } from "react-i18next"
 
 export function LanguageSelect() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   return (
-    <Select onValueChange={lang => i18n.changeLanguage(lang)}>
+    <Select value={i18n.language} onValueChange={lang => i18n.changeLanguage(lang)}>
       <SelectTrigger className="w-full max-w-48">
         <SelectValue placeholder={t("Select a language")} />
       </SelectTrigger>

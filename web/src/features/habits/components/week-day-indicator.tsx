@@ -1,5 +1,5 @@
 import { cn, getCompletedHabits, getDaysAround } from "@/lib/utils"
-import { format } from "date-fns"
+import { format, type Locale } from "date-fns"
 import { es } from "date-fns/locale/es"
 import { CheckIcon, TriangleIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
