@@ -62,6 +62,9 @@ export const finances = {
       const data = await response.json()
       return GoalSchema.parse(data)
     },
+    delete: async (params: GoalIdent) => {
+      await api.DELETE(`/finances/spaces/${params.spaceId}/goals/${params.goalId}`)
+    },
     contributions: {
       create: async (params: GoalIdent & { data: CreateGoalContributionParams }) => {
         const response = await api.POST(`/finances/spaces/${params.spaceId}/goals/${params.goalId}/contributions`, params.data)

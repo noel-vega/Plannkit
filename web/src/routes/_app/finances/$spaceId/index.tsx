@@ -1,8 +1,5 @@
 import { Container } from '@/components/layout/container'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Field, FieldLabel } from '@/components/ui/field'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ExpensesTable } from '@/features/finances/components/expenses-table'
 import { MarginStatusBanner } from '@/features/finances/components/margin-status-banner'
 import { MonthlyExpensesCard } from '@/features/finances/components/monthly-expenses-card'
@@ -13,16 +10,15 @@ import { FinanceSpaceSwitcher } from '@/features/finances/components/finance-spa
 import { getUseListExpensesOptions, getUseListGoalsOptions, getUseListIncomeSourcesOptions, useCurrentSpace, useListExpenses, useListGoals, useListSpacesQuery } from '@/features/finances/hooks'
 import type { Expense, FinanceSpace, Goal } from '@/features/finances/types'
 import { GoalCard, type GoalAction } from '@/features/finances/components/goal-card'
+import { ConfirmDeleteGoalDialog } from '@/features/finances/components/dialog-confirm-delete-goal'
 import { createFileRoute, Navigate, useNavigate } from '@tanstack/react-router'
-import { PlusIcon, SearchIcon, TargetIcon } from 'lucide-react'
+import { PlusIcon } from 'lucide-react'
 import z from 'zod/v3'
 import { queryClient } from '@/lib/react-query'
 import { CreateGoalDialog } from '@/features/finances/components/create-goal-form'
 import { useTranslation } from 'react-i18next'
-import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
 import { useState } from 'react'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogFooter } from '@/components/ui/alert-dialog'
 
 export const Route = createFileRoute('/_app/finances/$spaceId/')({
   beforeLoad: async ({ params }) => {
@@ -62,7 +58,7 @@ function RouteComponent() {
 
   return (
     <Container>
-      <div className="space-y-4 mb-8">
+      <div className="space-y-4 mb-4">
         <div className="grid grid-cols-1 @3xl:grid-cols-3 gap-4">
           <FinanceSpaceSwitcher
             currentSpace={currentSpace.data}
@@ -80,7 +76,7 @@ function RouteComponent() {
         <MarginStatusBanner spaceId={spaceId} />
       </div>
 
-      <div className="space-y-8">
+      <div className="space-y-6">
         <Goals spaceId={spaceId} goals={goals.data ?? []} />
         <Expenses spaceId={spaceId} expenses={expenses.data ?? []} />
       </div>
@@ -93,104 +89,83 @@ function Goals(props: { goals: Goal[], spaceId: number }) {
   const { t } = useTranslation()
   const [goalAction, setGoalAction] = useState<GoalAction>(null)
   return (
-    <section className="space-y-4">
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h2 className="text-xl font-medium">{t("Goals")}</h2>
-          <p className="text-muted-foreground">
-            {t("Track your progress towards financial goals.")}
-          </p>
-        </div>
+    <section className="space-y-3">
+      <div className="flex items-center justify-between px-1">
+        <div className="text-sm font-medium text-muted-foreground">{t("Goals")}</div>
         <CreateGoalDialog spaceId={props.spaceId}>
-          <Button variant="secondary" className="w-32" size="sm"><PlusIcon />{t("Goal")}</Button>
+          <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground">
+            <PlusIcon className="size-3.5" />
+            <span>{t("Goal")}</span>
+          </Button>
         </CreateGoalDialog>
-      </header>
-      {props.goals.length === 0 && (
-        <Card>
-          <CardContent className="grid place-content-center place-items-center gap-4 h-52">
-            <TargetIcon size={52} className="text-muted-foreground" />
-            <p>{t('No goals set yet. Click "Add Goal" to get started.')}</p>
-          </CardContent>
-        </Card>
-      )}
-      <div className="grid-cols-1 grid @5xl:grid-cols-2 gap-4">
-        {props.goals.map((goal) => (
-          <GoalCard key={goal.id} goal={goal} onAction={setGoalAction} />
-        ))}
-
-        {goalAction?.action === "details" && (
-          <Navigate to={`/finances/$spaceId/goals/$goalId`} params={{ spaceId: props.spaceId, goalId: goalAction.goal.id }} />
-        )}
-
-        {goalAction?.action === "edit" && (
-          <Dialog open onOpenChange={() => setGoalAction(null)}>
-            <DialogContent>
-              Edit Goal
-            </DialogContent>
-          </Dialog>
-        )}
-
-
-        {goalAction?.action === "delete" && (
-          <AlertDialog open onOpenChange={() => setGoalAction(null)}>
-            <AlertDialogContent>
-              Delete Goal
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction>Delete</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        )}
-
       </div>
+      {props.goals.length === 0 ? (
+        <CreateGoalDialog spaceId={props.spaceId}>
+          <button
+            className="flex flex-col items-center gap-2 py-6 w-full text-center rounded-lg border border-dashed border-muted-foreground/25 hover:border-muted-foreground/50 hover:bg-secondary/30 transition-all duration-200 cursor-pointer"
+          >
+            <p className="text-sm text-muted-foreground">{t("No goals yet")}</p>
+            <span className="text-xs text-muted-foreground">{t("Create goal")}</span>
+          </button>
+        </CreateGoalDialog>
+      ) : (
+        <div className="grid-cols-1 grid @5xl:grid-cols-2 gap-4">
+          {props.goals.map((goal) => (
+            <GoalCard key={goal.id} goal={goal} onAction={setGoalAction} />
+          ))}
+        </div>
+      )}
+
+      {goalAction?.action === "details" && (
+        <Navigate to={`/finances/$spaceId/goals/$goalId`} params={{ spaceId: props.spaceId, goalId: goalAction.goal.id }} />
+      )}
+
+      {goalAction?.action === "edit" && (
+        <Dialog open onOpenChange={() => setGoalAction(null)}>
+          <DialogContent>
+            Edit Goal
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {goalAction?.action === "delete" && (
+        <ConfirmDeleteGoalDialog
+          open
+          goal={goalAction.goal}
+          onOpenChange={() => setGoalAction(null)}
+        />
+      )}
     </section>
   )
 }
 
+
 function Expenses(props: { expenses: Expense[], spaceId: number }) {
   const { t } = useTranslation()
   return (
-    <section className="space-y-4">
-      <header className="flex items-end">
-        <div>
-          <h2 className="text-xl font-medium">{t("Expenses")}</h2>
-          <p className="text-muted-foreground">
-            {t("Track and organize your monthly expenses.")}
-          </p>
-        </div>
-
+    <section className="space-y-3">
+      <div className="flex items-center justify-between px-1">
+        <div className="text-sm font-medium text-muted-foreground">{t("Expenses")}</div>
         <CreateExpenseDialog spaceId={props.spaceId}>
-          <Button variant="secondary" className="ml-auto w-32" size="sm">
-            <PlusIcon /> {t("Expense")}
+          <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground">
+            <PlusIcon className="size-3.5" />
+            <span>{t("Expense")}</span>
           </Button>
         </CreateExpenseDialog>
-      </header>
-
-      <div className="flex gap-3 items-end mb-4">
-        <Field className="w-full">
-          <FieldLabel>{t("Search")}</FieldLabel>
-          <InputGroup>
-            <InputGroupInput placeholder={t("Search expenses...")} />
-            <InputGroupAddon>
-              <SearchIcon />
-            </InputGroupAddon>
-          </InputGroup>
-        </Field>
-        <Select>
-          <SelectTrigger className="w-full max-w-52">
-            <SelectValue placeholder={t("Select a category")} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem value="en">{t("Childcare")}</SelectItem>
-              <SelectItem value="es">{t("Housing")}</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
       </div>
 
-      <ExpensesTable spaceId={props.spaceId} expenses={props.expenses} />
+      {props.expenses.length === 0 ? (
+        <CreateExpenseDialog spaceId={props.spaceId}>
+          <button
+            className="flex flex-col items-center gap-2 py-6 w-full text-center rounded-lg border border-dashed border-muted-foreground/25 hover:border-muted-foreground/50 hover:bg-secondary/30 transition-all duration-200 cursor-pointer"
+          >
+            <p className="text-sm text-muted-foreground">{t("No expenses yet")}</p>
+            <span className="text-xs text-muted-foreground">{t("Create expense")}</span>
+          </button>
+        </CreateExpenseDialog>
+      ) : (
+        <ExpensesTable spaceId={props.spaceId} expenses={props.expenses} />
+      )}
     </section>
   )
 }
