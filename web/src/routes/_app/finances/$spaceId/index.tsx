@@ -19,6 +19,7 @@ import { CreateGoalDialog } from '@/features/finances/components/create-goal-for
 import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 export const Route = createFileRoute('/_app/finances/$spaceId/')({
   beforeLoad: async ({ params }) => {
@@ -38,12 +39,14 @@ export const Route = createFileRoute('/_app/finances/$spaceId/')({
 
 function RouteComponent() {
   const { spaceId } = Route.useParams()
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const rtCtx = Route.useRouteContext()
   const expenses = useListExpenses({ spaceId, initialData: rtCtx.expenses })
   const goals = useListGoals({ spaceId, initialData: rtCtx.goals })
   const spaces = useListSpacesQuery({ initialData: rtCtx.spaces })
   const currentSpace = useCurrentSpace({ spaceId })
+  const [activeTab, setActiveTab] = useState("goals")
 
   const handleSwitchSpace = (space: FinanceSpace) => {
     navigate({ to: "/finances/$spaceId", params: { spaceId: space.id } })
@@ -76,10 +79,35 @@ function RouteComponent() {
         <MarginStatusBanner spaceId={spaceId} />
       </div>
 
-      <div className="space-y-6">
-        <Goals spaceId={spaceId} goals={goals.data ?? []} />
-        <Expenses spaceId={spaceId} expenses={expenses.data ?? []} />
-      </div>
+      <Tabs defaultValue="goals" className="gap-0" onValueChange={setActiveTab}>
+        <div className="flex items-center justify-between">
+          <TabsList>
+            <TabsTrigger value="goals">{t("Goals")}</TabsTrigger>
+            <TabsTrigger value="expenses">{t("Expenses")}</TabsTrigger>
+          </TabsList>
+          {activeTab === "goals" ? (
+            <CreateGoalDialog spaceId={spaceId}>
+              <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground">
+                <PlusIcon className="size-3.5" />
+                <span>{t("Goal")}</span>
+              </Button>
+            </CreateGoalDialog>
+          ) : (
+            <CreateExpenseDialog spaceId={spaceId}>
+              <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground">
+                <PlusIcon className="size-3.5" />
+                <span>{t("Expense")}</span>
+              </Button>
+            </CreateExpenseDialog>
+          )}
+        </div>
+        <TabsContent value="goals">
+          <Goals spaceId={spaceId} goals={goals.data ?? []} />
+        </TabsContent>
+        <TabsContent value="expenses">
+          <Expenses spaceId={spaceId} expenses={expenses.data ?? []} />
+        </TabsContent>
+      </Tabs>
     </Container>
   )
 }
@@ -89,16 +117,7 @@ function Goals(props: { goals: Goal[], spaceId: number }) {
   const { t } = useTranslation()
   const [goalAction, setGoalAction] = useState<GoalAction>(null)
   return (
-    <section className="space-y-3">
-      <div className="flex items-center justify-between px-1">
-        <div className="text-sm font-medium text-muted-foreground">{t("Goals")}</div>
-        <CreateGoalDialog spaceId={props.spaceId}>
-          <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground">
-            <PlusIcon className="size-3.5" />
-            <span>{t("Goal")}</span>
-          </Button>
-        </CreateGoalDialog>
-      </div>
+    <section className="space-y-3 pt-3">
       {props.goals.length === 0 ? (
         <CreateGoalDialog spaceId={props.spaceId}>
           <button
@@ -143,17 +162,7 @@ function Goals(props: { goals: Goal[], spaceId: number }) {
 function Expenses(props: { expenses: Expense[], spaceId: number }) {
   const { t } = useTranslation()
   return (
-    <section className="space-y-3">
-      <div className="flex items-center justify-between px-1">
-        <div className="text-sm font-medium text-muted-foreground">{t("Expenses")}</div>
-        <CreateExpenseDialog spaceId={props.spaceId}>
-          <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground">
-            <PlusIcon className="size-3.5" />
-            <span>{t("Expense")}</span>
-          </Button>
-        </CreateExpenseDialog>
-      </div>
-
+    <section className="space-y-3 pt-3">
       {props.expenses.length === 0 ? (
         <CreateExpenseDialog spaceId={props.spaceId}>
           <button
