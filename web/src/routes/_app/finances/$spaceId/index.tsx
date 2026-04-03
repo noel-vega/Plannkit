@@ -82,8 +82,8 @@ function RouteComponent() {
       <Tabs defaultValue="goals" className="gap-0" onValueChange={setActiveTab}>
         <div className="flex items-center justify-between">
           <TabsList>
-            <TabsTrigger value="goals">{t("Goals")}</TabsTrigger>
-            <TabsTrigger value="expenses">{t("Expenses")}</TabsTrigger>
+            <TabsTrigger className="min-w-32" value="goals">{t("Goals")}</TabsTrigger>
+            <TabsTrigger className='min-w-32' value="expenses">{t("Expenses")}</TabsTrigger>
           </TabsList>
           {activeTab === "goals" ? (
             <CreateGoalDialog spaceId={spaceId}>
