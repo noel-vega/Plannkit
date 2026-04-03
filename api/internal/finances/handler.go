@@ -152,8 +152,8 @@ func (h *Handler) GetGoal(c *gin.Context) {
 		return
 	}
 
-	params := &GetGoalParams{
-		GoalID:  goalID,
+	params := &GoalIdent{
+		ID:      goalID,
 		SpaceID: c.MustGet("spaceID").(int),
 	}
 
@@ -167,6 +167,29 @@ func (h *Handler) GetGoal(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, goal)
+}
+
+func (h *Handler) DeleteGoal(c *gin.Context) {
+	goalID, err := strconv.Atoi(c.Param("goalID"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	err = h.service.DeleteGoal(&GoalIdent{
+		ID:      goalID,
+		SpaceID: c.MustGet("spaceID").(int),
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, ErrGoalNotFound):
+			c.AbortWithError(http.StatusNotFound, err)
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
+		return
+	}
+	c.Status(http.StatusNoContent)
 }
 
 func (h *Handler) CreateGoalContribution(c *gin.Context) {

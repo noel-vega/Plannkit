@@ -14,4 +14,5 @@ var (
 	ErrValidationMaxCharacters    = errors.New("max characters")
 	ErrExpenseNotFound            = errors.New("expense not found")
 	ErrIncomeSourceNotFound       = errors.New("income source not found")
+	ErrGoalNotFound               = errors.New("goal not found")
 )

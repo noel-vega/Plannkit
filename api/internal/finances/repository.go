@@ -193,14 +193,32 @@ func (r *Repository) ListGoals(params *ListGoalsParams) ([]Goal, error) {
 	return data, nil
 }
 
-func (r *Repository) DeleteGoalByID() {}
+func (r *Repository) DeleteGoal(params *GoalIdent) error {
+	query := `
+	DELETE FROM finance_spaces_goals
+	WHERE id = :id AND finance_space_id = :finance_space_id`
 
-func (r *Repository) GetGoal(params *GetGoalParams) (*Goal, error) {
+	result, err := r.db.NamedExec(query, params)
+	if err != nil {
+		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rows == 0 {
+		return apperrors.ErrNotFound
+	}
+	return nil
+}
+
+func (r *Repository) GetGoal(params *GoalIdent) (*Goal, error) {
 	query := `
   SELECT g.*, COALESCE(SUM(c.amount), 0) AS total_contributions
   FROM finance_spaces_goals g
   LEFT JOIN finance_spaces_goals_contributions c ON c.finance_space_goal_id = g.id
-	WHERE g.finance_space_id = :finance_space_id AND g.id = :goal_id
+	WHERE g.finance_space_id = :finance_space_id AND g.id = :id
   GROUP BY g.id
 	`
 	query, args, err := sqlx.Named(query, params)

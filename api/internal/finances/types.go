@@ -165,9 +165,9 @@ type ListGoalsParams struct {
 	SpaceID int `json:"spaceId" db:"finance_space_id"`
 }
 
-type GetGoalParams struct {
-	GoalID  int `json:"id" db:"goal_id"`
-	SpaceID int `json:"spaceId" db:"finance_space_id"`
+type GoalIdent struct {
+	ID      int `db:"id"`
+	SpaceID int `db:"finance_space_id"`
 }
 
 type GoalContribution struct {

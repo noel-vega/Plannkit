@@ -83,8 +83,16 @@ func (s *Service) ListGoals(params *ListGoalsParams) ([]Goal, error) {
 	return s.repository.ListGoals(params)
 }
 
-func (s *Service) GetGoal(params *GetGoalParams) (*Goal, error) {
+func (s *Service) GetGoal(params *GoalIdent) (*Goal, error) {
 	return s.repository.GetGoal(params)
+}
+
+func (s *Service) DeleteGoal(params *GoalIdent) error {
+	err := s.repository.DeleteGoal(params)
+	if errors.Is(err, apperrors.ErrNotFound) {
+		return ErrGoalNotFound
+	}
+	return err
 }
 
 func (s *Service) CreateGoalContribution(params *CreateGoalContributionParams) (*GoalContribution, error) {
@@ -95,8 +103,8 @@ func (s *Service) ListGoalContributions(params *ListGoalContributionsParams) ([]
 	return s.repository.ListGoalContributions(params)
 }
 
-func (s *Service) DeleteGoalContribution(id int) error {
-	err := s.repository.DeleteGoalContribution(id)
+func (s *Service) DeleteGoalContribution(ID int) error {
+	err := s.repository.DeleteGoalContribution(ID)
 	if errors.Is(err, apperrors.ErrNotFound) {
 		return ErrGoalContributionNotFound
 	}
