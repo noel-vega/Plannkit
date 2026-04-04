@@ -36,7 +36,60 @@ WHERE ID = sqlc.arg('id') AND user_id = sqlc.arg('user_id');
 DELETE FROM habits
 WHERE id = $1 AND user_id = $2;
 
--- name: ListContributions :many
+-- name: UpdateHabitPosition :one
+UPDATE habits
+SET position = $1 
+WHERE id = $2 
+AND routine_id = $3 
+AND user_id = $4 
+RETURNING *;
+
+-- name: CreateHabitContribution :one
+INSERT INTO 
+habits_contributions (habit_id, user_id, completions, date) 
+VALUES ($1, $2, $3, $4)
+RETURNING *;
+
+-- name: ListHabitsContributions :many
 SELECT *
 FROM habits_contributions
 WHERE user_id = $1;
+
+-- name: DeleteHabitContribution :exec
+DELETE FROM habits_contributions 
+WHERE id=$1 AND user_id=$2;
+
+-- name: UpdateHabitContributionCompletions :one
+UPDATE habits_contributions
+SET completions = $1 
+WHERE id = $2 AND user_id = $3
+RETURNING *;
+
+-- name: CreateRoutine :one
+INSERT INTO
+habits_routines (user_id, name, position)
+VALUES ($1, $2, $3)
+RETURNING *;
+
+-- name: ListRoutines :many
+SELECT * 
+FROM habits_routines
+WHERE user_id = $1
+ORDER by position ASC;
+
+-- name: UpdateRoutine :one
+UPDATE habits_routines
+SET name=$1
+WHERE id=$2 AND user_id=$3
+RETURNING *;
+
+-- name: DeleteRoutine :exec
+DELETE FROM habits_routines
+WHERE id = $1 AND user_id = $2;
+
+-- name: GetLastRoutine :one
+SELECT *
+FROM habits_routines
+WHERE user_id = $1
+ORDER BY position DESC
+LIMIT 1;

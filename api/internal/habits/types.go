@@ -7,21 +7,6 @@ import (
 	"github.com/noel-vega/habits/api/db"
 )
 
-type Habit struct {
-	ID                int       `json:"id" db:"id"`
-	UserID            int       `json:"userId" db:"user_id"`
-	Name              string    `json:"name" db:"name"`
-	Icon              string    `json:"icon" db:"icon"`
-	RoutineID         *int      `json:"routineId" db:"routine_id"`
-	UnitOfMeasurement string    `json:"unitOfMeasurement" db:"unit_of_measurement"`
-	Description       string    `json:"description" db:"description"`
-	CompletionType    string    `json:"completionType" db:"completion_type"`
-	CompletionsPerDay int       `json:"completionsPerDay" db:"completions_per_day"`
-	Position          string    `json:"position" db:"position"`
-	CreatedAt         time.Time `json:"createdAt" db:"created_at"`
-	UpdatedAt         time.Time `json:"updatedAt" db:"updated_at"`
-}
-
 type HabitWithContributions struct {
 	db.Habit
 	Contributions []db.HabitsContribution `json:"contributions"`
@@ -83,14 +68,14 @@ type GetHabitParams struct {
 }
 
 type CreateContributionBody struct {
-	Completions int       `json:"completions"`
+	Completions int32     `json:"completions"`
 	Date        time.Time `json:"date"`
 }
 
 type CreateContributionParams struct {
 	HabitID     int       `json:"habitId" db:"habit_id"`
 	UserID      int32     `json:"userId" db:"user_id"`
-	Completions int       `json:"completions" db:"completions"`
+	Completions int32     `json:"completions" db:"completions"`
 	Date        time.Time `json:"date" db:"date"`
 }
 
@@ -100,7 +85,7 @@ type DeleteContributionParams struct {
 }
 
 type UpdateCompletionsBody struct {
-	Completions int `json:"completions"`
+	Completions int32 `json:"completions"`
 }
 
 type UpdateContributionCompletionsParams struct {
@@ -144,7 +129,7 @@ type InsertRoutineParams struct {
 }
 
 type RoutineWithHabits struct {
-	Routine
+	db.HabitsRoutine
 	Habits []HabitWithContributions `json:"habits"`
 }
 
@@ -154,14 +139,15 @@ type HabitGroups struct {
 }
 
 type UpdateHabitPositionBody struct {
-	RoutineID      *int   `json:"routineId"`
+	RoutineID      *int32 `json:"routineId"`
 	AfterPosition  string `json:"afterPosition"`
 	BeforePosition string `json:"beforePosition"`
 }
 
 type UpdateHabitPositionParams struct {
-	ID             int
-	RoutineID      *int
+	ID             int32
+	UserID         int32
+	RoutineID      *int32
 	AfterPosition  string
 	BeforePosition string
 }

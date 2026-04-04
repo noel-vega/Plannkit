@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"time"
 )
 
 const createHabit = `-- name: CreateHabit :one
@@ -62,6 +63,66 @@ func (q *Queries) CreateHabit(ctx context.Context, arg CreateHabitParams) (Habit
 	return i, err
 }
 
+const createHabitContribution = `-- name: CreateHabitContribution :one
+INSERT INTO 
+habits_contributions (habit_id, user_id, completions, date) 
+VALUES ($1, $2, $3, $4)
+RETURNING id, habit_id, user_id, completions, date, created_at
+`
+
+type CreateHabitContributionParams struct {
+	HabitID     int32     `json:"habitId"`
+	UserID      int32     `json:"userId"`
+	Completions int32     `json:"completions"`
+	Date        time.Time `json:"date"`
+}
+
+func (q *Queries) CreateHabitContribution(ctx context.Context, arg CreateHabitContributionParams) (HabitsContribution, error) {
+	row := q.db.QueryRow(ctx, createHabitContribution,
+		arg.HabitID,
+		arg.UserID,
+		arg.Completions,
+		arg.Date,
+	)
+	var i HabitsContribution
+	err := row.Scan(
+		&i.ID,
+		&i.HabitID,
+		&i.UserID,
+		&i.Completions,
+		&i.Date,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const createRoutine = `-- name: CreateRoutine :one
+INSERT INTO
+habits_routines (user_id, name, position)
+VALUES ($1, $2, $3)
+RETURNING id, user_id, name, position, created_at, updated_at
+`
+
+type CreateRoutineParams struct {
+	UserID   int32  `json:"userId"`
+	Name     string `json:"name"`
+	Position string `json:"position"`
+}
+
+func (q *Queries) CreateRoutine(ctx context.Context, arg CreateRoutineParams) (HabitsRoutine, error) {
+	row := q.db.QueryRow(ctx, createRoutine, arg.UserID, arg.Name, arg.Position)
+	var i HabitsRoutine
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Name,
+		&i.Position,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const deleteHabit = `-- name: DeleteHabit :exec
 DELETE FROM habits
 WHERE id = $1 AND user_id = $2
@@ -74,6 +135,36 @@ type DeleteHabitParams struct {
 
 func (q *Queries) DeleteHabit(ctx context.Context, arg DeleteHabitParams) error {
 	_, err := q.db.Exec(ctx, deleteHabit, arg.ID, arg.UserID)
+	return err
+}
+
+const deleteHabitContribution = `-- name: DeleteHabitContribution :exec
+DELETE FROM habits_contributions 
+WHERE id=$1 AND user_id=$2
+`
+
+type DeleteHabitContributionParams struct {
+	ID     int32 `json:"id"`
+	UserID int32 `json:"userId"`
+}
+
+func (q *Queries) DeleteHabitContribution(ctx context.Context, arg DeleteHabitContributionParams) error {
+	_, err := q.db.Exec(ctx, deleteHabitContribution, arg.ID, arg.UserID)
+	return err
+}
+
+const deleteRoutine = `-- name: DeleteRoutine :exec
+DELETE FROM habits_routines
+WHERE id = $1 AND user_id = $2
+`
+
+type DeleteRoutineParams struct {
+	ID     int32 `json:"id"`
+	UserID int32 `json:"userId"`
+}
+
+func (q *Queries) DeleteRoutine(ctx context.Context, arg DeleteRoutineParams) error {
+	_, err := q.db.Exec(ctx, deleteRoutine, arg.ID, arg.UserID)
 	return err
 }
 
@@ -107,37 +198,26 @@ func (q *Queries) GetHabit(ctx context.Context, arg GetHabitParams) (Habit, erro
 	return i, err
 }
 
-const listContributions = `-- name: ListContributions :many
-SELECT id, habit_id, user_id, completions, date, created_at
-FROM habits_contributions
+const getLastRoutine = `-- name: GetLastRoutine :one
+SELECT id, user_id, name, position, created_at, updated_at
+FROM habits_routines
 WHERE user_id = $1
+ORDER BY position DESC
+LIMIT 1
 `
 
-func (q *Queries) ListContributions(ctx context.Context, userID int32) ([]HabitsContribution, error) {
-	rows, err := q.db.Query(ctx, listContributions, userID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []HabitsContribution
-	for rows.Next() {
-		var i HabitsContribution
-		if err := rows.Scan(
-			&i.ID,
-			&i.HabitID,
-			&i.UserID,
-			&i.Completions,
-			&i.Date,
-			&i.CreatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+func (q *Queries) GetLastRoutine(ctx context.Context, userID int32) (HabitsRoutine, error) {
+	row := q.db.QueryRow(ctx, getLastRoutine, userID)
+	var i HabitsRoutine
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Name,
+		&i.Position,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const listHabits = `-- name: ListHabits :many
@@ -166,6 +246,73 @@ func (q *Queries) ListHabits(ctx context.Context, userID int32) ([]Habit, error)
 			&i.CompletionType,
 			&i.CompletionsPerDay,
 			&i.UnitOfMeasurement,
+			&i.Position,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listHabitsContributions = `-- name: ListHabitsContributions :many
+SELECT id, habit_id, user_id, completions, date, created_at
+FROM habits_contributions
+WHERE user_id = $1
+`
+
+func (q *Queries) ListHabitsContributions(ctx context.Context, userID int32) ([]HabitsContribution, error) {
+	rows, err := q.db.Query(ctx, listHabitsContributions, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []HabitsContribution
+	for rows.Next() {
+		var i HabitsContribution
+		if err := rows.Scan(
+			&i.ID,
+			&i.HabitID,
+			&i.UserID,
+			&i.Completions,
+			&i.Date,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listRoutines = `-- name: ListRoutines :many
+SELECT id, user_id, name, position, created_at, updated_at 
+FROM habits_routines
+WHERE user_id = $1
+ORDER by position ASC
+`
+
+func (q *Queries) ListRoutines(ctx context.Context, userID int32) ([]HabitsRoutine, error) {
+	rows, err := q.db.Query(ctx, listRoutines, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []HabitsRoutine
+	for rows.Next() {
+		var i HabitsRoutine
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Name,
 			&i.Position,
 			&i.CreatedAt,
 			&i.UpdatedAt,
@@ -211,4 +358,99 @@ func (q *Queries) UpdateHabit(ctx context.Context, arg UpdateHabitParams) error 
 		arg.UserID,
 	)
 	return err
+}
+
+const updateHabitContributionCompletions = `-- name: UpdateHabitContributionCompletions :one
+UPDATE habits_contributions
+SET completions = $1 
+WHERE id = $2 AND user_id = $3
+RETURNING id, habit_id, user_id, completions, date, created_at
+`
+
+type UpdateHabitContributionCompletionsParams struct {
+	Completions int32 `json:"completions"`
+	ID          int32 `json:"id"`
+	UserID      int32 `json:"userId"`
+}
+
+func (q *Queries) UpdateHabitContributionCompletions(ctx context.Context, arg UpdateHabitContributionCompletionsParams) (HabitsContribution, error) {
+	row := q.db.QueryRow(ctx, updateHabitContributionCompletions, arg.Completions, arg.ID, arg.UserID)
+	var i HabitsContribution
+	err := row.Scan(
+		&i.ID,
+		&i.HabitID,
+		&i.UserID,
+		&i.Completions,
+		&i.Date,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const updateHabitPosition = `-- name: UpdateHabitPosition :one
+UPDATE habits
+SET position = $1 
+WHERE id = $2 
+AND routine_id = $3 
+AND user_id = $4 
+RETURNING id, user_id, routine_id, name, description, icon, completion_type, completions_per_day, unit_of_measurement, position, created_at, updated_at
+`
+
+type UpdateHabitPositionParams struct {
+	Position  string `json:"position"`
+	ID        int32  `json:"id"`
+	RoutineID *int32 `json:"routineId"`
+	UserID    int32  `json:"userId"`
+}
+
+func (q *Queries) UpdateHabitPosition(ctx context.Context, arg UpdateHabitPositionParams) (Habit, error) {
+	row := q.db.QueryRow(ctx, updateHabitPosition,
+		arg.Position,
+		arg.ID,
+		arg.RoutineID,
+		arg.UserID,
+	)
+	var i Habit
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.RoutineID,
+		&i.Name,
+		&i.Description,
+		&i.Icon,
+		&i.CompletionType,
+		&i.CompletionsPerDay,
+		&i.UnitOfMeasurement,
+		&i.Position,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateRoutine = `-- name: UpdateRoutine :one
+UPDATE habits_routines
+SET name=$1
+WHERE id=$2 AND user_id=$3
+RETURNING id, user_id, name, position, created_at, updated_at
+`
+
+type UpdateRoutineParams struct {
+	Name   string `json:"name"`
+	ID     int32  `json:"id"`
+	UserID int32  `json:"userId"`
+}
+
+func (q *Queries) UpdateRoutine(ctx context.Context, arg UpdateRoutineParams) (HabitsRoutine, error) {
+	row := q.db.QueryRow(ctx, updateRoutine, arg.Name, arg.ID, arg.UserID)
+	var i HabitsRoutine
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Name,
+		&i.Position,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
