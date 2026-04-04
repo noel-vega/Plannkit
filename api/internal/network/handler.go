@@ -71,7 +71,7 @@ func (h *Handler) RequestFollow(c *gin.Context) {
 
 	err = h.service.RequestFollow(&RequestFollowParams{
 		FollowerUserID:  httputil.UserID(c),
-		FollowingUserID: followingUserID,
+		FollowingUserID: int32(followingUserID),
 	})
 	if err != nil {
 		switch {
@@ -99,7 +99,7 @@ func (h *Handler) RemoveFollow(c *gin.Context) {
 
 	err = h.service.RemoveFollow(&RemoveFollowParams{
 		FollowerUserID:  httputil.UserID(c),
-		FollowingUserID: followingUserID,
+		FollowingUserID: int32(followingUserID),
 	})
 	if err != nil {
 		switch {
@@ -123,7 +123,7 @@ func (h *Handler) AcceptFollow(c *gin.Context) {
 	}
 	params := &AcceptFollowParams{
 		FollowingUserID: httputil.UserID(c),
-		FollowerUserID:  followerUserID,
+		FollowerUserID:  int32(followerUserID),
 	}
 
 	err = h.service.AcceptFollow(params)
@@ -148,7 +148,7 @@ func (h *Handler) RequestConnection(c *gin.Context) {
 	}
 	connection, err := h.service.RequestConnection(&RequestConnectionParams{
 		RequestedByUserID: requestedByUserID,
-		TargetUserID:      targetUserID,
+		TargetUserID:      int32(targetUserID),
 	})
 	if err != nil {
 		switch {
@@ -176,7 +176,7 @@ func (h *Handler) AcceptConnection(c *gin.Context) {
 
 	params := &AcceptConnectionParams{
 		AcceptedByUserID:  user1ID,
-		RequestedByUserID: user2ID,
+		RequestedByUserID: int32(user2ID),
 	}
 
 	err = h.service.AcceptConnection(params)
@@ -202,7 +202,7 @@ func (h *Handler) RemoveConnection(c *gin.Context) {
 		return
 	}
 
-	err = h.service.RemoveConnection(user1ID, user2ID)
+	err = h.service.RemoveConnection(user1ID, int32(user2ID))
 	if err != nil {
 		switch {
 		case errors.Is(err, ErrConnectionNotFound):

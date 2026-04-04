@@ -22,7 +22,7 @@ type CreateTodoBody struct {
 }
 
 type CreateTodoParams struct {
-	UserID      int    `json:"userId" db:"user_id"`
+	UserID      int32  `json:"userId" db:"user_id"`
 	Name        string `json:"name" db:"name"`
 	Status      string `json:"status" db:"status"`
 	Description string `json:"description" db:"description"`
@@ -30,8 +30,8 @@ type CreateTodoParams struct {
 }
 
 type GetTodoParams struct {
-	ID     int `json:"id" db:"id"`
-	UserID int `json:"userId" db:"user_id"`
+	ID     int   `json:"id" db:"id"`
+	UserID int32 `json:"userId" db:"user_id"`
 }
 
 type GetLastParams struct {
@@ -55,13 +55,13 @@ type UpdatePositionBody struct {
 }
 type UpdatePositionParams struct {
 	ID             int    `json:"id" db:"id"`
-	UserID         int    `json:"userId" db:"user_id"`
+	UserID         int32  `json:"userId" db:"user_id"`
 	Status         string `json:"status" db:"status"`
 	AfterPosition  string `json:"afterPosition"`
 	BeforePosition string `json:"beforePosition"`
 }
 
 type DeleteTodoParams struct {
-	ID     int `json:"id" db:"id"`
-	UserID int `json:"userId" db:"user_id"`
+	ID     int   `json:"id" db:"id"`
+	UserID int32 `json:"userId" db:"user_id"`
 }

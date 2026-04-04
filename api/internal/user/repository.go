@@ -41,7 +41,7 @@ func (r *Repository) Create(params CreateUserParams) (*UserNoPassword, error) {
 	return user, nil
 }
 
-func (r *Repository) GetByID(ID int) (*UserNoPassword, error) {
+func (r *Repository) GetByID(ID int32) (*UserNoPassword, error) {
 	user := &UserNoPassword{}
 	query := `SELECT id, is_private, username, first_name, last_name, email, created_at, updated_at, avatar FROM users WHERE id = $1`
 	err := r.db.Get(user, query, ID)
@@ -95,7 +95,7 @@ func (r *Repository) GetUserByUsername(username string) (*UserNoPassword, error)
 	return user, nil
 }
 
-func (r *Repository) UpdateAvatar(userID int, url string) error {
+func (r *Repository) UpdateAvatar(userID int32, url string) error {
 	query := `UPDATE users SET avatar = $1 WHERE id = $2`
 	_, err := r.db.Exec(query, url, userID)
 	return err

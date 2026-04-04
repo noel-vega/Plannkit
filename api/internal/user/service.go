@@ -45,7 +45,7 @@ func (s *Service) GetUserByEmailWithPassword(email string) (*User, error) {
 	return user, nil
 }
 
-func (s *Service) GetUserByID(ID int) (*UserNoPassword, error) {
+func (s *Service) GetUserByID(ID int32) (*UserNoPassword, error) {
 	user, err := s.userRepo.GetByID(ID)
 	if err != nil {
 		return nil, err
@@ -57,7 +57,7 @@ func (s *Service) GetUserByUsername(username string) (*UserNoPassword, error) {
 	return s.userRepo.GetUserByUsername(username)
 }
 
-func (s *Service) UpdateAvatar(userID int, fileName string) error {
+func (s *Service) UpdateAvatar(userID int32, fileName string) error {
 	err := s.userRepo.UpdateAvatar(userID, fileName)
 	if err != nil {
 		return err

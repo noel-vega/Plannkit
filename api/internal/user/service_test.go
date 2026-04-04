@@ -120,7 +120,7 @@ func TestServiceGetUserByID(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		id      int
+		id      int32
 		wantErr error
 	}{
 		{name: "existing user", id: seeded.ID},

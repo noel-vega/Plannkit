@@ -137,7 +137,7 @@ func (s *Service) RemoveFollow(params *RemoveFollowParams) error {
 	return err
 }
 
-func OrderUserIDs(user1ID, user2ID int) (int, int) {
+func OrderUserIDs(user1ID, user2ID int32) (int32, int32) {
 	if user1ID > user2ID {
 		temp := user1ID
 		user1ID = user2ID
@@ -146,7 +146,7 @@ func OrderUserIDs(user1ID, user2ID int) (int, int) {
 	return user1ID, user2ID
 }
 
-func (s *Service) GetConnection(user1ID, user2ID int) (*Connection, error) {
+func (s *Service) GetConnection(user1ID, user2ID int32) (*Connection, error) {
 	u1, u2 := OrderUserIDs(user1ID, user2ID)
 	connection, err := s.repository.GetConnection(u1, u2)
 	if err != nil {
@@ -158,7 +158,7 @@ func (s *Service) GetConnection(user1ID, user2ID int) (*Connection, error) {
 	return connection, err
 }
 
-func (s *Service) AreConnected(user1ID, user2ID int) (bool, error) {
+func (s *Service) AreConnected(user1ID, user2ID int32) (bool, error) {
 	_, err := s.GetConnection(user1ID, user2ID)
 	if err != nil {
 		if errors.Is(err, ErrConnectionNotFound) {
@@ -217,7 +217,7 @@ func (s *Service) AcceptConnection(params *AcceptConnectionParams) error {
 	return s.repository.AcceptConnection(connection.ID)
 }
 
-func (s *Service) RemoveConnection(user1ID, user2ID int) error {
+func (s *Service) RemoveConnection(user1ID, user2ID int32) error {
 	connection, err := s.GetConnection(user1ID, user2ID)
 	if err != nil {
 		return err

@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/noel-vega/habits/api/db"
 	"github.com/noel-vega/habits/api/internal/httputil"
 )
 
@@ -27,18 +28,15 @@ func (h *Handler) CreateHabit(c *gin.Context) {
 		return
 	}
 
-	params := &CreateHabitParams{
+	habit, err := h.service.CreateHabit(c, db.CreateHabitParams{
 		UserID:            httputil.UserID(c),
 		RoutineID:         body.RoutineID,
 		Icon:              body.Icon,
 		Name:              body.Name,
 		Description:       body.Description,
 		CompletionType:    body.CompletionType,
-		UnitOfMeasurement: body.UnitOfMeasurement,
 		CompletionsPerDay: body.CompletionsPerDay,
-	}
-
-	habit, err := h.service.CreateHabit(params)
+	})
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -46,7 +44,7 @@ func (h *Handler) CreateHabit(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, HabitWithContributions{
 		Habit:         habit,
-		Contributions: []HabitContribution{},
+		Contributions: []db.HabitsContribution{},
 	})
 }
 
@@ -58,12 +56,10 @@ func (h *Handler) GetHabitWithContributions(c *gin.Context) {
 		return
 	}
 
-	params := &GetHabitParams{
-		ID:     habitID,
+	habit, err := h.service.GetHabitWithContributions(c, db.GetHabitParams{
+		ID:     int32(habitID),
 		UserID: userID,
-	}
-
-	habit, err := h.service.GetHabitWithContributions(params)
+	})
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -73,7 +69,7 @@ func (h *Handler) GetHabitWithContributions(c *gin.Context) {
 }
 
 func (h *Handler) ListHabitsWithContributions(c *gin.Context) {
-	habits, err := h.service.ListHabitsWithContributions(httputil.UserID(c))
+	habits, err := h.service.ListHabitsWithContributions(c, httputil.UserID(c))
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -96,17 +92,15 @@ func (h *Handler) UpdateHabit(c *gin.Context) {
 		return
 	}
 
-	params := &UpdateHabitParams{
-		ID:                habitID,
+	err = h.service.UpdateHabit(c, db.UpdateHabitParams{
+		ID:                int32(habitID),
 		UserID:            httputil.UserID(c),
 		Name:              body.Name,
 		Description:       body.Description,
 		Icon:              body.Icon,
-		UnitOfMeasurement: body.UnitOfMeasurement,
 		CompletionType:    body.CompletionType,
 		CompletionsPerDay: body.CompletionsPerDay,
-	}
-	err = h.service.UpdateHabit(params)
+	})
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -122,12 +116,10 @@ func (h *Handler) DeleteHabit(c *gin.Context) {
 		return
 	}
 
-	params := &DeleteHabitParams{
-		ID:     habitID,
+	err = h.service.DeleteHabit(c, db.DeleteHabitParams{
+		ID:     int32(habitID),
 		UserID: httputil.UserID(c),
-	}
-
-	err = h.service.DeleteHabit(params)
+	})
 	if err != nil {
 		switch {
 		case errors.Is(err, ErrHabitNotFound):
@@ -279,7 +271,7 @@ func (h *Handler) CreateRoutine(c *gin.Context) {
 
 func (h *Handler) ListRoutines(c *gin.Context) {
 	userID := httputil.UserID(c)
-	routines, err := h.service.ListRoutinesWithHabits(userID)
+	routines, err := h.service.ListRoutinesWithHabits(c, userID)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return

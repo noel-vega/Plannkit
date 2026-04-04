@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/jmoiron/sqlx"
+	"github.com/noel-vega/habits/api/db"
 	"github.com/noel-vega/habits/api/internal/auth"
 	"github.com/noel-vega/habits/api/internal/finances"
 	"github.com/noel-vega/habits/api/internal/habits"
@@ -22,6 +23,7 @@ type Services struct {
 }
 
 type NewServicesParams struct {
+	Queries     *db.Queries
 	DB          *sqlx.DB
 	JwtSecret   string
 	StoragePath string
@@ -34,7 +36,7 @@ func NewServices(params *NewServicesParams) *Services {
 	networkService := network.NewService(params.DB, userService)
 	financesService := finances.NewService(params.DB, networkService)
 	todosService := todos.NewService(params.DB)
-	habitsService := habits.NewService(params.DB)
+	habitsService := habits.NewService(params.DB, params.Queries)
 	authService := auth.NewService(params.JwtSecret)
 
 	return &Services{

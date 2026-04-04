@@ -4,7 +4,7 @@ package user
 import "time"
 
 type User struct {
-	ID        int       `json:"id" db:"id"`
+	ID        int32     `json:"id" db:"id"`
 	Username  string    `json:"username" db:"username"`
 	FirstName string    `json:"firstName" db:"first_name"`
 	LastName  string    `json:"lastName" db:"last_name"`
@@ -17,7 +17,7 @@ type User struct {
 }
 
 type UserNoPassword struct {
-	ID        int       `json:"id" db:"id"`
+	ID        int32     `json:"id" db:"id"`
 	Username  string    `json:"username" db:"username"`
 	FirstName string    `json:"firstName" db:"first_name"`
 	LastName  string    `json:"lastName" db:"last_name"`

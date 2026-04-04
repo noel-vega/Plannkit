@@ -21,7 +21,7 @@ func (s *Service) CreateTodo(params *CreateTodoParams) error {
 	return s.repository.CreateTodo(params)
 }
 
-func (s *Service) ListTodos(userID int) ([]Todo, error) {
+func (s *Service) ListTodos(userID int32) ([]Todo, error) {
 	return s.repository.ListTodos(userID)
 }
 

@@ -21,6 +21,6 @@ type SignInParams struct {
 }
 
 type Claims struct {
-	UserID int `json:"userID"`
+	UserID int32 `json:"userID"`
 	jwt.RegisteredClaims
 }

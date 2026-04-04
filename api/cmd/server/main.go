@@ -1,15 +1,19 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
+	"github.com/noel-vega/habits/api/db"
 	"github.com/noel-vega/habits/api/internal/server"
 )
 
@@ -19,10 +23,14 @@ func main() {
 	}
 
 	postgresConnectionString := os.Getenv("POSTGRES_CONNECTION_STRING")
-	db, err := sqlx.Connect("postgres", postgresConnectionString)
+
+	pool, err := pgxpool.New(context.Background(), postgresConnectionString)
+	// db, err := sqlx.Connect("postgres", postgresConnectionString)
 	if err != nil {
 		log.Fatalln(err)
 	}
+
+	xdb := sqlx.NewDb(stdlib.OpenDBFromPool(pool), "pgx")
 
 	allowOrigin := os.Getenv("ALLOW_ORIGIN")
 
@@ -36,7 +44,7 @@ func main() {
 	}))
 
 	router.GET("/health", func(c *gin.Context) {
-		if err := db.Ping(); err != nil {
+		if err := pool.Ping(context.Background()); err != nil {
 			c.JSON(http.StatusServiceUnavailable, gin.H{"status": "unhealthy", "reason": "database unreachable"})
 			return
 		}
@@ -47,8 +55,11 @@ func main() {
 	router.Static("/public", storageBasePath)
 	jwtSecret := os.Getenv("JWT_SECRET")
 
+	queries := db.New(pool)
+
 	services := server.NewServices(&server.NewServicesParams{
-		DB:          db,
+		Queries:     queries,
+		DB:          xdb,
 		JwtSecret:   jwtSecret,
 		StoragePath: storageBasePath,
 		Domain:      os.Getenv("DOMAIN"),

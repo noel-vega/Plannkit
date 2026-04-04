@@ -144,7 +144,7 @@ func TestServiceUpdateSpaceName(t *testing.T) {
 	tests := []struct {
 		name      string
 		spaceName string
-		userID    int
+		userID    int32
 		wantErr   error
 	}{
 		{name: "valid", spaceName: "Updated Name", userID: u.ID},
@@ -229,7 +229,7 @@ func TestServiceUpdateSpaceName_Unauthorized(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		userID  int
+		userID  int32
 		errWant error
 	}{
 		{name: "not owner", userID: editor.ID, errWant: apperrors.ErrUnauthorized},

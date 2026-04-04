@@ -18,82 +18,6 @@ func NewRepository(db *sqlx.DB) *Repository {
 	}
 }
 
-func (r *Repository) GetHabit(params *GetHabitParams) (*Habit, error) {
-	habit := &Habit{}
-	err := r.db.Get(habit, "SELECT * FROM habits WHERE id=$1 AND user_id = $2", params.ID, params.UserID)
-	if err != nil {
-		return nil, err
-	}
-
-	return habit, nil
-}
-
-func (r *Repository) CreateHabit(params *CreateHabitParams) (*Habit, error) {
-	query := `
-        INSERT INTO habits (name, description, completion_type, completions_per_day, icon, user_id, routine_id) 
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
-				RETURNING *
-    `
-	var habit Habit
-
-	err := r.db.Get(&habit, query, params.Name, params.Description, params.CompletionType, params.CompletionsPerDay, params.Icon, params.UserID, params.RoutineID)
-	if err != nil {
-		return nil, err
-	}
-
-	return &habit, nil
-}
-
-func (r *Repository) ListHabits(userID int) ([]Habit, error) {
-	query := `
-  SELECT * 
-	FROM habits 
-	WHERE user_id = $1
-	ORDER by position asc
-	`
-	habits := []Habit{}
-	err := r.db.Select(&habits, query, userID)
-	if err != nil {
-		return nil, err
-	}
-	return habits, nil
-}
-
-func (r *Repository) UpdateHabit(params *UpdateHabitParams) error {
-	query := `
-		UPDATE habits 
-	  SET name = :name, description = :description, completion_type = :completion_type, completions_per_day = :completions_per_day
-	  WHERE ID = :id AND user_id = :user_id
-	`
-	_, err := r.db.NamedExec(query, params)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (r *Repository) DeleteHabit(params *DeleteHabitParams) error {
-	query := `
-	DELETE FROM habits
-	WHERE id = :id AND user_id = :user_id`
-	result, err := r.db.NamedExec(query, params)
-	if err != nil {
-		return err
-	}
-
-	rows, err := result.RowsAffected()
-	if err != nil {
-		return err
-	}
-
-	if rows == 0 {
-		return apperrors.ErrNotFound
-	}
-
-	return nil
-}
-
 func (r *Repository) InsertRoutine(params *InsertRoutineParams) (*Routine, error) {
 	query := `
 		INSERT INTO
@@ -125,24 +49,6 @@ func (r *Repository) CreateHabitContribution(params *CreateContributionParams) e
 		return err
 	}
 	return nil
-}
-
-func (r *Repository) ListContributions(userID int) ([]HabitContribution, error) {
-	contributions := []HabitContribution{}
-	err := r.db.Select(&contributions, "SELECT * FROM habits_contributions WHERE user_id = $1", userID)
-	if err != nil {
-		return nil, err
-	}
-	return contributions, nil
-}
-
-func (r *Repository) ListHabitContributions(params *GetHabitParams) ([]HabitContribution, error) {
-	contributions := []HabitContribution{}
-	err := r.db.Select(&contributions, "SELECT * FROM habits_contributions WHERE habit_id=$1 AND user_id = $2", params.ID, params.UserID)
-	if err != nil {
-		return nil, err
-	}
-	return contributions, nil
 }
 
 func (r *Repository) UpdateHabitContributionCompletions(params *UpdateContributionCompletionsParams) error {
@@ -181,41 +87,7 @@ func (r *Repository) DeleteHabitContribution(params *DeleteContributionParams) e
 	return nil
 }
 
-func (r *Repository) ListHabitsAndContributions(userID int) ([]Habit, []HabitContribution, error) {
-	habits, err := r.ListHabits(userID)
-	if err != nil {
-		return nil, nil, err
-	}
-	contributions, err := r.ListContributions(userID)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return habits, contributions, nil
-}
-
-// ## Step 3: Repository — `api/internal/habits/repository.go`
-//
-// Add `roci.dev/fracdex`, `database/sql`, and `apperrors` imports (reference: `todos/repository.go`).
-//
-// **New methods:**
-// - `GetLastRoutine(userID)` — SELECT last routine by position DESC LIMIT 1, return `apperrors.ErrNotFound` on no rows
-// - `GetLastHabitInGroup(userID, routineID *int)` — SELECT last habit by position in a routine (or standalone when nil), return `apperrors.ErrNotFound` on no rows
-// - `ListRoutines(userID)` — SELECT all routines ORDER BY position ASC
-// - `UpdateHabitPosition(params)` — compute `fracdex.KeyBetween(after, before)`, UPDATE position + routine_id
-// - `UpdateRoutinePosition(params)` — compute `fracdex.KeyBetween(after, before)`, UPDATE position
-//
-//
-// CREATE TABLE IF NOT EXISTS habits_routines (
-//     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-//     user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-//     name VARCHAR(255) NOT NULL,
-//     position TEXT COLLATE "C" NOT NULL DEFAULT '',
-//     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-//     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-// );
-
-func (r *Repository) GetLastRoutine(userID int) (*Routine, error) {
+func (r *Repository) GetLastRoutine(userID int32) (*Routine, error) {
 	query := `
    SELECT *
 	 FROM habits_routines
@@ -272,7 +144,7 @@ func (r *Repository) UpdateHabitPosition(params *UpdateHabitPositionRepoParams) 
 	return habit, nil
 }
 
-func (r *Repository) ListRoutines(userID int) ([]Routine, error) {
+func (r *Repository) ListRoutines(userID int32) ([]Routine, error) {
 	query := `
 		SELECT * 
 	  FROM habits_routines

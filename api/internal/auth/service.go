@@ -23,7 +23,7 @@ func NewService(jwtSecret string) *Service {
 	}
 }
 
-func (s *Service) GenerateToken(userID int, duration time.Duration) (string, error) {
+func (s *Service) GenerateToken(userID int32, duration time.Duration) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"userID": userID,
 		"exp":    time.Now().Add(duration).Unix(),
@@ -37,7 +37,7 @@ func (s *Service) GenerateToken(userID int, duration time.Duration) (string, err
 	return tokenStr, nil
 }
 
-func (s *Service) GenerateAccessToken(userID int) (string, error) {
+func (s *Service) GenerateAccessToken(userID int32) (string, error) {
 	token, err := s.GenerateToken(userID, accessTokenDuration)
 	if err != nil {
 		return "", err
@@ -45,7 +45,7 @@ func (s *Service) GenerateAccessToken(userID int) (string, error) {
 	return token, nil
 }
 
-func (s *Service) GenerateRefreshToken(userID int) (string, error) {
+func (s *Service) GenerateRefreshToken(userID int32) (string, error) {
 	token, err := s.GenerateToken(userID, refreshTokenDuration)
 	if err != nil {
 		return "", err
@@ -65,7 +65,7 @@ func (s *Service) ComparePassword(hashedPassword string, plainPassword string) e
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(plainPassword))
 }
 
-func (s *Service) GenerateTokenPair(userID int) (*TokenPair, error) {
+func (s *Service) GenerateTokenPair(userID int32) (*TokenPair, error) {
 	accessToken, err := s.GenerateAccessToken(userID)
 	if err != nil {
 		return nil, err

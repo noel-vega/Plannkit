@@ -28,7 +28,7 @@ type Space struct {
 type SpaceMember struct {
 	ID        int       `json:"id" db:"id"`
 	SpaceID   int       `json:"spaceId" db:"finance_space_id"`
-	UserID    int       `json:"userId" db:"user_id"`
+	UserID    int32     `json:"userId" db:"user_id"`
 	Role      string    `json:"role" db:"role"`
 	Status    string    `json:"status" db:"status"`
 	CreatedAt time.Time `json:"createdAt" db:"created_at"`
@@ -47,19 +47,19 @@ type SpaceMemberWithUser struct {
 }
 
 type InviteToSpaceBody struct {
-	UserID int    `json:"userId"`
+	UserID int32  `json:"userId"`
 	Role   string `json:"role"`
 }
 
 type InviteToSpaceParams struct {
-	UserID          int
-	NewMemberUserID int
+	UserID          int32
+	NewMemberUserID int32
 	SpaceID         int
 	Role            string
 }
 
 type InsertSpaceMemberParams struct {
-	UserID  int    `db:"user_id"`
+	UserID  int32  `db:"user_id"`
 	SpaceID int    `db:"finance_space_id"`
 	Role    string `db:"role"`
 	Status  string `db:"status"`
@@ -70,8 +70,8 @@ type ListSpaceMembersParams struct {
 }
 
 type SpaceMemberRelationship struct {
-	UserID  int `db:"user_id"`
-	SpaceID int `db:"finance_space_id"`
+	UserID  int32 `db:"user_id"`
+	SpaceID int   `db:"finance_space_id"`
 }
 
 type (
@@ -96,7 +96,7 @@ type UpdateSpaceNameParams struct {
 type Expense struct {
 	ID          int       `json:"id" db:"id"`
 	SpaceID     int       `json:"spaceId" db:"finance_space_id"`
-	UserID      int       `json:"userId" db:"user_id"`
+	UserID      int32     `json:"userId" db:"user_id"`
 	Name        string    `json:"name" db:"name"`
 	Amount      int       `json:"amount" db:"amount"`
 	Category    *string   `json:"category" db:"category"`
@@ -110,7 +110,7 @@ type CreateSpaceBody struct {
 }
 
 type CreateSpaceParams struct {
-	UserID int    `json:"userId" db:"user_id"`
+	UserID int32  `json:"userId" db:"user_id"`
 	Name   string `json:"name" db:"name"`
 }
 
@@ -123,7 +123,7 @@ type CreateExpenseBody struct {
 
 type CreateExpenseParams struct {
 	SpaceID     int     `json:"spaceId" db:"finance_space_id"`
-	UserID      int     `json:"userId" db:"user_id"`
+	UserID      int32   `json:"userId" db:"user_id"`
 	Name        string  `json:"name" db:"name"`
 	Amount      int     `json:"amount" db:"amount"`
 	Category    *string `json:"category" db:"category"`
@@ -131,14 +131,14 @@ type CreateExpenseParams struct {
 }
 
 type ListExpensesParams struct {
-	SpaceID int `json:"spaceId" db:"finance_space_id"`
-	UserID  int `json:"userId" db:"user_id"`
+	SpaceID int   `json:"spaceId" db:"finance_space_id"`
+	UserID  int32 `json:"userId" db:"user_id"`
 }
 
 type Goal struct {
 	ID                 int       `json:"id" db:"id"`
 	SpaceID            int       `json:"spaceId" db:"finance_space_id"`
-	UserID             int       `json:"userId" db:"user_id"`
+	UserID             int32     `json:"userId" db:"user_id"`
 	Name               string    `json:"name" db:"name"`
 	Amount             int       `json:"amount" db:"amount"`
 	MonthlyCommitment  int       `json:"monthlyCommitment" db:"monthly_commitment"`
@@ -155,7 +155,7 @@ type CreateGoalBody struct {
 
 type CreateGoalParams struct {
 	SpaceID           int    `json:"spaceId" db:"finance_space_id"`
-	UserID            int    `json:"userId" db:"user_id"`
+	UserID            int32  `json:"userId" db:"user_id"`
 	Name              string `json:"name" db:"name"`
 	Amount            int    `json:"amount" db:"amount"`
 	MonthlyCommitment int    `json:"monthlyCommitment" db:"monthly_commitment"`
@@ -174,7 +174,7 @@ type GoalContribution struct {
 	ID        int       `json:"id" db:"id"`
 	SpaceID   int       `json:"spaceId" db:"finance_space_id"`
 	GoalID    int       `json:"goalId" db:"finance_space_goal_id"`
-	UserID    int       `json:"userId" db:"user_id"`
+	UserID    int32     `json:"userId" db:"user_id"`
 	Amount    int       `json:"amount" db:"amount"`
 	Note      *string   `json:"note" db:"note"`
 	CreatedAt time.Time `json:"createdAt" db:"created_at"`
@@ -182,9 +182,9 @@ type GoalContribution struct {
 }
 
 type ListGoalContributionsParams struct {
-	UserID  int `json:"userId" db:"user_id"`
-	SpaceID int `json:"spaceId" db:"finance_space_id"`
-	GoalID  int `json:"goalId" db:"finance_space_goal_id"`
+	UserID  int32 `json:"userId" db:"user_id"`
+	SpaceID int   `json:"spaceId" db:"finance_space_id"`
+	GoalID  int   `json:"goalId" db:"finance_space_goal_id"`
 }
 
 type CreateGoalContributionBody struct {
@@ -195,7 +195,7 @@ type CreateGoalContributionBody struct {
 type CreateGoalContributionParams struct {
 	SpaceID int     `db:"finance_space_id"`
 	GoalID  int     `db:"finance_space_goal_id"`
-	UserID  int     `db:"user_id"`
+	UserID  int32   `db:"user_id"`
 	Amount  int     `db:"amount"`
 	Note    *string `db:"note"`
 }
@@ -205,15 +205,15 @@ type DeleteGoalContributionParams struct {
 }
 
 type DeleteExpenseParams struct {
-	ID      int `json:"id" db:"id"`
-	SpaceID int `json:"spaceId" db:"finance_space_id"`
-	UserID  int `json:"userId" db:"user_id"`
+	ID      int   `json:"id" db:"id"`
+	SpaceID int   `json:"spaceId" db:"finance_space_id"`
+	UserID  int32 `json:"userId" db:"user_id"`
 }
 
 type IncomeSource struct {
 	ID        int       `json:"id" db:"id"`
 	SpaceID   int       `json:"spaceId" db:"finance_space_id"`
-	UserID    int       `json:"userId" db:"user_id"`
+	UserID    int32     `json:"userId" db:"user_id"`
 	Name      string    `json:"name" db:"name"`
 	Amount    int       `json:"amount" db:"amount"`
 	CreatedAt time.Time `json:"createdAt" db:"created_at"`
@@ -227,7 +227,7 @@ type CreateIncomeSourceBody struct {
 
 type InsertIncomeSourceParams struct {
 	SpaceID int    `db:"finance_space_id"`
-	UserID  int    `db:"user_id"`
+	UserID  int32  `db:"user_id"`
 	Name    string `db:"name"`
 	Amount  int    `db:"amount"`
 }

@@ -57,7 +57,7 @@ func (r *Repository) GetTodo(params *GetTodoParams) (*Todo, error) {
 	return todo, nil
 }
 
-func (r *Repository) ListTodos(userID int) ([]Todo, error) {
+func (r *Repository) ListTodos(userID int32) ([]Todo, error) {
 	query := `
 		SELECT * FROM todos WHERE user_id = $1 ORDER BY position ASC
 	`

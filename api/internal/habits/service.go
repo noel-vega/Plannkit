@@ -1,38 +1,55 @@
 package habits
 
 import (
+	"context"
 	"errors"
 	"strings"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jmoiron/sqlx"
+	"github.com/noel-vega/habits/api/db"
 	"github.com/noel-vega/habits/api/internal/apperrors"
 	"roci.dev/fracdex"
 )
 
 type Service struct {
+	queries    *db.Queries
 	repository *Repository
 }
 
-func NewService(db *sqlx.DB) *Service {
+func NewService(db *sqlx.DB, queries *db.Queries) *Service {
 	return &Service{
+		queries:    queries,
 		repository: NewRepository(db),
 	}
 }
 
-func (s *Service) CreateHabit(params *CreateHabitParams) (*Habit, error) {
-	return s.repository.CreateHabit(params)
+func (s *Service) CreateHabit(ctx context.Context, params db.CreateHabitParams) (db.Habit, error) {
+	return s.queries.CreateHabit(ctx, params)
 }
 
-func (s *Service) ListHabits(userID int) ([]Habit, error) {
-	return s.repository.ListHabits(userID)
+func (s *Service) ListHabits(c context.Context, userID int32) ([]db.Habit, error) {
+	return s.queries.ListHabits(c, userID)
 }
 
-func (s *Service) GetHabitWithContributions(params *GetHabitParams) (*HabitWithContributions, error) {
-	habit, err := s.repository.GetHabit(params)
+func (s *Service) UpdateHabit(ctx context.Context, params db.UpdateHabitParams) error {
+	return s.queries.UpdateHabit(ctx, params)
+}
+
+func (s *Service) DeleteHabit(ctx context.Context, params db.DeleteHabitParams) error {
+	err := s.queries.DeleteHabit(ctx, params)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return ErrHabitNotFound
+	}
+	return err
+}
+
+func (s *Service) GetHabitWithContributions(ctx context.Context, params db.GetHabitParams) (*HabitWithContributions, error) {
+	habit, err := s.queries.GetHabit(ctx, params)
 	if err != nil {
 		return nil, err
 	}
-	contributions, err := s.repository.ListHabitContributions(params)
+	contributions, err := s.queries.ListContributions(ctx, params.UserID)
 	if err != nil {
 		return nil, err
 	}
@@ -40,10 +57,6 @@ func (s *Service) GetHabitWithContributions(params *GetHabitParams) (*HabitWithC
 		Habit:         habit,
 		Contributions: contributions,
 	}, nil
-}
-
-func (s *Service) UpdateHabit(params *UpdateHabitParams) error {
-	return s.repository.UpdateHabit(params)
 }
 
 func (s *Service) UpdateHabitPosition(params *UpdateHabitPositionParams) (*Habit, error) {
@@ -59,20 +72,8 @@ func (s *Service) UpdateHabitPosition(params *UpdateHabitPositionParams) (*Habit
 	})
 }
 
-func (s *Service) DeleteHabit(params *DeleteHabitParams) error {
-	err := s.repository.DeleteHabit(params)
-	if errors.Is(err, apperrors.ErrNotFound) {
-		return ErrHabitNotFound
-	}
-	return err
-}
-
 func (s *Service) CreateContribution(params *CreateContributionParams) error {
 	return s.repository.CreateHabitContribution(params)
-}
-
-func (s *Service) ListContributions(userID int) ([]HabitContribution, error) {
-	return s.repository.ListContributions(userID)
 }
 
 func (s *Service) UpdateContributionCompletions(params *UpdateContributionCompletionsParams) error {
@@ -87,17 +88,18 @@ func (s *Service) DeleteContribution(params *DeleteContributionParams) error {
 	return err
 }
 
-func (s *Service) ListHabitContributions(params *GetHabitParams) ([]HabitContribution, error) {
-	return s.repository.ListHabitContributions(params)
-}
-
-func (s *Service) ListHabitsWithContributions(userID int) ([]HabitWithContributions, error) {
-	habits, contributions, err := s.repository.ListHabitsAndContributions(userID)
+func (s *Service) ListHabitsWithContributions(ctx context.Context, userID int32) ([]HabitWithContributions, error) {
+	habits, err := s.queries.ListHabits(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
 
-	contributionsByHabit := make(map[int][]HabitContribution)
+	contributions, err := s.queries.ListContributions(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	contributionsByHabit := make(map[int32][]db.HabitsContribution)
 
 	for _, c := range contributions {
 		contributionsByHabit[c.HabitID] = append(contributionsByHabit[c.HabitID], c)
@@ -108,10 +110,10 @@ func (s *Service) ListHabitsWithContributions(userID int) ([]HabitWithContributi
 	for i, habit := range habits {
 		contribs := contributionsByHabit[habit.ID]
 		if contribs == nil {
-			contribs = []HabitContribution{}
+			contribs = []db.HabitsContribution{}
 		}
 		result[i] = HabitWithContributions{
-			Habit:         &habit,
+			Habit:         habit,
 			Contributions: contribs,
 		}
 	}
@@ -149,19 +151,19 @@ func (s *Service) CreateRoutine(params *InsertRoutineParams) (*Routine, error) {
 	return s.repository.InsertRoutine(params)
 }
 
-func (s *Service) ListRoutinesWithHabits(userID int) (*HabitGroups, error) {
+func (s *Service) ListRoutinesWithHabits(ctx context.Context, userID int32) (*HabitGroups, error) {
 	routinesList, err := s.repository.ListRoutines(userID)
 	if err != nil {
 		return nil, err
 	}
 
-	habitsList, err := s.ListHabitsWithContributions(userID)
+	habitsList, err := s.ListHabitsWithContributions(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
 
 	habits := []HabitWithContributions{}
-	routines := map[int]*RoutineWithHabits{}
+	routines := map[int32]*RoutineWithHabits{}
 
 	for _, routine := range routinesList {
 		routines[routine.ID] = &RoutineWithHabits{
@@ -171,10 +173,10 @@ func (s *Service) ListRoutinesWithHabits(userID int) (*HabitGroups, error) {
 	}
 
 	for _, habit := range habitsList {
-		if habit.RoutineID == nil {
+		if habit.Habit.RoutineID == nil {
 			habits = append(habits, habit)
 		} else {
-			routines[*habit.RoutineID].Habits = append(routines[*habit.RoutineID].Habits, habit)
+			routines[*habit.Habit.RoutineID].Habits = append(routines[*habit.Habit.RoutineID].Habits, habit)
 		}
 	}
 
@@ -216,8 +218,8 @@ func (s *Service) UpdateRoutinePosition(params *UpdateRoutinePositionParams) (*R
 }
 
 type DeleteRoutineParams struct {
-	ID     int `db:"id"`
-	UserID int `db:"user_id"`
+	ID     int   `db:"id"`
+	UserID int32 `db:"user_id"`
 }
 
 func (s *Service) DeleteRoutine(params *DeleteRoutineParams) error {

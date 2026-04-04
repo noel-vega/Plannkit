@@ -1,7 +1,11 @@
 // Package habits
 package habits
 
-import "time"
+import (
+	"time"
+
+	"github.com/noel-vega/habits/api/db"
+)
 
 type Habit struct {
 	ID                int       `json:"id" db:"id"`
@@ -19,27 +23,27 @@ type Habit struct {
 }
 
 type HabitWithContributions struct {
-	*Habit
-	Contributions []HabitContribution `json:"contributions"`
+	db.Habit
+	Contributions []db.HabitsContribution `json:"contributions"`
 }
 
 type HabitContribution struct {
 	ID          int       `json:"id"`
-	UserID      int       `json:"userId" db:"user_id"`
+	UserID      int32     `json:"userId" db:"user_id"`
 	Date        time.Time `json:"date"`
-	HabitID     int       `json:"habitId" db:"habit_id"`
+	HabitID     int32     `json:"habitId" db:"habit_id"`
 	Completions int       `json:"completions" db:"completions"`
 	CreatedAt   time.Time `json:"createdAt" db:"created_at"`
 }
 
 type CreateHabitRequestBody struct {
-	RoutineID         *int   `json:"routineId"`
-	Name              string `json:"name"`
-	Icon              string `json:"icon"`
-	UnitOfMeasurement string `json:"unitOfMeasurement"`
-	Description       string `json:"description"`
-	CompletionType    string `json:"completionType"`
-	CompletionsPerDay int    `json:"completionsPerDay"`
+	RoutineID         *int32  `json:"routineId"`
+	Name              string  `json:"name"`
+	Icon              string  `json:"icon"`
+	UnitOfMeasurement string  `json:"unitOfMeasurement"`
+	Description       *string `json:"description"`
+	CompletionType    string  `json:"completionType"`
+	CompletionsPerDay int32   `json:"completionsPerDay"`
 }
 
 type CreateHabitParams struct {
@@ -54,17 +58,17 @@ type CreateHabitParams struct {
 }
 
 type UpdateHabitBody struct {
-	Name              string `json:"name"`
-	Icon              string `json:"icon"`
-	UnitOfMeasurement string `json:"unitOfMeasurement"`
-	Description       string `json:"description"`
-	CompletionType    string `json:"completionType"`
-	CompletionsPerDay int    `json:"completionsPerDay"`
+	Name              string  `json:"name"`
+	Icon              string  `json:"icon"`
+	UnitOfMeasurement *string `json:"unitOfMeasurement"`
+	Description       *string `json:"description"`
+	CompletionType    string  `json:"completionType"`
+	CompletionsPerDay int32   `json:"completionsPerDay"`
 }
 
 type UpdateHabitParams struct {
 	ID                int    `json:"id" db:"id"`
-	UserID            int    `json:"userId" db:"user_id"`
+	UserID            int32  `json:"userId" db:"user_id"`
 	Name              string `json:"name" db:"name"`
 	Icon              string `json:"icon" db:"icon"`
 	UnitOfMeasurement string `json:"unitOfMeasurement" db:"unit_of_measurement"`
@@ -74,8 +78,8 @@ type UpdateHabitParams struct {
 }
 
 type GetHabitParams struct {
-	ID     int `json:"id" db:"id"`
-	UserID int `json:"userId" db:"user_id"`
+	ID     int   `json:"id" db:"id"`
+	UserID int32 `json:"userId" db:"user_id"`
 }
 
 type CreateContributionBody struct {
@@ -85,14 +89,14 @@ type CreateContributionBody struct {
 
 type CreateContributionParams struct {
 	HabitID     int       `json:"habitId" db:"habit_id"`
-	UserID      int       `json:"userId" db:"user_id"`
+	UserID      int32     `json:"userId" db:"user_id"`
 	Completions int       `json:"completions" db:"completions"`
 	Date        time.Time `json:"date" db:"date"`
 }
 
 type DeleteContributionParams struct {
-	ID     int `db:"id"`
-	UserID int `db:"user_id"`
+	ID     int   `db:"id"`
+	UserID int32 `db:"user_id"`
 }
 
 type UpdateCompletionsBody struct {
@@ -100,19 +104,19 @@ type UpdateCompletionsBody struct {
 }
 
 type UpdateContributionCompletionsParams struct {
-	ID          int `json:"id" db:"id"`
-	UserID      int `json:"userId" db:"user_id"`
-	Completions int `json:"completions" db:"completions"`
+	ID          int   `json:"id" db:"id"`
+	UserID      int32 `json:"userId" db:"user_id"`
+	Completions int   `json:"completions" db:"completions"`
 }
 
 type DeleteHabitParams struct {
-	ID     int `db:"id"`
-	UserID int `db:"user_id"`
+	ID     int   `db:"id"`
+	UserID int32 `db:"user_id"`
 }
 
 type Routine struct {
-	ID        int       `json:"id" db:"id"`
-	UserID    int       `json:"userId" db:"user_id"`
+	ID        int32     `json:"id" db:"id"`
+	UserID    int32     `json:"userId" db:"user_id"`
 	Name      string    `json:"name" db:"name"`
 	Position  string    `json:"position" db:"position"`
 	CreatedAt time.Time `json:"createdAt" db:"created_at"`
@@ -125,7 +129,7 @@ type UpdateRoutineBody struct {
 
 type UpdateRoutineParams struct {
 	ID     int    `db:"id"`
-	UserID int    `db:"user_id"`
+	UserID int32  `db:"user_id"`
 	Name   string `db:"name"`
 }
 
@@ -134,7 +138,7 @@ type CreateRoutineBody struct {
 }
 
 type InsertRoutineParams struct {
-	UserID   int    `db:"user_id"`
+	UserID   int32  `db:"user_id"`
 	Position string `db:"position"`
 	Name     string `db:"name"`
 }

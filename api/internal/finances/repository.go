@@ -61,7 +61,7 @@ func (r *Repository) GetSpaceMember(params *SpaceMemberRelationship) (*SpaceMemb
 	return data, nil
 }
 
-func (r *Repository) ListSpaces(userID int) ([]SpaceWithMembership, error) {
+func (r *Repository) ListSpaces(userID int32) ([]SpaceWithMembership, error) {
 	spaces := []SpaceWithMembership{}
 	query := `
 	SELECT 

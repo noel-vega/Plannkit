@@ -182,7 +182,7 @@ func (r *Repository) AcceptFollow(params *AcceptFollowParams) error {
 	return err
 }
 
-func (r *Repository) GetConnection(user1ID, user2ID int) (*Connection, error) {
+func (r *Repository) GetConnection(user1ID, user2ID int32) (*Connection, error) {
 	query := `
 		SELECT *
 		FROM network_connections

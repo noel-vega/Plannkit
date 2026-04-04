@@ -453,7 +453,7 @@ func (h *Handler) DeleteSpaceMember(c *gin.Context) {
 		return
 	}
 	err = h.service.DeleteSpaceMember(&SpaceMemberRelationship{
-		UserID:  userID,
+		UserID:  int32(userID),
 		SpaceID: c.MustGet("spaceID").(int),
 	})
 	if err != nil {
