@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { DynamicIcon } from "@/components/ui/dynamic-icon"
+import { Item, ItemMedia, ItemContent, ItemTitle, ItemDescription, ItemActions } from "@/components/ui/item"
 import { CreateHabitDialogDrawer } from "./create-habit-form"
 import { CreateRoutineDialogDrawer } from "./create-routine-form"
 import { CircularProgress } from "@/components/ui/circle-progress"
@@ -78,65 +79,69 @@ function RoutineHabitRow({ habit }: { habit: HabitWithContributions; }) {
 
   return (
     <li>
-      <Link to="/habits/$id" params={{ id: habit.id }} className="block">
-        <div className="flex items-center h-13 px-5 hover:bg-secondary/30 transition-all duration-300">
-          <div className={cn(
-            "flex items-center gap-3 flex-1",
-            isDone && "opacity-60"
-          )}>
-            <div className="size-8 grid place-content-center shrink-0 text-muted-foreground">
-              <DynamicIcon className="size-4" name={habit.icon} />
-            </div>
-            <span className={cn(
-              "text-sm transition-all duration-300",
-              isDone ? "text-muted-foreground line-through" : "font-medium"
+      <Item asChild size="sm" className="rounded-none px-5 gap-3">
+        <Link to="/habits/$id" params={{ id: habit.id }}>
+          <ItemMedia className={cn("text-muted-foreground", isDone && "opacity-60")}>
+            <DynamicIcon className="size-4" name={habit.icon} />
+          </ItemMedia>
+          <ItemContent className={cn("gap-0.5", isDone && "opacity-60")}>
+            <ItemTitle className={cn(
+              "transition-all duration-300",
+              isDone ? "text-muted-foreground line-through font-normal" : "font-medium"
             )}>
               {habit.name}
-            </span>
-          </div>
-          {habit.completionsPerDay === 1 ? (
-            <button
-              className={cn(
-                "cursor-pointer size-10 rounded-full border-2 grid place-content-center shrink-0 transition-all duration-300 group/check",
-                isDone
-                  ? "bg-green-600 border-green-600"
-                  : "border-muted-foreground/30 hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-950/20"
-              )}
-              onClick={handleContribution}
-            >
-              <CheckIcon
+            </ItemTitle>
+            {habit.description && (
+              <ItemDescription className="text-xs line-clamp-1">
+                {habit.description}
+              </ItemDescription>
+            )}
+          </ItemContent>
+          <ItemActions>
+            {habit.completionsPerDay === 1 ? (
+              <button
                 className={cn(
-                  "transition-all duration-300",
+                  "cursor-pointer size-10 rounded-full border-2 grid place-content-center shrink-0 transition-all duration-300 group/check",
                   isDone
-                    ? "stroke-white opacity-100"
-                    : "stroke-muted-foreground/50 group-hover/check:stroke-green-500 group-hover/check:opacity-80"
+                    ? "bg-green-600 border-green-600"
+                    : "border-muted-foreground/30 hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-950/20"
                 )}
-                size={18}
-                strokeWidth={2.5}
-              />
-            </button>
-          ) : (
-            <button
-              className="cursor-pointer relative size-10 rounded-full grid place-content-center shrink-0 transition-all duration-300"
-              onClick={handleContribution}
-            >
-              {isDone ? (
-                <CheckIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 stroke-green-600" size={18} />
-              ) : (
-                <PlusIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 text-muted-foreground/50 transition-colors duration-300" size={18} />
-              )}
-              <CircularProgress
-                progress={progress}
-                size={40}
-                strokeWidth={2}
-                showPercentage={false}
-                primaryColor="stroke-green-600"
-                secondaryColor="color-mix(in oklch, var(--muted-foreground) 30%, transparent)"
-              />
-            </button>
-          )}
-        </div>
-      </Link>
+                onClick={handleContribution}
+              >
+                <CheckIcon
+                  className={cn(
+                    "transition-all duration-300",
+                    isDone
+                      ? "stroke-white opacity-100"
+                      : "stroke-muted-foreground/50 group-hover/check:stroke-green-500 group-hover/check:opacity-80"
+                  )}
+                  size={18}
+                  strokeWidth={2.5}
+                />
+              </button>
+            ) : (
+              <button
+                className="cursor-pointer relative size-10 rounded-full grid place-content-center shrink-0 transition-all duration-300"
+                onClick={handleContribution}
+              >
+                {isDone ? (
+                  <CheckIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 stroke-green-600" size={18} />
+                ) : (
+                  <PlusIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 text-muted-foreground/50 transition-colors duration-300" size={18} />
+                )}
+                <CircularProgress
+                  progress={progress}
+                  size={40}
+                  strokeWidth={2}
+                  showPercentage={false}
+                  primaryColor="stroke-green-600"
+                  secondaryColor="color-mix(in oklch, var(--muted-foreground) 30%, transparent)"
+                />
+              </button>
+            )}
+          </ItemActions>
+        </Link>
+      </Item>
       <CustomContributionCompletionsDialog
         {...contributionsDialog}
         date={new Date()}
@@ -231,7 +236,7 @@ function RoutineItem({ routine, colorScheme, onDelete, onEdit }: RoutineItemProp
         open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
       )}>
         <div className="overflow-hidden min-h-0">
-          <CardContent className="px-0 pb-0">
+          <CardContent className="px-0 py-0 pb-0">
             <ul className="divide-y divide-border/50">
               {routine.habits.map(habit => (
                 <RoutineHabitRow key={habit.id} habit={habit} />
@@ -339,8 +344,8 @@ export function HabitsList({ habits }: { habits: HabitWithContributions[] }) {
           <span className="text-xs text-muted-foreground">{t("Create habit")}</span>
         </button>
       ) : (
-        <Card className="p-0 overflow-hidden">
-          <CardContent className="px-0 py-1.75">
+        <Card className="p-0 py-0 overflow-hidden">
+          <CardContent className="px-0 py-0">
             <ul className="divide-y divide-border/50">
               {habits.map(habit => (
                 <RoutineHabitRow
