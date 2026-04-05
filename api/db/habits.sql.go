@@ -153,7 +153,7 @@ func (q *Queries) DeleteHabitContribution(ctx context.Context, arg DeleteHabitCo
 	return err
 }
 
-const deleteRoutine = `-- name: DeleteRoutine :exec
+const deleteRoutine = `-- name: DeleteRoutine :execrows
 DELETE FROM habits_routines
 WHERE id = $1 AND user_id = $2
 `
@@ -163,9 +163,12 @@ type DeleteRoutineParams struct {
 	UserID int32 `json:"userId"`
 }
 
-func (q *Queries) DeleteRoutine(ctx context.Context, arg DeleteRoutineParams) error {
-	_, err := q.db.Exec(ctx, deleteRoutine, arg.ID, arg.UserID)
-	return err
+func (q *Queries) DeleteRoutine(ctx context.Context, arg DeleteRoutineParams) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteRoutine, arg.ID, arg.UserID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const getHabit = `-- name: GetHabit :one
@@ -213,6 +216,39 @@ func (q *Queries) GetLastRoutine(ctx context.Context, userID int32) (HabitsRouti
 		&i.ID,
 		&i.UserID,
 		&i.Name,
+		&i.Position,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getLastRoutineHabit = `-- name: GetLastRoutineHabit :one
+SELECT id, user_id, routine_id, name, description, icon, completion_type, completions_per_day, unit_of_measurement, position, created_at, updated_at
+FROM habits
+WHERE user_id = $1 AND routine_id = $2
+ORDER BY position DESC
+LIMIT 1
+`
+
+type GetLastRoutineHabitParams struct {
+	UserID    int32  `json:"userId"`
+	RoutineID *int32 `json:"routineId"`
+}
+
+func (q *Queries) GetLastRoutineHabit(ctx context.Context, arg GetLastRoutineHabitParams) (Habit, error) {
+	row := q.db.QueryRow(ctx, getLastRoutineHabit, arg.UserID, arg.RoutineID)
+	var i Habit
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.RoutineID,
+		&i.Name,
+		&i.Description,
+		&i.Icon,
+		&i.CompletionType,
+		&i.CompletionsPerDay,
+		&i.UnitOfMeasurement,
 		&i.Position,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -443,6 +479,33 @@ type UpdateRoutineParams struct {
 
 func (q *Queries) UpdateRoutine(ctx context.Context, arg UpdateRoutineParams) (HabitsRoutine, error) {
 	row := q.db.QueryRow(ctx, updateRoutine, arg.Name, arg.ID, arg.UserID)
+	var i HabitsRoutine
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Name,
+		&i.Position,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateRoutinePosition = `-- name: UpdateRoutinePosition :one
+UPDATE habits_routines
+SET position=$1 
+WHERE id=$2 and user_id=$3
+RETURNING id, user_id, name, position, created_at, updated_at
+`
+
+type UpdateRoutinePositionParams struct {
+	Position string `json:"position"`
+	ID       int32  `json:"id"`
+	UserID   int32  `json:"userId"`
+}
+
+func (q *Queries) UpdateRoutinePosition(ctx context.Context, arg UpdateRoutinePositionParams) (HabitsRoutine, error) {
+	row := q.db.QueryRow(ctx, updateRoutinePosition, arg.Position, arg.ID, arg.UserID)
 	var i HabitsRoutine
 	err := row.Scan(
 		&i.ID,

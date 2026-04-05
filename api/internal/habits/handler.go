@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/noel-vega/habits/api/db"
@@ -20,8 +21,20 @@ func NewHandler(service *Service) *Handler {
 	}
 }
 
+// Habit
+
+type CreateHabitBody struct {
+	RoutineID         *int32  `json:"routineId"`
+	Name              string  `json:"name"`
+	Icon              string  `json:"icon"`
+	UnitOfMeasurement string  `json:"unitOfMeasurement"`
+	Description       *string `json:"description"`
+	CompletionType    string  `json:"completionType"`
+	CompletionsPerDay int32   `json:"completionsPerDay"`
+}
+
 func (h *Handler) CreateHabit(c *gin.Context) {
-	var body CreateHabitRequestBody
+	var body CreateHabitBody
 	err := c.Bind(&body)
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -78,6 +91,15 @@ func (h *Handler) ListHabitsWithContributions(c *gin.Context) {
 	c.JSON(http.StatusOK, habits)
 }
 
+type UpdateHabitBody struct {
+	Name              string  `json:"name"`
+	Icon              string  `json:"icon"`
+	UnitOfMeasurement *string `json:"unitOfMeasurement"`
+	Description       *string `json:"description"`
+	CompletionType    string  `json:"completionType"`
+	CompletionsPerDay int32   `json:"completionsPerDay"`
+}
+
 func (h *Handler) UpdateHabit(c *gin.Context) {
 	habitID, err := strconv.Atoi(c.Param("habitID"))
 	if err != nil {
@@ -132,6 +154,13 @@ func (h *Handler) DeleteHabit(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
+// Habit Contributions
+
+type CreateHabitContributionBody struct {
+	Completions int32     `json:"completions"`
+	Date        time.Time `json:"date"`
+}
+
 func (h *Handler) CreateHabitContribution(c *gin.Context) {
 	habitID, err := strconv.Atoi(c.Param("habitID"))
 	if err != nil {
@@ -139,7 +168,7 @@ func (h *Handler) CreateHabitContribution(c *gin.Context) {
 		return
 	}
 
-	body := &CreateContributionBody{}
+	body := &CreateHabitContributionBody{}
 	err = c.Bind(body)
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -160,6 +189,10 @@ func (h *Handler) CreateHabitContribution(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, contrib)
+}
+
+type UpdateCompletionsBody struct {
+	Completions int32 `json:"completions"`
 }
 
 func (h *Handler) UpdateHabitContribution(c *gin.Context) {
@@ -194,6 +227,12 @@ func (h *Handler) UpdateHabitContribution(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, contrib)
+}
+
+type UpdateHabitPositionBody struct {
+	RoutineID      *int32 `json:"routineId"`
+	AfterPosition  string `json:"afterPosition"`
+	BeforePosition string `json:"beforePosition"`
 }
 
 func (h *Handler) UpdateHabitPosition(c *gin.Context) {
@@ -250,6 +289,12 @@ func (h *Handler) DeleteHabitContribution(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
+// Routine
+
+type CreateRoutineBody struct {
+	Name string `json:"name"`
+}
+
 func (h *Handler) CreateRoutine(c *gin.Context) {
 	body := &CreateRoutineBody{}
 
@@ -287,6 +332,10 @@ func (h *Handler) ListRoutines(c *gin.Context) {
 	c.JSON(http.StatusOK, routines)
 }
 
+type UpdateRoutineBody struct {
+	Name string `json:"name"`
+}
+
 func (h *Handler) UpdateRoutine(c *gin.Context) {
 	routineID, err := strconv.Atoi(c.Param("routineID"))
 	if err != nil {
@@ -317,7 +366,12 @@ func (h *Handler) UpdateRoutine(c *gin.Context) {
 		}
 		return
 	}
-	c.JSON(http.StatusNoContent, routine)
+	c.JSON(http.StatusOK, routine)
+}
+
+type UpdateRoutinePositionBody struct {
+	AfterPosition  string `json:"afterPosition"`
+	BeforePosition string `json:"beforePosition"`
 }
 
 func (h *Handler) UpdateRoutinePosition(c *gin.Context) {
@@ -334,13 +388,19 @@ func (h *Handler) UpdateRoutinePosition(c *gin.Context) {
 		return
 	}
 
-	routine, err := h.service.UpdateRoutinePosition(&UpdateRoutinePositionParams{
-		ID:             routineID,
+	routine, err := h.service.UpdateRoutinePosition(c, UpdateRoutinePositionParams{
+		ID:             int32(routineID),
+		UserID:         httputil.UserID(c),
 		AfterPosition:  body.AfterPosition,
 		BeforePosition: body.BeforePosition,
 	})
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		switch {
+		case errors.Is(err, ErrRoutineNotFound):
+			c.AbortWithError(http.StatusNotFound, err)
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
 		return
 	}
 

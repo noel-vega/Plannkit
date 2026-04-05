@@ -6,20 +6,17 @@ import (
 	"strings"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/jmoiron/sqlx"
 	"github.com/noel-vega/habits/api/db"
 	"roci.dev/fracdex"
 )
 
 type Service struct {
-	queries    *db.Queries
-	repository *Repository
+	queries *db.Queries
 }
 
-func NewService(db *sqlx.DB, queries *db.Queries) *Service {
+func NewService(queries *db.Queries) *Service {
 	return &Service{
-		queries:    queries,
-		repository: NewRepository(db),
+		queries: queries,
 	}
 }
 
@@ -137,17 +134,17 @@ func (s *Service) ListHabitsWithContributions(ctx context.Context, userID int32)
 	return result, nil
 }
 
-func (s *Service) CreateRoutine(ctx context.Context, params db.CreateRoutineParams) (*db.HabitsRoutine, error) {
+func (s *Service) CreateRoutine(ctx context.Context, params db.CreateRoutineParams) (db.HabitsRoutine, error) {
 	trimmedName := strings.TrimSpace(params.Name)
 	if trimmedName == "" {
-		return nil, ErrValidationNameRequired
+		return db.HabitsRoutine{}, ErrValidationNameRequired
 	}
 	params.Name = trimmedName
 
 	lastRoutine, err := s.queries.GetLastRoutine(ctx, params.UserID)
 	noRows := errors.Is(err, pgx.ErrNoRows)
 	if err != nil && !noRows {
-		return nil, err
+		return db.HabitsRoutine{}, err
 	}
 
 	var position string
@@ -157,34 +154,37 @@ func (s *Service) CreateRoutine(ctx context.Context, params db.CreateRoutinePara
 	} else {
 		position, err = fracdex.KeyBetween(lastRoutine.Position, "")
 	}
+	params.Position = position
 
 	if err != nil {
-		return nil, err
+		return db.HabitsRoutine{}, err
 	}
 
-	params.Position = position
 	routine, err := s.queries.CreateRoutine(ctx, params)
+	if err != nil {
+		return db.HabitsRoutine{}, err
+	}
 
-	return &routine, err
+	return routine, nil
 }
 
-func (s *Service) ListRoutinesWithHabits(ctx context.Context, userID int32) (*HabitGroups, error) {
+func (s *Service) ListRoutinesWithHabits(ctx context.Context, userID int32) (HabitGroups, error) {
 	routinesList, err := s.queries.ListRoutines(ctx, userID)
 	if err != nil {
-		return nil, err
+		return HabitGroups{}, err
 	}
 
 	habitsList, err := s.ListHabitsWithContributions(ctx, userID)
 	if err != nil {
-		return nil, err
+		return HabitGroups{}, err
 	}
 
 	habits := []HabitWithContributions{}
 	routines := map[int32]*RoutineWithHabits{}
 
-	for _, routine := range routinesList {
-		routines[routine.ID] = &RoutineWithHabits{
-			HabitsRoutine: routine,
+	for _, r := range routinesList {
+		routines[r.ID] = &RoutineWithHabits{
+			HabitsRoutine: r,
 			Habits:        []HabitWithContributions{},
 		}
 	}
@@ -202,47 +202,63 @@ func (s *Service) ListRoutinesWithHabits(ctx context.Context, userID int32) (*Ha
 		routineSlice = append(routineSlice, routines[routine.ID])
 	}
 
-	return &HabitGroups{
+	return HabitGroups{
 		Routines: routineSlice,
 		Habits:   habits,
 	}, nil
 }
 
-func (s *Service) UpdateRoutine(ctx context.Context, params db.UpdateRoutineParams) (*db.HabitsRoutine, error) {
+func (s *Service) UpdateRoutine(ctx context.Context, params db.UpdateRoutineParams) (db.HabitsRoutine, error) {
 	trimmedName := strings.TrimSpace(params.Name)
 	if trimmedName == "" {
-		return nil, ErrValidationNameRequired
+		return db.HabitsRoutine{}, ErrValidationNameRequired
 	}
-	params.Name = trimmedName
 
-	routine, err := s.queries.UpdateRoutine(ctx, params)
-	if errors.Is(err, pgx.ErrNoRows) {
-		return nil, ErrRoutineNotFound
+	routine, err := s.queries.UpdateRoutine(ctx, db.UpdateRoutineParams{
+		ID:     params.ID,
+		UserID: params.UserID,
+		Name:   trimmedName,
+	})
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return db.HabitsRoutine{}, ErrRoutineNotFound
+		}
+		return db.HabitsRoutine{}, err
 	}
-	return &routine, err
+
+	return routine, nil
 }
 
-func (s *Service) UpdateRoutinePosition(params *UpdateRoutinePositionParams) (*Routine, error) {
+func (s *Service) UpdateRoutinePosition(ctx context.Context, params UpdateRoutinePositionParams) (db.HabitsRoutine, error) {
 	newPosition, err := fracdex.KeyBetween(params.AfterPosition, params.BeforePosition)
 	if err != nil {
-		return nil, err
+		return db.HabitsRoutine{}, err
 	}
 
-	return s.repository.UpdateRoutinePosition(&UpdateRoutinePositionRepoParams{
+	routine, err := s.queries.UpdateRoutinePosition(ctx, db.UpdateRoutinePositionParams{
 		ID:       params.ID,
+		UserID:   params.UserID,
 		Position: newPosition,
 	})
-}
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return db.HabitsRoutine{}, ErrRoutineNotFound
+		}
+		return db.HabitsRoutine{}, err
+	}
 
-type DeleteRoutineParams struct {
-	ID     int   `db:"id"`
-	UserID int32 `db:"user_id"`
+	return routine, nil
 }
 
 func (s *Service) DeleteRoutine(ctx context.Context, params db.DeleteRoutineParams) error {
-	err := s.queries.DeleteRoutine(ctx, params)
-	if errors.Is(err, pgx.ErrNoRows) {
+	count, err := s.queries.DeleteRoutine(ctx, params)
+	if err != nil {
+		return err
+	}
+
+	if count == 0 {
 		return ErrRoutineNotFound
 	}
-	return err
+
+	return nil
 }

@@ -36,7 +36,7 @@ func NewServices(params *NewServicesParams) *Services {
 	networkService := network.NewService(params.DB, userService)
 	financesService := finances.NewService(params.DB, networkService)
 	todosService := todos.NewService(params.DB)
-	habitsService := habits.NewService(params.DB, params.Queries)
+	habitsService := habits.NewService(params.Queries)
 	authService := auth.NewService(params.JwtSecret)
 
 	return &Services{

@@ -83,7 +83,7 @@ SET name=$1
 WHERE id=$2 AND user_id=$3
 RETURNING *;
 
--- name: DeleteRoutine :exec
+-- name: DeleteRoutine :execrows
 DELETE FROM habits_routines
 WHERE id = $1 AND user_id = $2;
 
@@ -93,3 +93,16 @@ FROM habits_routines
 WHERE user_id = $1
 ORDER BY position DESC
 LIMIT 1;
+
+-- name: GetLastRoutineHabit :one
+SELECT *
+FROM habits
+WHERE user_id = $1 AND routine_id = $2
+ORDER BY position DESC
+LIMIT 1;
+
+-- name: UpdateRoutinePosition :one
+UPDATE habits_routines
+SET position=$1 
+WHERE id=$2 and user_id=$3
+RETURNING *;
