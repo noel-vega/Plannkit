@@ -69,8 +69,8 @@ export function useSpaceUpdateNameMutation() {
 export function useCreateExpense() {
   return useMutation({
     mutationFn: finances.expenses.create,
-    onSuccess: ({ id }) => {
-      invalidateUseListExpenses({ spaceId: id })
+    onSuccess: ({ spaceId }) => {
+      invalidateUseListExpenses({ spaceId })
     }
   })
 }
