@@ -2,6 +2,7 @@
 // versions:
 //   sqlc v1.30.0
 
+// Package db
 package db
 
 import (

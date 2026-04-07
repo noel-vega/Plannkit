@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/noel-vega/habits/api/db"
 	"github.com/noel-vega/habits/api/internal/apperrors"
 	"github.com/noel-vega/habits/api/internal/contracts"
 	"github.com/noel-vega/habits/api/internal/httputil"
@@ -30,12 +31,10 @@ func (h *Handler) CreateSpace(c *gin.Context) {
 		return
 	}
 
-	params := &CreateSpaceParams{
+	space, _, err := h.service.CreateSpace(c, CreateSpaceParams{
 		UserID: httputil.UserID(c),
 		Name:   body.Name,
-	}
-
-	space, _, err := h.service.CreateSpace(params)
+	})
 	if err != nil {
 		switch {
 		case errors.Is(err, ErrValidationRequireName):
@@ -51,7 +50,7 @@ func (h *Handler) CreateSpace(c *gin.Context) {
 
 func (h *Handler) ListSpaces(c *gin.Context) {
 	userID := httputil.UserID(c)
-	spaces, err := h.service.ListSpaces(userID)
+	spaces, err := h.service.ListSpaces(c, userID)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -61,7 +60,7 @@ func (h *Handler) ListSpaces(c *gin.Context) {
 }
 
 func (h *Handler) DeleteSpace(c *gin.Context) {
-	err := h.service.DeleteSpace(c.MustGet("spaceID").(int))
+	err := h.service.DeleteSpace(c, c.MustGet("spaceID").(int32))
 	if err != nil {
 		switch {
 		case errors.Is(err, ErrSpaceMemberNotFound):
@@ -85,11 +84,8 @@ func (h *Handler) UpdateSpaceName(c *gin.Context) {
 		return
 	}
 
-	space, err := h.service.UpdateSpaceName(&UpdateSpaceNameParams{
-		SpaceMemberRelationship: SpaceMemberRelationship{
-			UserID:  httputil.UserID(c),
-			SpaceID: c.MustGet("spaceID").(int),
-		},
+	err = h.service.UpdateSpaceName(c, httputil.UserID(c), db.UpdateSpaceNameParams{
+		ID:   c.MustGet("spaceID").(int32),
 		Name: body.Name,
 	})
 	if err != nil {
@@ -103,7 +99,7 @@ func (h *Handler) UpdateSpaceName(c *gin.Context) {
 		}
 		return
 	}
-	c.JSON(http.StatusOK, space)
+	c.Status(http.StatusNoContent)
 }
 
 func (h *Handler) CreateGoal(c *gin.Context) {
@@ -114,15 +110,13 @@ func (h *Handler) CreateGoal(c *gin.Context) {
 		return
 	}
 
-	params := &CreateGoalParams{
+	goal, err := h.service.CreateGoal(c, db.CreateGoalParams{
 		UserID:            httputil.UserID(c),
-		SpaceID:           c.MustGet("spaceID").(int),
+		FinanceSpaceID:    c.MustGet("spaceID").(int32),
 		Name:              body.Name,
 		Amount:            body.Amount,
 		MonthlyCommitment: body.MonthlyCommitment,
-	}
-
-	goal, err := h.service.CreateGoal(params)
+	})
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -132,11 +126,8 @@ func (h *Handler) CreateGoal(c *gin.Context) {
 }
 
 func (h *Handler) ListGoals(c *gin.Context) {
-	params := &ListGoalsParams{
-		SpaceID: c.MustGet("spaceID").(int),
-	}
-
-	goals, err := h.service.ListGoals(params)
+	spaceID := c.MustGet("spaceID").(int32)
+	goals, err := h.service.ListGoals(c, spaceID)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -152,14 +143,12 @@ func (h *Handler) GetGoal(c *gin.Context) {
 		return
 	}
 
-	params := &GoalIdent{
-		ID:      goalID,
-		SpaceID: c.MustGet("spaceID").(int),
-	}
-
-	goal, err := h.service.GetGoal(params)
+	goal, err := h.service.GetGoal(c, db.GetGoalParams{
+		ID:             int32(goalID),
+		FinanceSpaceID: c.MustGet("spaceID").(int32),
+	})
 	if err != nil {
-		if errors.Is(err, apperrors.ErrNotFound) {
+		if errors.Is(err, ErrGoalNotFound) {
 			c.AbortWithStatus(http.StatusNotFound)
 			return
 		}
@@ -176,9 +165,9 @@ func (h *Handler) DeleteGoal(c *gin.Context) {
 		return
 	}
 
-	err = h.service.DeleteGoal(&GoalIdent{
-		ID:      goalID,
-		SpaceID: c.MustGet("spaceID").(int),
+	err = h.service.DeleteGoal(c, db.DeleteGoalParams{
+		ID:             int32(goalID),
+		FinanceSpaceID: c.MustGet("spaceID").(int32),
 	})
 	if err != nil {
 		switch {
@@ -206,15 +195,13 @@ func (h *Handler) CreateGoalContribution(c *gin.Context) {
 		return
 	}
 
-	params := &CreateGoalContributionParams{
-		UserID:  httputil.UserID(c),
-		SpaceID: c.MustGet("spaceID").(int),
-		GoalID:  goalID,
-		Amount:  body.Amount,
-		Note:    body.Note,
-	}
-
-	goal, err := h.service.CreateGoalContribution(params)
+	goal, err := h.service.CreateGoalContribution(c, db.CreateGoalContributionParams{
+		UserID:             httputil.UserID(c),
+		FinanceSpaceID:     c.MustGet("spaceID").(int32),
+		FinanceSpaceGoalID: int32(goalID),
+		Amount:             body.Amount,
+		Note:               body.Note,
+	})
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -229,12 +216,11 @@ func (h *Handler) ListGoalContributions(c *gin.Context) {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	params := &ListGoalContributionsParams{
-		UserID:  httputil.UserID(c),
-		SpaceID: c.MustGet("spaceID").(int),
-		GoalID:  goalID,
-	}
-	contributions, err := h.service.ListGoalContributions(params)
+	contributions, err := h.service.ListGoalContributions(c, db.ListGoalContributionsParams{
+		UserID:             httputil.UserID(c),
+		FinanceSpaceID:     c.MustGet("spaceID").(int32),
+		FinanceSpaceGoalID: int32(goalID),
+	})
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -249,7 +235,7 @@ func (h *Handler) DeleteGoalContribution(c *gin.Context) {
 		return
 	}
 
-	err = h.service.DeleteGoalContribution(contributionID)
+	err = h.service.DeleteGoalContribution(c, int32(contributionID))
 	if err != nil {
 		switch {
 		case errors.Is(err, ErrGoalContributionNotFound):
@@ -271,16 +257,14 @@ func (h *Handler) CreateExpense(c *gin.Context) {
 		return
 	}
 
-	params := &CreateExpenseParams{
-		UserID:      httputil.UserID(c),
-		SpaceID:     c.MustGet("spaceID").(int),
-		Name:        body.Name,
-		Amount:      body.Amount,
-		Category:    body.Category,
-		Description: body.Description,
-	}
-
-	expense, err := h.service.CreateExpense(params)
+	expense, err := h.service.CreateExpense(c, db.CreateExpenseParams{
+		UserID:         httputil.UserID(c),
+		FinanceSpaceID: c.MustGet("spaceID").(int32),
+		Name:           body.Name,
+		Amount:         body.Amount,
+		Category:       body.Category,
+		Description:    body.Description,
+	})
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -290,12 +274,10 @@ func (h *Handler) CreateExpense(c *gin.Context) {
 }
 
 func (h *Handler) ListExpenses(c *gin.Context) {
-	params := &ListExpensesParams{
-		UserID:  httputil.UserID(c),
-		SpaceID: c.MustGet("spaceID").(int),
-	}
-
-	expenses, err := h.service.ListExpenses(params)
+	expenses, err := h.service.ListExpenses(c, db.ListExpensesParams{
+		UserID:         httputil.UserID(c),
+		FinanceSpaceID: c.MustGet("spaceID").(int32),
+	})
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -311,7 +293,7 @@ func (h *Handler) DeleteExpense(c *gin.Context) {
 		return
 	}
 
-	err = h.service.DeleteExpense(expenseID)
+	err = h.service.DeleteExpense(c, int32(expenseID))
 	if err != nil {
 		switch {
 		case errors.Is(err, ErrExpenseNotFound):
@@ -332,14 +314,12 @@ func (h *Handler) CreateIncomeSource(c *gin.Context) {
 		return
 	}
 
-	params := &InsertIncomeSourceParams{
-		SpaceID: c.MustGet("spaceID").(int),
-		UserID:  httputil.UserID(c),
-		Amount:  body.Amount,
-		Name:    body.Name,
-	}
-
-	incomeSource, err := h.service.CreateIncomeSource(params)
+	incomeSource, err := h.service.CreateIncomeSource(c, db.CreateIncomeSourceParams{
+		FinanceSpaceID: c.MustGet("spaceID").(int32),
+		UserID:         httputil.UserID(c),
+		Amount:         body.Amount,
+		Name:           body.Name,
+	})
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -349,10 +329,8 @@ func (h *Handler) CreateIncomeSource(c *gin.Context) {
 }
 
 func (h *Handler) ListIncomes(c *gin.Context) {
-	params := &ListIncomeSourcesParams{
-		SpaceID: c.MustGet("spaceID").(int),
-	}
-	incomeSources, err := h.service.ListIncomeSources(params)
+	spaceID := c.MustGet("spaceID").(int32)
+	incomeSources, err := h.service.ListIncomeSources(c, spaceID)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -368,7 +346,7 @@ func (h *Handler) DeleteIncome(c *gin.Context) {
 		return
 	}
 
-	err = h.service.DeleteIncomeSource(incomeSourceID)
+	err = h.service.DeleteIncomeSource(c, int32(incomeSourceID))
 	if err != nil {
 		switch {
 		case errors.Is(err, ErrIncomeSourceNotFound):
@@ -389,10 +367,10 @@ func (h *Handler) InviteToSpace(c *gin.Context) {
 		return
 	}
 
-	member, err := h.service.InviteToSpace(&InviteToSpaceParams{
+	member, err := h.service.InviteToSpace(c, InviteToSpaceParams{
 		UserID:          httputil.UserID(c),
 		NewMemberUserID: body.UserID,
-		SpaceID:         c.MustGet("spaceID").(int),
+		SpaceID:         c.MustGet("spaceID").(int32),
 		Role:            body.Role,
 	})
 	if err != nil {
@@ -416,9 +394,9 @@ func (h *Handler) AcceptSpaceInvite(c *gin.Context) {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	member, err := h.service.AcceptSpaceInvite(&SpaceMemberRelationship{
+	err = h.service.AcceptSpaceInvite(c, AcceptSpaceInvite{
 		UserID:  httputil.UserID(c),
-		SpaceID: spaceID,
+		SpaceID: int32(spaceID),
 	})
 	if err != nil {
 		switch {
@@ -432,13 +410,11 @@ func (h *Handler) AcceptSpaceInvite(c *gin.Context) {
 		}
 		return
 	}
-	c.JSON(http.StatusOK, member)
+	c.Status(http.StatusNoContent)
 }
 
 func (h *Handler) ListSpaceMembersWithUsers(c *gin.Context) {
-	members, err := h.service.ListSpaceMembersWithUsers(&ListSpaceMembersParams{
-		SpaceID: c.MustGet("spaceID").(int),
-	})
+	members, err := h.service.ListSpaceMembersWithUsers(c, c.MustGet("spaceID").(int32))
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -452,9 +428,9 @@ func (h *Handler) DeleteSpaceMember(c *gin.Context) {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	err = h.service.DeleteSpaceMember(&SpaceMemberRelationship{
-		UserID:  int32(userID),
-		SpaceID: c.MustGet("spaceID").(int),
+	err = h.service.DeleteSpaceMember(c, db.DeleteSpaceMemberParams{
+		UserID:         int32(userID),
+		FinanceSpaceID: c.MustGet("spaceID").(int32),
 	})
 	if err != nil {
 		switch {

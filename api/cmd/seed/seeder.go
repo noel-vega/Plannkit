@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"os/exec"
@@ -61,7 +62,7 @@ func (s *Seeder) SeedUser(num int) *user.UserNoPassword {
 		panic(err)
 	}
 
-	_, _, err = s.services.Finances.CreateSpace(&finances.CreateSpaceParams{
+	_, _, err = s.services.Finances.CreateSpace(context.Background(), finances.CreateSpaceParams{
 		UserID: u.ID,
 		Name:   "My Finances",
 	})
@@ -93,7 +94,7 @@ func (s *Seeder) SeedTestUser() *user.UserNoPassword {
 		panic(err)
 	}
 
-	_, _, err = s.services.Finances.CreateSpace(&finances.CreateSpaceParams{
+	_, _, err = s.services.Finances.CreateSpace(context.Background(), finances.CreateSpaceParams{
 		UserID: u.ID,
 		Name:   "My Finances",
 	})

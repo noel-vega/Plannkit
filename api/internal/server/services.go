@@ -34,7 +34,7 @@ func NewServices(params *NewServicesParams) *Services {
 	storageService := storage.NewLocalStorage(params.StoragePath, params.Domain)
 	userService := user.NewService(params.DB)
 	networkService := network.NewService(params.DB, userService)
-	financesService := finances.NewService(params.DB, networkService)
+	financesService := finances.NewService(params.Queries, networkService)
 	todosService := todos.NewService(params.DB)
 	habitsService := habits.NewService(params.Queries)
 	authService := auth.NewService(params.JwtSecret)

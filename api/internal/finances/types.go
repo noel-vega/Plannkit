@@ -54,7 +54,7 @@ type InviteToSpaceBody struct {
 type InviteToSpaceParams struct {
 	UserID          int32
 	NewMemberUserID int32
-	SpaceID         int
+	SpaceID         int32
 	Role            string
 }
 
@@ -109,14 +109,9 @@ type CreateSpaceBody struct {
 	Name string `json:"name"`
 }
 
-type CreateSpaceParams struct {
-	UserID int32  `json:"userId" db:"user_id"`
-	Name   string `json:"name" db:"name"`
-}
-
 type CreateExpenseBody struct {
 	Name        string  `json:"name"`
-	Amount      int     `json:"amount"`
+	Amount      int32   `json:"amount"`
 	Category    *string `json:"category"`
 	Description *string `json:"description"`
 }
@@ -149,8 +144,8 @@ type Goal struct {
 
 type CreateGoalBody struct {
 	Name              string `json:"name"`
-	Amount            int    `json:"amount"`
-	MonthlyCommitment int    `json:"monthlyCommitment"`
+	Amount            int32  `json:"amount"`
+	MonthlyCommitment int32  `json:"monthlyCommitment"`
 }
 
 type CreateGoalParams struct {
@@ -188,7 +183,7 @@ type ListGoalContributionsParams struct {
 }
 
 type CreateGoalContributionBody struct {
-	Amount int     `json:"amount"`
+	Amount int32   `json:"amount"`
 	Note   *string `json:"note"`
 }
 
@@ -222,7 +217,7 @@ type IncomeSource struct {
 
 type CreateIncomeSourceBody struct {
 	Name   string `json:"name"`
-	Amount int    `json:"amount"`
+	Amount int32  `json:"amount"`
 }
 
 type InsertIncomeSourceParams struct {

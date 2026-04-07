@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/noel-vega/habits/api/db"
 	"github.com/noel-vega/habits/api/internal/httputil"
 )
 
@@ -19,9 +20,9 @@ func VerifySpaceMembership(financeService *Service) gin.HandlerFunc {
 			c.AbortWithError(http.StatusBadRequest, err)
 			return
 		}
-		member, err := financeService.GetSpaceMember(&SpaceMemberRelationship{
-			UserID:  userID,
-			SpaceID: spaceID,
+		member, err := financeService.GetSpaceMember(c, db.GetSpaceMemberParams{
+			UserID:         userID,
+			FinanceSpaceID: int32(spaceID),
 		})
 		if err != nil {
 			if errors.Is(err, ErrSpaceMemberNotFound) {

@@ -76,7 +76,7 @@ func (h *Handler) SignUp(c *gin.Context) {
 		return
 	}
 
-	_, _, err = h.financesService.CreateSpace(&finances.CreateSpaceParams{
+	_, _, err = h.financesService.CreateSpace(c, finances.CreateSpaceParams{
 		UserID: newUser.ID,
 		Name:   "My Finances",
 	})

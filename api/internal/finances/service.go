@@ -1,50 +1,58 @@
 package finances
 
 import (
+	"context"
 	"errors"
 	"strings"
 
-	"github.com/jmoiron/sqlx"
+	"github.com/jackc/pgx/v5"
+	"github.com/noel-vega/habits/api/db"
 	"github.com/noel-vega/habits/api/internal/apperrors"
 	"github.com/noel-vega/habits/api/internal/contracts"
 )
 
 type Service struct {
 	connectionChecker contracts.ConnectionChecker
-	repository        *Repository
+	queries           *db.Queries
 }
 
-func NewService(db *sqlx.DB, cc contracts.ConnectionChecker) *Service {
+func NewService(queries *db.Queries, cc contracts.ConnectionChecker) *Service {
 	return &Service{
-		repository:        NewRepository(db),
+		queries:           queries,
 		connectionChecker: cc,
 	}
 }
 
-func (s *Service) CreateSpace(params *CreateSpaceParams) (*Space, *SpaceMember, error) {
+type CreateSpaceParams struct {
+	Name   string
+	UserID int32
+}
+
+func (s *Service) CreateSpace(ctx context.Context, params CreateSpaceParams) (db.FinanceSpace, db.FinanceSpacesMember, error) {
+	params.Name = strings.TrimSpace(params.Name)
 	if params.Name == "" {
-		return nil, nil, ErrValidationRequireName
+		return db.FinanceSpace{}, db.FinanceSpacesMember{}, ErrValidationRequireName
 	}
-	space, err := s.repository.CreateSpace(params)
+	space, err := s.queries.CreateSpace(ctx, params.Name)
 	if err != nil {
-		return nil, nil, err
+		return db.FinanceSpace{}, db.FinanceSpacesMember{}, err
 	}
-	member, err := s.repository.InsertSpaceMember(&InsertSpaceMemberParams{
-		SpaceID: space.ID,
-		UserID:  params.UserID,
-		Status:  MemberInviteAccepted,
-		Role:    RoleOwner,
+	member, err := s.queries.CreateSpaceMember(ctx, db.CreateSpaceMemberParams{
+		FinanceSpaceID: space.ID,
+		UserID:         params.UserID,
+		Status:         MemberInviteAccepted,
+		Role:           RoleOwner,
 	})
 	if err != nil {
-		return nil, nil, err
+		return db.FinanceSpace{}, db.FinanceSpacesMember{}, err
 	}
 	return space, member, nil
 }
 
-func (s *Service) SpaceMembershipExists(params *SpaceMemberRelationship) (bool, error) {
-	_, err := s.repository.GetSpaceMember(params)
+func (s *Service) SpaceMembershipExists(ctx context.Context, params db.GetSpaceMemberParams) (bool, error) {
+	_, err := s.queries.GetSpaceMember(ctx, params)
 	if err != nil {
-		if errors.Is(err, apperrors.ErrNotFound) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return false, nil
 		}
 		return false, err
@@ -52,158 +60,187 @@ func (s *Service) SpaceMembershipExists(params *SpaceMemberRelationship) (bool, 
 	return true, nil
 }
 
-func (s *Service) GetSpace(spaceID int) (*Space, error) {
-	space, err := s.repository.GetSpace(spaceID)
+func (s *Service) GetSpace(ctx context.Context, spaceID int32) (db.FinanceSpace, error) {
+	space, err := s.queries.GetSpace(ctx, spaceID)
 	if err != nil {
-		if errors.Is(err, apperrors.ErrNotFound) {
-			return nil, ErrSpaceNotFound
+		if errors.Is(err, pgx.ErrNoRows) {
+			return db.FinanceSpace{}, ErrSpaceNotFound
 		}
-		return nil, err
+		return db.FinanceSpace{}, err
 	}
 	return space, err
 }
 
-func (s *Service) ListSpaces(userID int32) ([]SpaceWithMembership, error) {
-	return s.repository.ListSpaces(userID)
+func (s *Service) ListSpaces(ctx context.Context, userID int32) ([]db.ListSpacesRow, error) {
+	return s.queries.ListSpaces(ctx, userID)
 }
 
-func (s *Service) DeleteSpace(spaceID int) error {
-	err := s.repository.DeleteSpace(spaceID)
-	if errors.Is(err, apperrors.ErrNotFound) {
+func (s *Service) DeleteSpace(ctx context.Context, spaceID int32) error {
+	count, err := s.queries.DeleteSpace(ctx, spaceID)
+	if count == 0 {
 		return ErrSpaceNotFound
 	}
 	return err
 }
 
-func (s *Service) CreateGoal(params *CreateGoalParams) (*Goal, error) {
-	return s.repository.CreateGoal(params)
+func (s *Service) CreateGoal(ctx context.Context, params db.CreateGoalParams) (db.FinanceSpacesGoal, error) {
+	return s.queries.CreateGoal(ctx, params)
 }
 
-func (s *Service) ListGoals(params *ListGoalsParams) ([]Goal, error) {
-	return s.repository.ListGoals(params)
+func (s *Service) ListGoals(ctx context.Context, spaceID int32) ([]db.ListGoalsRow, error) {
+	return s.queries.ListGoals(ctx, spaceID)
 }
 
-func (s *Service) GetGoal(params *GoalIdent) (*Goal, error) {
-	return s.repository.GetGoal(params)
+func (s *Service) GetGoal(ctx context.Context, params db.GetGoalParams) (db.GetGoalRow, error) {
+	goal, err := s.queries.GetGoal(ctx, params)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return db.GetGoalRow{}, ErrGoalNotFound
+		}
+		return db.GetGoalRow{}, err
+	}
+	return goal, nil
 }
 
-func (s *Service) DeleteGoal(params *GoalIdent) error {
-	err := s.repository.DeleteGoal(params)
-	if errors.Is(err, apperrors.ErrNotFound) {
+func (s *Service) DeleteGoal(ctx context.Context, params db.DeleteGoalParams) error {
+	count, err := s.queries.DeleteGoal(ctx, params)
+	if count == 0 {
 		return ErrGoalNotFound
 	}
 	return err
 }
 
-func (s *Service) CreateGoalContribution(params *CreateGoalContributionParams) (*GoalContribution, error) {
-	return s.repository.CreateGoalContribution(params)
+func (s *Service) CreateGoalContribution(ctx context.Context, params db.CreateGoalContributionParams) (db.FinanceSpacesGoalsContribution, error) {
+	return s.queries.CreateGoalContribution(ctx, params)
 }
 
-func (s *Service) ListGoalContributions(params *ListGoalContributionsParams) ([]GoalContribution, error) {
-	return s.repository.ListGoalContributions(params)
+func (s *Service) ListGoalContributions(ctx context.Context, params db.ListGoalContributionsParams) ([]db.FinanceSpacesGoalsContribution, error) {
+	return s.queries.ListGoalContributions(ctx, params)
 }
 
-func (s *Service) DeleteGoalContribution(ID int) error {
-	err := s.repository.DeleteGoalContribution(ID)
-	if errors.Is(err, apperrors.ErrNotFound) {
+func (s *Service) DeleteGoalContribution(ctx context.Context, ID int32) error {
+	count, err := s.queries.DeleteGoalContribution(ctx, ID)
+	if count == 0 {
 		return ErrGoalContributionNotFound
 	}
 	return err
 }
 
-func (s *Service) CreateExpense(params *CreateExpenseParams) (*Expense, error) {
-	return s.repository.CreateExpense(params)
+func (s *Service) CreateExpense(ctx context.Context, params db.CreateExpenseParams) (db.FinanceSpacesExpense, error) {
+	return s.queries.CreateExpense(ctx, params)
 }
 
-func (s *Service) ListExpenses(params *ListExpensesParams) ([]Expense, error) {
-	return s.repository.ListExpenses(params)
+func (s *Service) ListExpenses(ctx context.Context, params db.ListExpensesParams) ([]db.FinanceSpacesExpense, error) {
+	return s.queries.ListExpenses(ctx, params)
 }
 
-func (s *Service) DeleteExpense(id int) error {
-	err := s.repository.DeleteExpense(id)
-	if errors.Is(err, apperrors.ErrNotFound) {
+func (s *Service) DeleteExpense(ctx context.Context, ID int32) error {
+	count, err := s.queries.DeleteExpense(ctx, ID)
+	if count == 0 {
 		return ErrExpenseNotFound
 	}
 	return err
 }
 
-func (s *Service) CreateIncomeSource(params *InsertIncomeSourceParams) (*IncomeSource, error) {
-	return s.repository.InsertIncomeSource(params)
+func (s *Service) CreateIncomeSource(ctx context.Context, params db.CreateIncomeSourceParams) (db.FinanceSpacesIncomeSource, error) {
+	return s.queries.CreateIncomeSource(ctx, params)
 }
 
-func (s *Service) ListIncomeSources(params *ListIncomeSourcesParams) ([]IncomeSource, error) {
-	return s.repository.ListIncomeSources(params)
+func (s *Service) ListIncomeSources(ctx context.Context, spaceID int32) ([]db.FinanceSpacesIncomeSource, error) {
+	return s.queries.ListIncomeSources(ctx, spaceID)
 }
 
-func (s *Service) DeleteIncomeSource(id int) error {
-	err := s.repository.DeleteIncomeSource(id)
-	if errors.Is(err, apperrors.ErrNotFound) {
+func (s *Service) DeleteIncomeSource(ctx context.Context, incomeSourceID int32) error {
+	count, err := s.queries.DeleteIncomeSource(ctx, incomeSourceID)
+	if count == 0 {
 		return ErrIncomeSourceNotFound
 	}
 	return err
 }
 
-func (s *Service) InviteToSpace(params *InviteToSpaceParams) (*SpaceMember, error) {
+func (s *Service) InviteToSpace(ctx context.Context, params InviteToSpaceParams) (db.FinanceSpacesMember, error) {
 	isConnected, err := s.connectionChecker.AreConnected(params.UserID, params.NewMemberUserID)
 	if err != nil {
-		return nil, err
+		return db.FinanceSpacesMember{}, err
 	}
 	if !isConnected {
-		return nil, contracts.ErrNotConnected
+		return db.FinanceSpacesMember{}, contracts.ErrNotConnected
 	}
 
 	if params.Role != RoleEditor && params.Role != RoleViewer {
-		return nil, ErrInvalidRole
+		return db.FinanceSpacesMember{}, ErrInvalidRole
 	}
-	return s.repository.InsertSpaceMember(&InsertSpaceMemberParams{
-		UserID:  params.NewMemberUserID,
-		SpaceID: params.SpaceID,
-		Role:    params.Role,
-		Status:  MemberInvitePending,
+	return s.queries.CreateSpaceMember(ctx, db.CreateSpaceMemberParams{
+		UserID:         params.NewMemberUserID,
+		FinanceSpaceID: params.SpaceID,
+		Role:           params.Role,
+		Status:         MemberInvitePending,
 	})
 }
 
-func (s *Service) AcceptSpaceInvite(params *SpaceMemberRelationship) (*SpaceMember, error) {
-	member, err := s.GetSpaceMember(params)
+type AcceptSpaceInvite struct {
+	SpaceID int32
+	UserID  int32
+}
+
+func (s *Service) AcceptSpaceInvite(ctx context.Context, params AcceptSpaceInvite) error {
+	member, err := s.GetSpaceMember(ctx, db.GetSpaceMemberParams{
+		FinanceSpaceID: params.SpaceID,
+		UserID:         params.UserID,
+	})
 	if err != nil {
-		return nil, err
+		if errors.Is(err, pgx.ErrNoRows) {
+			return ErrSpaceMemberNotFound
+		}
 	}
 
 	if member.Status == MemberInviteAccepted {
-		return nil, ErrSpaceInviteAlreadyAccepted
+		return ErrSpaceInviteAlreadyAccepted
 	}
 
 	if member.Status != MemberInvitePending {
-		return nil, ErrSpaceInviteNotFound
+		return ErrSpaceInviteNotFound
 	}
 
-	return s.repository.UpdateSpaceMemberStatus(&UpdateSpaceMemberStatus{
-		SpaceMemberRelationship: *params,
-		Status:                  MemberInviteAccepted,
+	count, err := s.queries.UpdateSpaceMemberStatus(ctx, db.UpdateSpaceMemberStatusParams{
+		FinanceSpaceID: params.SpaceID,
+		UserID:         params.UserID,
+		Status:         MemberInviteAccepted,
 	})
+	if err != nil {
+		return err
+	}
+
+	if count == 0 {
+		return ErrSpaceMemberNotFound
+	}
+	return nil
 }
 
-func (s *Service) ListSpaceMembers(params *ListSpaceMembersParams) ([]SpaceMember, error) {
-	return s.repository.ListSpaceMembers(params)
+func (s *Service) ListSpaceMembers(ctx context.Context, spaceID int32) ([]db.FinanceSpacesMember, error) {
+	return s.queries.ListSpaceMembers(ctx, spaceID)
 }
 
-func (s *Service) ListSpaceMembersWithUsers(params *ListSpaceMembersParams) ([]SpaceMemberWithUser, error) {
-	return s.repository.ListSpaceMembersWithUsers(params)
+func (s *Service) ListSpaceMembersWithUsers(ctx context.Context, spaceID int32) ([]db.ListSpaceMembersUsersRow, error) {
+	return s.queries.ListSpaceMembersUsers(ctx, spaceID)
 }
 
-func (s *Service) GetSpaceMember(params *SpaceMemberRelationship) (*SpaceMember, error) {
-	member, err := s.repository.GetSpaceMember(params)
+func (s *Service) GetSpaceMember(ctx context.Context, params db.GetSpaceMemberParams) (db.FinanceSpacesMember, error) {
+	member, err := s.queries.GetSpaceMember(ctx, params)
 	if err != nil {
 		if errors.Is(err, apperrors.ErrNotFound) {
-			return nil, ErrSpaceMemberNotFound
+			return db.FinanceSpacesMember{}, ErrSpaceMemberNotFound
 		}
-		return nil, err
+		return db.FinanceSpacesMember{}, err
 	}
 	return member, nil
 }
 
-func (s *Service) DeleteSpaceMember(params *SpaceMemberRelationship) error {
-	member, err := s.GetSpaceMember(params)
+func (s *Service) DeleteSpaceMember(ctx context.Context, params db.DeleteSpaceMemberParams) error {
+	member, err := s.GetSpaceMember(ctx, db.GetSpaceMemberParams{
+		UserID:         params.UserID,
+		FinanceSpaceID: params.FinanceSpaceID,
+	})
 	if err != nil {
 		return err
 	}
@@ -212,36 +249,46 @@ func (s *Service) DeleteSpaceMember(params *SpaceMemberRelationship) error {
 		return ErrCannotDeleteOwner
 	}
 
-	err = s.repository.DeleteSpaceMember(params)
-	if errors.Is(err, apperrors.ErrNotFound) {
+	count, err := s.queries.DeleteSpaceMember(ctx, params)
+	if count == 0 {
 		return ErrSpaceMemberNotFound
 	}
 	return err
 }
 
-func (s *Service) UpdateSpaceName(params *UpdateSpaceNameParams) (*Space, error) {
-	member, err := s.GetSpaceMember(&params.SpaceMemberRelationship)
+func (s *Service) UpdateSpaceName(ctx context.Context, userID int32, params db.UpdateSpaceNameParams) error {
+	member, err := s.GetSpaceMember(ctx, db.GetSpaceMemberParams{
+		UserID:         userID,
+		FinanceSpaceID: params.ID,
+	})
 	if err != nil {
 		if errors.Is(err, ErrSpaceMemberNotFound) {
-			return nil, apperrors.ErrUnauthorized
+			return apperrors.ErrUnauthorized
 		}
-		return nil, err
+		return err
 	}
 
 	if member.Role != RoleOwner {
-		return nil, apperrors.ErrUnauthorized
+		return apperrors.ErrUnauthorized
 	}
 
 	trimmedName := strings.TrimSpace(params.Name)
 	if trimmedName == "" {
-		return nil, ErrValidationRequireName
+		return ErrValidationRequireName
 	}
 
 	if len(trimmedName) > 30 {
-		return nil, ErrValidationMaxCharacters
+		return ErrValidationMaxCharacters
 	}
 
 	params.Name = trimmedName
 
-	return s.repository.UpdateSpaceName(params)
+	count, err := s.queries.UpdateSpaceName(ctx, params)
+	if err != nil {
+		return err
+	}
+	if count == 0 {
+		return ErrSpaceNotFound
+	}
+	return nil
 }
