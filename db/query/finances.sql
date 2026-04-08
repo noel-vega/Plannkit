@@ -53,6 +53,7 @@ VALUES ($1, $2, $3, $4, $5)
 RETURNING *;
 
 -- name: ListGoals :many
+-- @type: Goal
 SELECT g.*, COALESCE(SUM(c.amount), 0) AS total_contributions
 FROM finance_spaces_goals g
 LEFT JOIN finance_spaces_goals_contributions c ON c.finance_space_goal_id = g.id

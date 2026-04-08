@@ -14,8 +14,7 @@ import (
 func VerifySpaceMembership(financeService *Service) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := httputil.UserID(c)
-		spaceIDParam := c.Param("spaceID")
-		spaceID, err := strconv.Atoi(spaceIDParam)
+		spaceID, err := strconv.Atoi(c.Param("spaceID"))
 		if err != nil {
 			c.AbortWithError(http.StatusBadRequest, err)
 			return
@@ -37,7 +36,7 @@ func VerifySpaceMembership(financeService *Service) gin.HandlerFunc {
 			c.AbortWithStatus(http.StatusForbidden)
 			return
 		}
-		c.Set("spaceID", spaceID)
+		c.Set("spaceID", int32(spaceID))
 		c.Set("spaceRole", member.Role)
 		c.Next()
 	}

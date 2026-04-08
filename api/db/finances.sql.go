@@ -489,6 +489,7 @@ type ListGoalsRow struct {
 	TotalContributions interface{} `json:"totalContributions"`
 }
 
+// @type: Goal
 func (q *Queries) ListGoals(ctx context.Context, financeSpaceID int32) ([]ListGoalsRow, error) {
 	rows, err := q.db.Query(ctx, listGoals, financeSpaceID)
 	if err != nil {

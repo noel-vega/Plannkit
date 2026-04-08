@@ -49,17 +49,6 @@ func (s *Service) CreateSpace(ctx context.Context, params CreateSpaceParams) (db
 	return space, member, nil
 }
 
-func (s *Service) SpaceMembershipExists(ctx context.Context, params db.GetSpaceMemberParams) (bool, error) {
-	_, err := s.queries.GetSpaceMember(ctx, params)
-	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return false, nil
-		}
-		return false, err
-	}
-	return true, nil
-}
-
 func (s *Service) GetSpace(ctx context.Context, spaceID int32) (db.FinanceSpace, error) {
 	space, err := s.queries.GetSpace(ctx, spaceID)
 	if err != nil {
@@ -77,6 +66,10 @@ func (s *Service) ListSpaces(ctx context.Context, userID int32) ([]db.ListSpaces
 
 func (s *Service) DeleteSpace(ctx context.Context, spaceID int32) error {
 	count, err := s.queries.DeleteSpace(ctx, spaceID)
+	if err != nil {
+		return err
+	}
+
 	if count == 0 {
 		return ErrSpaceNotFound
 	}
@@ -104,10 +97,13 @@ func (s *Service) GetGoal(ctx context.Context, params db.GetGoalParams) (db.GetG
 
 func (s *Service) DeleteGoal(ctx context.Context, params db.DeleteGoalParams) error {
 	count, err := s.queries.DeleteGoal(ctx, params)
+	if err != nil {
+		return err
+	}
 	if count == 0 {
 		return ErrGoalNotFound
 	}
-	return err
+	return nil
 }
 
 func (s *Service) CreateGoalContribution(ctx context.Context, params db.CreateGoalContributionParams) (db.FinanceSpacesGoalsContribution, error) {
@@ -120,10 +116,13 @@ func (s *Service) ListGoalContributions(ctx context.Context, params db.ListGoalC
 
 func (s *Service) DeleteGoalContribution(ctx context.Context, ID int32) error {
 	count, err := s.queries.DeleteGoalContribution(ctx, ID)
+	if err != nil {
+		return err
+	}
 	if count == 0 {
 		return ErrGoalContributionNotFound
 	}
-	return err
+	return nil
 }
 
 func (s *Service) CreateExpense(ctx context.Context, params db.CreateExpenseParams) (db.FinanceSpacesExpense, error) {
@@ -136,10 +135,13 @@ func (s *Service) ListExpenses(ctx context.Context, params db.ListExpensesParams
 
 func (s *Service) DeleteExpense(ctx context.Context, ID int32) error {
 	count, err := s.queries.DeleteExpense(ctx, ID)
+	if err != nil {
+		return err
+	}
 	if count == 0 {
 		return ErrExpenseNotFound
 	}
-	return err
+	return nil
 }
 
 func (s *Service) CreateIncomeSource(ctx context.Context, params db.CreateIncomeSourceParams) (db.FinanceSpacesIncomeSource, error) {
@@ -152,6 +154,9 @@ func (s *Service) ListIncomeSources(ctx context.Context, spaceID int32) ([]db.Fi
 
 func (s *Service) DeleteIncomeSource(ctx context.Context, incomeSourceID int32) error {
 	count, err := s.queries.DeleteIncomeSource(ctx, incomeSourceID)
+	if err != nil {
+		return err
+	}
 	if count == 0 {
 		return ErrIncomeSourceNotFound
 	}
@@ -189,9 +194,7 @@ func (s *Service) AcceptSpaceInvite(ctx context.Context, params AcceptSpaceInvit
 		UserID:         params.UserID,
 	})
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return ErrSpaceMemberNotFound
-		}
+		return err
 	}
 
 	if member.Status == MemberInviteAccepted {
@@ -228,7 +231,7 @@ func (s *Service) ListSpaceMembersWithUsers(ctx context.Context, spaceID int32) 
 func (s *Service) GetSpaceMember(ctx context.Context, params db.GetSpaceMemberParams) (db.FinanceSpacesMember, error) {
 	member, err := s.queries.GetSpaceMember(ctx, params)
 	if err != nil {
-		if errors.Is(err, apperrors.ErrNotFound) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return db.FinanceSpacesMember{}, ErrSpaceMemberNotFound
 		}
 		return db.FinanceSpacesMember{}, err
