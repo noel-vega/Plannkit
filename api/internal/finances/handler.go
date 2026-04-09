@@ -6,7 +6,6 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/noel-vega/habits/api/db"
 	"github.com/noel-vega/habits/api/internal/apperrors"
 	"github.com/noel-vega/habits/api/internal/contracts"
 	"github.com/noel-vega/habits/api/internal/httputil"
@@ -31,10 +30,9 @@ func (h *Handler) CreateSpace(c *gin.Context) {
 		return
 	}
 
-	space, _, err := h.service.CreateSpace(c, CreateSpaceParams{
-		UserID: httputil.UserID(c),
-		Name:   body.Name,
-	})
+	space, _, err := h.service.CreateSpace(CreateSpaceParams{
+		Name: body.Name,
+	}, httputil.UserID(c))
 	if err != nil {
 		switch {
 		case errors.Is(err, ErrValidationRequireName):
@@ -50,7 +48,7 @@ func (h *Handler) CreateSpace(c *gin.Context) {
 
 func (h *Handler) ListSpaces(c *gin.Context) {
 	userID := httputil.UserID(c)
-	spaces, err := h.service.ListSpaces(c, userID)
+	spaces, err := h.service.ListSpaces(userID)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -60,7 +58,7 @@ func (h *Handler) ListSpaces(c *gin.Context) {
 }
 
 func (h *Handler) DeleteSpace(c *gin.Context) {
-	err := h.service.DeleteSpace(c, c.MustGet("spaceID").(int32))
+	err := h.service.DeleteSpace(c.MustGet("spaceID").(int32))
 	if err != nil {
 		switch {
 		case errors.Is(err, ErrSpaceMemberNotFound):
@@ -84,7 +82,7 @@ func (h *Handler) UpdateSpaceName(c *gin.Context) {
 		return
 	}
 
-	err = h.service.UpdateSpaceName(c, httputil.UserID(c), db.UpdateSpaceNameParams{
+	err = h.service.UpdateSpaceName(httputil.UserID(c), UpdateSpaceNameParams{
 		ID:   c.MustGet("spaceID").(int32),
 		Name: body.Name,
 	})
@@ -110,7 +108,7 @@ func (h *Handler) CreateGoal(c *gin.Context) {
 		return
 	}
 
-	goal, err := h.service.CreateGoal(c, db.CreateGoalParams{
+	goal, err := h.service.CreateGoal(CreateGoalParams{
 		UserID:            httputil.UserID(c),
 		FinanceSpaceID:    c.MustGet("spaceID").(int32),
 		Name:              body.Name,
@@ -127,7 +125,7 @@ func (h *Handler) CreateGoal(c *gin.Context) {
 
 func (h *Handler) ListGoals(c *gin.Context) {
 	spaceID := c.MustGet("spaceID").(int32)
-	goals, err := h.service.ListGoals(c, spaceID)
+	goals, err := h.service.ListGoals(spaceID)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -143,7 +141,7 @@ func (h *Handler) GetGoal(c *gin.Context) {
 		return
 	}
 
-	goal, err := h.service.GetGoal(c, db.GetGoalParams{
+	goal, err := h.service.GetGoal(GoalIdent{
 		ID:             int32(goalID),
 		FinanceSpaceID: c.MustGet("spaceID").(int32),
 	})
@@ -165,7 +163,7 @@ func (h *Handler) DeleteGoal(c *gin.Context) {
 		return
 	}
 
-	err = h.service.DeleteGoal(c, db.DeleteGoalParams{
+	err = h.service.DeleteGoal(GoalIdent{
 		ID:             int32(goalID),
 		FinanceSpaceID: c.MustGet("spaceID").(int32),
 	})
@@ -195,7 +193,7 @@ func (h *Handler) CreateGoalContribution(c *gin.Context) {
 		return
 	}
 
-	goal, err := h.service.CreateGoalContribution(c, db.CreateGoalContributionParams{
+	contrib, err := h.service.CreateGoalContribution(CreateGoalContributionParams{
 		UserID:             httputil.UserID(c),
 		FinanceSpaceID:     c.MustGet("spaceID").(int32),
 		FinanceSpaceGoalID: int32(goalID),
@@ -207,7 +205,7 @@ func (h *Handler) CreateGoalContribution(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, goal)
+	c.JSON(http.StatusCreated, contrib)
 }
 
 func (h *Handler) ListGoalContributions(c *gin.Context) {
@@ -216,7 +214,7 @@ func (h *Handler) ListGoalContributions(c *gin.Context) {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	contributions, err := h.service.ListGoalContributions(c, db.ListGoalContributionsParams{
+	contributions, err := h.service.ListGoalContributions(ListGoalContributionsParams{
 		UserID:             httputil.UserID(c),
 		FinanceSpaceID:     c.MustGet("spaceID").(int32),
 		FinanceSpaceGoalID: int32(goalID),
@@ -235,7 +233,7 @@ func (h *Handler) DeleteGoalContribution(c *gin.Context) {
 		return
 	}
 
-	err = h.service.DeleteGoalContribution(c, int32(contributionID))
+	err = h.service.DeleteGoalContribution(int32(contributionID))
 	if err != nil {
 		switch {
 		case errors.Is(err, ErrGoalContributionNotFound):
@@ -257,7 +255,7 @@ func (h *Handler) CreateExpense(c *gin.Context) {
 		return
 	}
 
-	expense, err := h.service.CreateExpense(c, db.CreateExpenseParams{
+	expense, err := h.service.CreateExpense(CreateExpenseParams{
 		UserID:         httputil.UserID(c),
 		FinanceSpaceID: c.MustGet("spaceID").(int32),
 		Name:           body.Name,
@@ -274,7 +272,7 @@ func (h *Handler) CreateExpense(c *gin.Context) {
 }
 
 func (h *Handler) ListExpenses(c *gin.Context) {
-	expenses, err := h.service.ListExpenses(c, db.ListExpensesParams{
+	expenses, err := h.service.ListExpenses(ListExpensesParams{
 		UserID:         httputil.UserID(c),
 		FinanceSpaceID: c.MustGet("spaceID").(int32),
 	})
@@ -293,7 +291,7 @@ func (h *Handler) DeleteExpense(c *gin.Context) {
 		return
 	}
 
-	err = h.service.DeleteExpense(c, int32(expenseID))
+	err = h.service.DeleteExpense(int32(expenseID))
 	if err != nil {
 		switch {
 		case errors.Is(err, ErrExpenseNotFound):
@@ -314,7 +312,7 @@ func (h *Handler) CreateIncomeSource(c *gin.Context) {
 		return
 	}
 
-	incomeSource, err := h.service.CreateIncomeSource(c, db.CreateIncomeSourceParams{
+	incomeSource, err := h.service.CreateIncomeSource(CreateIncomeSourceParams{
 		FinanceSpaceID: c.MustGet("spaceID").(int32),
 		UserID:         httputil.UserID(c),
 		Amount:         body.Amount,
@@ -330,7 +328,7 @@ func (h *Handler) CreateIncomeSource(c *gin.Context) {
 
 func (h *Handler) ListIncomes(c *gin.Context) {
 	spaceID := c.MustGet("spaceID").(int32)
-	incomeSources, err := h.service.ListIncomeSources(c, spaceID)
+	incomeSources, err := h.service.ListIncomeSources(spaceID)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -346,7 +344,7 @@ func (h *Handler) DeleteIncome(c *gin.Context) {
 		return
 	}
 
-	err = h.service.DeleteIncomeSource(c, int32(incomeSourceID))
+	err = h.service.DeleteIncomeSource(int32(incomeSourceID))
 	if err != nil {
 		switch {
 		case errors.Is(err, ErrIncomeSourceNotFound):
@@ -367,7 +365,7 @@ func (h *Handler) InviteToSpace(c *gin.Context) {
 		return
 	}
 
-	member, err := h.service.InviteToSpace(c, InviteToSpaceParams{
+	member, err := h.service.InviteToSpace(InviteToSpaceParams{
 		UserID:          httputil.UserID(c),
 		NewMemberUserID: body.UserID,
 		SpaceID:         c.MustGet("spaceID").(int32),
@@ -394,7 +392,7 @@ func (h *Handler) AcceptSpaceInvite(c *gin.Context) {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	err = h.service.AcceptSpaceInvite(c, AcceptSpaceInvite{
+	err = h.service.AcceptSpaceInvite(AcceptSpaceInvite{
 		UserID:  httputil.UserID(c),
 		SpaceID: int32(spaceID),
 	})
@@ -414,7 +412,7 @@ func (h *Handler) AcceptSpaceInvite(c *gin.Context) {
 }
 
 func (h *Handler) ListSpaceMembersWithUsers(c *gin.Context) {
-	members, err := h.service.ListSpaceMembersWithUsers(c, c.MustGet("spaceID").(int32))
+	members, err := h.service.ListSpaceMembersWithUsers(c.MustGet("spaceID").(int32))
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -428,7 +426,7 @@ func (h *Handler) DeleteSpaceMember(c *gin.Context) {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	err = h.service.DeleteSpaceMember(c, db.DeleteSpaceMemberParams{
+	err = h.service.DeleteSpaceMember(DeleteSpaceMemberParams{
 		UserID:         int32(userID),
 		FinanceSpaceID: c.MustGet("spaceID").(int32),
 	})

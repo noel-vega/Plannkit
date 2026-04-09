@@ -13,7 +13,6 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
-	"github.com/noel-vega/habits/api/db"
 	"github.com/noel-vega/habits/api/internal/server"
 )
 
@@ -25,7 +24,6 @@ func main() {
 	postgresConnectionString := os.Getenv("POSTGRES_CONNECTION_STRING")
 
 	pool, err := pgxpool.New(context.Background(), postgresConnectionString)
-	// db, err := sqlx.Connect("postgres", postgresConnectionString)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -55,10 +53,7 @@ func main() {
 	router.Static("/public", storageBasePath)
 	jwtSecret := os.Getenv("JWT_SECRET")
 
-	queries := db.New(pool)
-
 	services := server.NewServices(&server.NewServicesParams{
-		Queries:     queries,
 		DB:          xdb,
 		JwtSecret:   jwtSecret,
 		StoragePath: storageBasePath,

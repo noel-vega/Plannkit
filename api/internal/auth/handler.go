@@ -76,10 +76,9 @@ func (h *Handler) SignUp(c *gin.Context) {
 		return
 	}
 
-	_, _, err = h.financesService.CreateSpace(c, finances.CreateSpaceParams{
-		UserID: newUser.ID,
-		Name:   "My Finances",
-	})
+	_, _, err = h.financesService.CreateSpace(finances.CreateSpaceParams{
+		Name: "My Finances",
+	}, newUser.ID)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return

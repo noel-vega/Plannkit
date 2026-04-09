@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/noel-vega/habits/api/db"
 	"github.com/noel-vega/habits/api/internal/httputil"
 )
 
@@ -41,7 +40,7 @@ func (h *Handler) CreateHabit(c *gin.Context) {
 		return
 	}
 
-	habit, err := h.service.CreateHabit(c, db.CreateHabitParams{
+	habit, err := h.service.CreateHabit(CreateHabitParams{
 		UserID:            httputil.UserID(c),
 		RoutineID:         body.RoutineID,
 		Icon:              body.Icon,
@@ -49,6 +48,7 @@ func (h *Handler) CreateHabit(c *gin.Context) {
 		Description:       body.Description,
 		CompletionType:    body.CompletionType,
 		CompletionsPerDay: body.CompletionsPerDay,
+		UnitOfMeasurement: body.UnitOfMeasurement,
 	})
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
@@ -56,8 +56,8 @@ func (h *Handler) CreateHabit(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, HabitWithContributions{
-		Habit:         habit,
-		Contributions: []db.HabitsContribution{},
+		Habit:         *habit,
+		Contributions: []HabitContribution{},
 	})
 }
 
@@ -69,7 +69,7 @@ func (h *Handler) GetHabitWithContributions(c *gin.Context) {
 		return
 	}
 
-	habit, err := h.service.GetHabitWithContributions(c, db.GetHabitParams{
+	habit, err := h.service.GetHabitWithContributions(GetHabitParams{
 		ID:     int32(habitID),
 		UserID: userID,
 	})
@@ -82,7 +82,7 @@ func (h *Handler) GetHabitWithContributions(c *gin.Context) {
 }
 
 func (h *Handler) ListHabitsWithContributions(c *gin.Context) {
-	habits, err := h.service.ListHabitsWithContributions(c, httputil.UserID(c))
+	habits, err := h.service.ListHabitsWithContributions(httputil.UserID(c))
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -114,7 +114,7 @@ func (h *Handler) UpdateHabit(c *gin.Context) {
 		return
 	}
 
-	err = h.service.UpdateHabit(c, db.UpdateHabitParams{
+	err = h.service.UpdateHabit(UpdateHabitParams{
 		ID:                int32(habitID),
 		UserID:            httputil.UserID(c),
 		Name:              body.Name,
@@ -138,7 +138,7 @@ func (h *Handler) DeleteHabit(c *gin.Context) {
 		return
 	}
 
-	err = h.service.DeleteHabit(c, db.DeleteHabitParams{
+	err = h.service.DeleteHabit(DeleteHabitParams{
 		ID:     int32(habitID),
 		UserID: httputil.UserID(c),
 	})
@@ -175,14 +175,12 @@ func (h *Handler) CreateHabitContribution(c *gin.Context) {
 		return
 	}
 
-	params := db.CreateHabitContributionParams{
+	contrib, err := h.service.CreateContribution(CreateContributionParams{
 		HabitID:     int32(habitID),
 		UserID:      httputil.UserID(c),
 		Completions: body.Completions,
 		Date:        body.Date,
-	}
-
-	contrib, err := h.service.CreateContribution(c, params)
+	})
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -209,13 +207,11 @@ func (h *Handler) UpdateHabitContribution(c *gin.Context) {
 		return
 	}
 
-	params := db.UpdateHabitContributionCompletionsParams{
+	contrib, err := h.service.UpdateContributionCompletions(UpdateContributionCompletionsParams{
 		ID:          int32(contributionID),
 		UserID:      httputil.UserID(c),
 		Completions: body.Completions,
-	}
-
-	contrib, err := h.service.UpdateContributionCompletions(c, params)
+	})
 	if err != nil {
 		switch {
 		case errors.Is(err, ErrContributionNotFound):
@@ -249,7 +245,7 @@ func (h *Handler) UpdateHabitPosition(c *gin.Context) {
 		return
 	}
 
-	routine, err := h.service.UpdateHabitPosition(c, UpdateHabitPositionParams{
+	routine, err := h.service.UpdateHabitPosition(UpdateHabitPositionParams{
 		ID:             int32(habitID),
 		UserID:         httputil.UserID(c),
 		RoutineID:      body.RoutineID,
@@ -271,11 +267,10 @@ func (h *Handler) DeleteHabitContribution(c *gin.Context) {
 		return
 	}
 
-	params := db.DeleteHabitContributionParams{
+	err = h.service.DeleteContribution(DeleteContributionParams{
 		ID:     int32(contributionID),
 		UserID: httputil.UserID(c),
-	}
-	err = h.service.DeleteContribution(c, params)
+	})
 	if err != nil {
 		switch {
 		case errors.Is(err, ErrContributionNotFound):
@@ -304,7 +299,7 @@ func (h *Handler) CreateRoutine(c *gin.Context) {
 		return
 	}
 
-	routine, err := h.service.CreateRoutine(c, db.CreateRoutineParams{
+	routine, err := h.service.CreateRoutine(InsertRoutineParams{
 		UserID: httputil.UserID(c),
 		Name:   body.Name,
 	})
@@ -323,7 +318,7 @@ func (h *Handler) CreateRoutine(c *gin.Context) {
 
 func (h *Handler) ListRoutines(c *gin.Context) {
 	userID := httputil.UserID(c)
-	routines, err := h.service.ListRoutinesWithHabits(c, userID)
+	routines, err := h.service.ListRoutinesWithHabits(userID)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -350,7 +345,7 @@ func (h *Handler) UpdateRoutine(c *gin.Context) {
 		return
 	}
 
-	routine, err := h.service.UpdateRoutine(c, db.UpdateRoutineParams{
+	routine, err := h.service.UpdateRoutine(UpdateRoutineParams{
 		ID:     int32(routineID),
 		UserID: httputil.UserID(c),
 		Name:   body.Name,
@@ -388,7 +383,7 @@ func (h *Handler) UpdateRoutinePosition(c *gin.Context) {
 		return
 	}
 
-	routine, err := h.service.UpdateRoutinePosition(c, UpdateRoutinePositionParams{
+	routine, err := h.service.UpdateRoutinePosition(UpdateRoutinePositionParams{
 		ID:             int32(routineID),
 		UserID:         httputil.UserID(c),
 		AfterPosition:  body.AfterPosition,
@@ -413,7 +408,7 @@ func (h *Handler) DeleteRoutine(c *gin.Context) {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	err = h.service.DeleteRoutine(c, db.DeleteRoutineParams{
+	err = h.service.DeleteRoutine(DeleteRoutineParams{
 		ID:     int32(routineID),
 		UserID: httputil.UserID(c),
 	})
