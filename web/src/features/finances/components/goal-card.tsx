@@ -64,7 +64,7 @@ export function GoalCard({ goal, onAction }: GoalCardProps) {
               </div>
             </div>
             <DropdownMenu>
-              <DropdownMenuTrigger>
+              <DropdownMenuTrigger asChild>
                 <Button variant="ghost">
                   <MoreVerticalIcon />
                 </Button>
