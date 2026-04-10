@@ -1,3 +1,4 @@
+// Package finances
 package finances
 
 import (
@@ -154,6 +155,45 @@ func (h *Handler) GetGoal(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, goal)
+}
+
+type UpdateGoalBody struct {
+	Name              string `json:"name"`
+	Amount            int32  `json:"amount"`
+	MonthlyCommitment int32  `json:"monthlyCommitment"`
+}
+
+func (h *Handler) UpdateGoal(c *gin.Context) {
+	goalID, err := strconv.Atoi(c.Param("goalID"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	body := UpdateGoalBody{}
+
+	err = c.Bind(&body)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	err = h.service.UpdateGoal(UpdateGoalParams{
+		ID:                int32(goalID),
+		Name:              body.Name,
+		Amount:            body.Amount,
+		MonthlyCommitment: body.MonthlyCommitment,
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, ErrGoalNotFound):
+			c.AbortWithError(http.StatusNotFound, err)
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
+		return
+	}
+	c.Status(http.StatusNoContent)
 }
 
 func (h *Handler) DeleteGoal(c *gin.Context) {

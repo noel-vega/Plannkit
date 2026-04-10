@@ -191,7 +191,7 @@ func (r *Repository) ListSpaceMembersWithUsers(spaceID int32) ([]SpaceMemberWith
 	return members, nil
 }
 
-func (r *Repository) DeleteSpaceMember(params *DeleteSpaceMemberParams) error {
+func (r *Repository) DeleteSpaceMember(params DeleteSpaceMemberParams) error {
 	query := `
 		DELETE FROM finance_spaces_members
 		WHERE user_id = :user_id AND finance_space_id = :finance_space_id
@@ -286,6 +286,32 @@ func (r *Repository) GetGoal(params *GoalIdent) (*Goal, error) {
 		return nil, err
 	}
 	return goal, nil
+}
+
+func (r *Repository) UpdateGoal(params UpdateGoalParams) error {
+	query := `
+		UPDATE finance_spaces_goals
+	  SET amount = :amount,
+	  name = :name,
+	  monthly_commitment = :monthly_commitment
+	  WHERE id = :id
+	`
+
+	result, err := r.db.NamedExec(query, params)
+	if err != nil {
+		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return apperrors.ErrNotFound
+	}
+
+	return nil
 }
 
 func (r *Repository) DeleteGoal(params *GoalIdent) error {

@@ -64,6 +64,7 @@ func AddRoutes(router *gin.Engine, services *Services) *gin.Engine {
 	financeSpace.GET("/incomes", financesHandler.ListIncomes)
 	financeSpace.GET("/goals", financesHandler.ListGoals)
 	financeSpace.GET("/goals/:goalID", financesHandler.GetGoal)
+	financeSpace.PATCH("/goals/:goalID", financesHandler.UpdateGoal)
 	financeSpace.GET("/goals/:goalID/contributions", financesHandler.ListGoalContributions)
 	financeSpace.GET("/expenses", financesHandler.ListExpenses)
 

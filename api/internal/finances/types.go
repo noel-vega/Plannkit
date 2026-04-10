@@ -57,6 +57,13 @@ type Goal struct {
 	UpdatedAt          time.Time `json:"updatedAt" db:"updated_at"`
 }
 
+type UpdateGoalParams struct {
+	ID                int32  `db:"id"`
+	Name              string `db:"name"`
+	Amount            int32  `db:"amount"`
+	MonthlyCommitment int32  `db:"monthly_commitment"`
+}
+
 type GoalContribution struct {
 	ID        int32     `json:"id" db:"id"`
 	SpaceID   int32     `json:"spaceId" db:"finance_space_id"`

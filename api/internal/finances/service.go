@@ -84,6 +84,14 @@ func (s *Service) GetGoal(params GoalIdent) (*Goal, error) {
 	return goal, nil
 }
 
+func (s *Service) UpdateGoal(params UpdateGoalParams) error {
+	err := s.repository.UpdateGoal(params)
+	if errors.Is(err, apperrors.ErrNotFound) {
+		return ErrGoalNotFound
+	}
+	return err
+}
+
 func (s *Service) DeleteGoal(params GoalIdent) error {
 	err := s.repository.DeleteGoal(&params)
 	if errors.Is(err, apperrors.ErrNotFound) {
@@ -211,11 +219,8 @@ func (s *Service) GetSpaceMember(params GetSpaceMemberParams) (*SpaceMember, err
 	return member, nil
 }
 
-func (s *Service) DeleteSpaceMember(params DeleteSpaceMemberParams) error {
-	member, err := s.GetSpaceMember(GetSpaceMemberParams{
-		UserID:         params.UserID,
-		FinanceSpaceID: params.FinanceSpaceID,
-	})
+func (s *Service) DeleteSpaceMember(params SpaceMemberRelationship) error {
+	member, err := s.GetSpaceMember(params)
 	if err != nil {
 		return err
 	}
@@ -224,7 +229,7 @@ func (s *Service) DeleteSpaceMember(params DeleteSpaceMemberParams) error {
 		return ErrCannotDeleteOwner
 	}
 
-	err = s.repository.DeleteSpaceMember(&params)
+	err = s.repository.DeleteSpaceMember(params)
 	if errors.Is(err, apperrors.ErrNotFound) {
 		return ErrSpaceMemberNotFound
 	}
