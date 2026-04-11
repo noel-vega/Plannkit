@@ -4,7 +4,6 @@ import { Page } from '@/components/layout/page'
 import { getBoardQueryOptions, getListTodosQueryOptions } from '@/features/todos/hooks';
 import { Board } from '@/features/todos/components/board';
 import { Container } from '@/components/layout/container';
-import { PageHeader } from '@/components/layout/page-header';
 
 export const Route = createFileRoute('/_app/todos/')({
   head: () => ({ meta: [{ title: "Tasks" }] }),
@@ -21,7 +20,6 @@ function RouteComponent() {
   const board = useQuery({ ...getBoardQueryOptions(), initialData: loaderData.board })
   return (
     <Page title="Tasks" className="space-y-4">
-      <PageHeader title='Tasks' />
       <Container className="w-full">
         <Board board={board.data} />
       </Container>
