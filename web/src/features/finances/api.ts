@@ -64,7 +64,7 @@ export const finances = {
     },
     update: async (params: UpdateGoalParams) => {
       const { id, spaceId, ...data } = params
-      await api.PUT(`/finances/spaces/${spaceId}/goals/${id}`, params)
+      await api.PUT(`/finances/spaces/${spaceId}/goals/${id}`, data)
 
     },
     delete: async (params: GoalIdent) => {
