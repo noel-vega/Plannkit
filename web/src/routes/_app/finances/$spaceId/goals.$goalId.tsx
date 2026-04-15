@@ -65,8 +65,7 @@ function RouteComponent() {
   return (
     <Container>
       <GoalHeader goal={goal} contributions={contributions} />
-
-      <div className="grid grid-cols-1 @3xl:grid-cols-3 gap-4 mb-8">
+      <section className="grid grid-cols-1 @3xl:grid-cols-3 gap-4 mb-8">
         <GoalInfoCard title={t("Saved")}>
           {formatCurrency(currentAmount)}
         </GoalInfoCard>
@@ -76,13 +75,13 @@ function RouteComponent() {
         <GoalInfoCard title={t("Remaining")}>
           {formatCurrency(remaining)}
         </GoalInfoCard>
-      </div>
+      </section>
 
       <GoalProgress progress={progress} />
 
       <Separator className="mb-8" />
 
-      <div>
+      <section>
         <div className="flex justify-between">
           <h3 className="text-lg font-semibold mb-4">{t("Contributions")}</h3>
           <CreateGoalContributionDialog spaceId={spaceId} goalId={goalId}>
@@ -90,7 +89,7 @@ function RouteComponent() {
           </CreateGoalContributionDialog>
         </div>
         <GoalContributionList contributions={contributions ?? []} />
-      </div>
+      </section>
     </Container>
   )
 }

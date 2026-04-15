@@ -1,6 +1,6 @@
 import { api } from "@/lib/plannkit-api-client"
 import type { ByIdParams } from "../habits/types"
-import { ExpenseSchema, FinanceSpaceSchema, GoalContributionSchema, GoalSchema, IncomeSourceSchema, SpaceMemberSchema, SpaceWithMembershipSchema, type CreateExpenseParams, type CreateFinanceSpaceParams, type CreateGoalContributionParams, type CreateGoalParams, type CreateIncomeSourceParams, type Expense, type ExpenseIdent, type GoalIdent, type SpaceIdent, type SpaceMemberRole } from "./types"
+import { ExpenseSchema, FinanceSpaceSchema, GoalContributionSchema, GoalSchema, IncomeSourceSchema, SpaceMemberSchema, SpaceWithMembershipSchema, type CreateExpenseParams, type CreateFinanceSpaceParams, type CreateGoalContributionParams, type CreateGoalParams, type CreateIncomeSourceParams, type Expense, type ExpenseIdent, type GoalIdent, type SpaceIdent, type SpaceMemberRole, type UpdateGoalParams } from "./types"
 
 export const finances = {
   spaces: {
@@ -61,6 +61,11 @@ export const finances = {
       const response = await api.GET(`/finances/spaces/${params.spaceId}/goals/${params.goalId}`)
       const data = await response.json()
       return GoalSchema.parse(data)
+    },
+    update: async (params: UpdateGoalParams) => {
+      const { id, spaceId, ...data } = params
+      await api.PUT(`/finances/spaces/${spaceId}/goals/${id}`, params)
+
     },
     delete: async (params: GoalIdent) => {
       await api.DELETE(`/finances/spaces/${params.spaceId}/goals/${params.goalId}`)

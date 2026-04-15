@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { EditGoalDialog } from '@/features/finances/components/edit-goal-dialog'
 
 export const Route = createFileRoute('/_app/finances/$spaceId/')({
   beforeLoad: async ({ params }) => {
@@ -139,13 +140,7 @@ function Goals(props: { goals: Goal[], spaceId: number }) {
         <Navigate to={`/finances/$spaceId/goals/$goalId`} params={{ spaceId: props.spaceId, goalId: goalAction.goal.id }} />
       )}
 
-      {goalAction?.action === "edit" && (
-        <Dialog open onOpenChange={() => setGoalAction(null)}>
-          <DialogContent>
-            Edit Goal
-          </DialogContent>
-        </Dialog>
-      )}
+      <EditGoalDialog open={goalAction?.action === "edit"} onOpenChange={() => setGoalAction(null)} />
 
       {goalAction?.action === "delete" && (
         <ConfirmDeleteGoalDialog
