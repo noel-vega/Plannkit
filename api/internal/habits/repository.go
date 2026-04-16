@@ -18,8 +18,8 @@ func NewRepository(db *sqlx.DB) *Repository {
 
 func (r *Repository) CreateHabit(params *CreateHabitParams) (*Habit, error) {
 	query := `
-		INSERT INTO habits (user_id, routine_id, name, icon, description, completion_type, completions_per_day, unit_of_measurement)
-		VALUES (:user_id, :routine_id, :name, :icon, :description, :completion_type, :completions_per_day, :unit_of_measurement)
+		INSERT INTO habits (user_id, routine_id, name, icon, description, completion_type, completions_per_day)
+		VALUES (:user_id, :routine_id, :name, :icon, :description, :completion_type, :completions_per_day)
 		RETURNING *
 	`
 	query, args, err := sqlx.Named(query, params)

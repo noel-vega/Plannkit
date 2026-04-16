@@ -26,7 +26,6 @@ type CreateHabitBody struct {
 	RoutineID         *int32  `json:"routineId"`
 	Name              string  `json:"name"`
 	Icon              string  `json:"icon"`
-	UnitOfMeasurement string  `json:"unitOfMeasurement"`
 	Description       *string `json:"description"`
 	CompletionType    string  `json:"completionType"`
 	CompletionsPerDay int32   `json:"completionsPerDay"`
@@ -48,7 +47,6 @@ func (h *Handler) CreateHabit(c *gin.Context) {
 		Description:       body.Description,
 		CompletionType:    body.CompletionType,
 		CompletionsPerDay: body.CompletionsPerDay,
-		UnitOfMeasurement: body.UnitOfMeasurement,
 	})
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
@@ -94,7 +92,6 @@ func (h *Handler) ListHabitsWithContributions(c *gin.Context) {
 type UpdateHabitBody struct {
 	Name              string  `json:"name"`
 	Icon              string  `json:"icon"`
-	UnitOfMeasurement *string `json:"unitOfMeasurement"`
 	Description       *string `json:"description"`
 	CompletionType    string  `json:"completionType"`
 	CompletionsPerDay int32   `json:"completionsPerDay"`

@@ -13,7 +13,6 @@ type Habit struct {
 	Icon              string    `json:"icon" db:"icon"`
 	CompletionType    string    `json:"completionType" db:"completion_type"`
 	CompletionsPerDay int32     `json:"completionsPerDay" db:"completions_per_day"`
-	UnitOfMeasurement string    `json:"unitOfMeasurement" db:"unit_of_measurement"`
 	Position          string    `json:"position" db:"position"`
 	CreatedAt         time.Time `json:"createdAt" db:"created_at"`
 	UpdatedAt         time.Time `json:"updatedAt" db:"updated_at"`
@@ -60,7 +59,6 @@ type CreateHabitParams struct {
 	Description       *string `db:"description"`
 	CompletionType    string  `db:"completion_type"`
 	CompletionsPerDay int32   `db:"completions_per_day"`
-	UnitOfMeasurement string  `db:"unit_of_measurement"`
 }
 
 type UpdateHabitParams struct {

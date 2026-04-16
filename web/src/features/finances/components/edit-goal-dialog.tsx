@@ -102,7 +102,7 @@ export function EditGoalDialog({ goal, ...dialogProps }: { goal: Goal } & Dialog
       <DialogContent onOpenAutoFocus={e => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>Edit Goal</DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="sr-only">
             Edit your goal
           </DialogDescription>
         </DialogHeader>
