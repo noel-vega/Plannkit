@@ -140,7 +140,9 @@ function Goals(props: { goals: Goal[], spaceId: number }) {
         <Navigate to={`/finances/$spaceId/goals/$goalId`} params={{ spaceId: props.spaceId, goalId: goalAction.goal.id }} />
       )}
 
-      <EditGoalDialog open={goalAction?.action === "edit"} onOpenChange={() => setGoalAction(null)} />
+      {goalAction?.action === "edit" && (
+        <EditGoalDialog goal={goalAction.goal} open onOpenChange={() => setGoalAction(null)} />
+      )}
 
       {goalAction?.action === "delete" && (
         <ConfirmDeleteGoalDialog

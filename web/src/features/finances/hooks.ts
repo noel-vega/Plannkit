@@ -141,6 +141,16 @@ export function useGetGoal(params: GoalIdent, initialData: Goal) {
   return useQuery({ ...getUseGetGoalOptions(params), initialData })
 }
 
+export function useFinanceUpdateGoal() {
+  return useMutation({
+    mutationFn: finances.goals.update,
+    onSuccess: (_, { id, spaceId }) => {
+      invalidateUseListGoals({ spaceId })
+      invalidateUseGetGoal({ spaceId, goalId: id })
+    }
+  })
+}
+
 export function useDeleteGoalMutation() {
   return useMutation({
     mutationFn: finances.goals.delete,
