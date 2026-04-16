@@ -54,9 +54,16 @@ function EditGoalForm(props: Props) {
         render={({ field }) => (
           <Field>
             <FieldLabel>Amount</FieldLabel>
-            <NumericFormat onValueChange={(v) => {
-              field.onChange(v.floatValue)
-            }} value={field.value} customInput={Input} thousandSeparator type="text" />
+            <NumericFormat
+              prefix="$"
+              value={field.value}
+              onValueChange={(v) => {
+                field.onChange(v.floatValue)
+              }}
+              customInput={Input}
+              thousandSeparator
+              type="text"
+            />
           </Field>
         )}
       />
@@ -67,7 +74,16 @@ function EditGoalForm(props: Props) {
         render={({ field }) => (
           <Field>
             <FieldLabel>Monthly Commitment</FieldLabel>
-            <Input type="number" {...field} />
+            <NumericFormat
+              prefix="$"
+              value={field.value}
+              onValueChange={(v) => {
+                field.onChange(v.floatValue)
+              }}
+              customInput={Input}
+              thousandSeparator
+              type="text"
+            />
           </Field>
         )}
       />
