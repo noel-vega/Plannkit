@@ -8,6 +8,7 @@ import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useFinanceUpdateGoal } from "../hooks";
+import { NumericFormat } from 'react-number-format'
 
 type Props = {
   goal: Goal;
@@ -53,7 +54,7 @@ function EditGoalForm(props: Props) {
         render={({ field }) => (
           <Field>
             <FieldLabel>Amount</FieldLabel>
-            <Input type="number" {...field} />
+            <NumericFormat {...field} customInput={Input} thousandSeparator />
           </Field>
         )}
       />
@@ -70,7 +71,7 @@ function EditGoalForm(props: Props) {
       />
 
       <div className="flex justify-end gap-3">
-        <Button type="button" disabled={isResetDisabled} variant="outline">Reset</Button>
+        <Button type="button" disabled={isResetDisabled} variant="outline" onClick={() => form.reset()}>Reset</Button>
         <Button type="submit" disabled={isSubmitDisabled}>Submit</Button>
       </div>
     </form>
