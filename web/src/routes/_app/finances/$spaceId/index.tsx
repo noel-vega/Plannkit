@@ -18,7 +18,6 @@ import { queryClient } from '@/lib/react-query'
 import { CreateGoalDialog } from '@/features/finances/components/create-goal-form'
 import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { EditGoalDialog } from '@/features/finances/components/edit-goal-dialog'
 

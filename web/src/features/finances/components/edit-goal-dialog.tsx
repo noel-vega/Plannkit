@@ -33,6 +33,7 @@ function EditGoalForm(props: Props) {
 
   const isSubmitDisabled = !form.formState.isValid || !form.formState.isDirty
   const isResetDisabled = !form.formState.isDirty
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <Controller
