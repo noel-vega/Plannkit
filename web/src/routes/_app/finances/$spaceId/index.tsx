@@ -1,6 +1,5 @@
 import { Container } from '@/components/layout/container'
 import { Button } from '@/components/ui/button'
-import { ExpensesTable } from '@/features/finances/components/expenses-table'
 import { MarginStatusBanner } from '@/features/finances/components/margin-status-banner'
 import { MonthlyExpensesCard } from '@/features/finances/components/monthly-expenses-card'
 import { MonthlyGoalCommitmentsCard } from '@/features/finances/components/monthly-goal-commitment-card'
@@ -8,10 +7,8 @@ import { MonthlyIncomeCard } from '@/features/finances/components/monthly-income
 import { CreateExpenseDialog } from '@/features/finances/components/create-expense-form'
 import { FinanceSpaceSwitcher } from '@/features/finances/components/finance-space-switcher'
 import { getUseListExpensesOptions, getUseListGoalsOptions, getUseListIncomeSourcesOptions, useCurrentSpace, useListExpenses, useListGoals, useListSpacesQuery } from '@/features/finances/hooks'
-import type { Expense, FinanceSpace, Goal } from '@/features/finances/types'
-import { GoalCard, type GoalAction } from '@/features/finances/components/goal-card'
-import { ConfirmDeleteGoalDialog } from '@/features/finances/components/dialog-confirm-delete-goal'
-import { createFileRoute, Navigate, useNavigate } from '@tanstack/react-router'
+import type { FinanceSpace } from '@/features/finances/types'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { PlusIcon } from 'lucide-react'
 import z from 'zod/v3'
 import { queryClient } from '@/lib/react-query'
@@ -19,7 +16,8 @@ import { CreateGoalDialog } from '@/features/finances/components/create-goal-for
 import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { UpdateGoalDialog } from '@/features/finances/components/update-goal-form'
+import { ListGoals } from '@/features/finances/components/list-goals'
+import { ListExpenses } from '@/features/finances/components/list-expenses'
 
 export const Route = createFileRoute('/_app/finances/$spaceId/')({
   beforeLoad: async ({ params }) => {
@@ -87,14 +85,14 @@ function RouteComponent() {
           </TabsList>
           {activeTab === "goals" ? (
             <CreateGoalDialog spaceId={spaceId}>
-              <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground">
+              <Button variant="secondary">
                 <PlusIcon className="size-3.5" />
                 <span>{t("Goal")}</span>
               </Button>
             </CreateGoalDialog>
           ) : (
             <CreateExpenseDialog spaceId={spaceId}>
-              <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground">
+              <Button variant="secondary">
                 <PlusIcon className="size-3.5" />
                 <span>{t("Expense")}</span>
               </Button>
@@ -102,75 +100,13 @@ function RouteComponent() {
           )}
         </div>
         <TabsContent value="goals">
-          <Goals spaceId={spaceId} goals={goals.data ?? []} />
+          <ListGoals spaceId={spaceId} goals={goals.data ?? []} />
         </TabsContent>
         <TabsContent value="expenses">
-          <Expenses spaceId={spaceId} expenses={expenses.data ?? []} />
+          <ListExpenses spaceId={spaceId} expenses={expenses.data ?? []} />
         </TabsContent>
       </Tabs>
     </Container>
   )
 }
 
-
-function Goals(props: { goals: Goal[], spaceId: number }) {
-  const { t } = useTranslation()
-  const [goalAction, setGoalAction] = useState<GoalAction>(null)
-  return (
-    <section className="space-y-3 pt-3">
-      {props.goals.length === 0 ? (
-        <CreateGoalDialog spaceId={props.spaceId}>
-          <button
-            className="flex flex-col items-center gap-2 py-20 w-full text-center rounded-lg border border-dashed border-muted-foreground/25 hover:border-muted-foreground/50 hover:bg-secondary/30 transition-all duration-200 cursor-pointer"
-          >
-            <p className="text-sm text-muted-foreground">{t("No goals yet")}</p>
-            <span className="text-xs text-muted-foreground">{t("Create goal")}</span>
-          </button>
-        </CreateGoalDialog>
-      ) : (
-        <div className={`grid grid-cols-1 gap-4 ${props.goals.length > 1 ? "@5xl:grid-cols-2" : ""}`}>
-          {props.goals.map((goal) => (
-            <GoalCard key={goal.id} goal={goal} onAction={setGoalAction} />
-          ))}
-        </div>
-      )}
-
-      {goalAction?.action === "details" && (
-        <Navigate to={`/finances/$spaceId/goals/$goalId`} params={{ spaceId: props.spaceId, goalId: goalAction.goal.id }} />
-      )}
-
-      {goalAction?.action === "edit" && (
-        <UpdateGoalDialog goal={goalAction.goal} open onOpenChange={() => setGoalAction(null)} />
-      )}
-
-      {goalAction?.action === "delete" && (
-        <ConfirmDeleteGoalDialog
-          open
-          goal={goalAction.goal}
-          onOpenChange={() => setGoalAction(null)}
-        />
-      )}
-    </section>
-  )
-}
-
-
-function Expenses(props: { expenses: Expense[], spaceId: number }) {
-  const { t } = useTranslation()
-  return (
-    <section className="space-y-3 pt-3">
-      {props.expenses.length === 0 ? (
-        <CreateExpenseDialog spaceId={props.spaceId}>
-          <button
-            className="flex flex-col items-center gap-2 py-20 w-full text-center rounded-lg border border-dashed border-muted-foreground/25 hover:border-muted-foreground/50 hover:bg-secondary/30 transition-all duration-200 cursor-pointer"
-          >
-            <p className="text-sm text-muted-foreground">{t("No expenses yet")}</p>
-            <span className="text-xs text-muted-foreground">{t("Create expense")}</span>
-          </button>
-        </CreateExpenseDialog>
-      ) : (
-        <ExpensesTable spaceId={props.spaceId} expenses={props.expenses} />
-      )}
-    </section>
-  )
-}
