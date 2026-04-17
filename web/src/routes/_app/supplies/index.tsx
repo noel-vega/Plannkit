@@ -1,128 +1,37 @@
 import { Container } from '@/components/layout/container'
 import { Page } from '@/components/layout/page'
-import { PageHeader } from '@/components/layout/page-header'
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
-import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
-import { AddItemForm, type AddItemFormData } from '@/features/groceries/components/add-item-form'
-import { GroceryListitem } from '@/features/groceries/components/grocery-list-item'
-import type { GroceryListItem } from '@/features/groceries/types'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { CatalogView } from '@/features/supplies/components/catalog-view'
+import { InventoryView } from '@/features/supplies/components/inventory-view'
+import { ListsView } from '@/features/supplies/components/lists-view'
 import { createFileRoute } from '@tanstack/react-router'
-import { BookTextIcon, PlusIcon } from 'lucide-react'
-import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 export const Route = createFileRoute('/_app/supplies/')({
   component: RouteComponent,
 })
 
-
 function RouteComponent() {
   const { t } = useTranslation()
-  const [items, setItems] = useState<GroceryListItem[]>([])
-
-  const handleAddItem = (item: AddItemFormData) => {
-    setItems(prev => [{ id: Math.random(), inCart: false, ...item }, ...prev])
-  }
-
-  const toggleItemInCart = (item: GroceryListItem) => {
-    setItems(prev => prev.map(x => {
-      if (x.id !== item.id) return x
-      return { ...x, inCart: !item.inCart }
-    }))
-  }
-
-  const handleCheckout = () => {
-    setItems(prev => prev.filter(x => !x.inCart))
-  }
-
-  const handleClear = () => {
-    setItems([])
-  }
-
-  const handleDelete = (item: GroceryListItem) => {
-    setItems(prev => prev.filter(x => x.id !== item.id))
-  }
-
-  const handleQuantityChange = (itemId: number, quantity: number) => {
-    setItems(prev => prev.map(x => x.id === itemId ? { ...x, quantity } : x))
-  }
-
   return (
     <Page>
-      <PageHeader title='Groceries' />
-      <Container className="h-full flex flex-col pb-2">
-        <div className="flex gap-4">
-          <h2 className="text-xl font-medium mb-4">{t("Shopping List")} ({items.length})</h2>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="secondary" className="ml-auto">
-                <PlusIcon />
-                {t("Items")}
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <AddItemForm onSubmit={handleAddItem} />
-            </DialogContent>
-
-          </Dialog>
-
-          <Button variant="secondary">
-            <BookTextIcon />
-            {t("Catalog")}
-          </Button>
-        </div>
-
-        <div className="flex-1">
-          {items.length === 0 ? (
-            <p className="text-center py-4 text-muted-foreground">
-              {t("Add some groceries to your list.")}
-            </p>
-          ) : (
-            <ul className="flex-1 divide-y border rounded-lg">
-              {items.map(x => (
-                <li key={x.id} className="hover:bg-secondary/30">
-                  <GroceryListitem item={x} onClick={() => toggleItemInCart(x)} onDelete={() => handleDelete(x)} onQuantityChange={handleQuantityChange} />
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-
-        <div className="flex gap-2">
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="secondary" className="flex-1" size="lg" disabled={items.length === 0}>{t("Clear")}</Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>{t("Are you want to clear items?")}</AlertDialogTitle>
-                <AlertDialogDescription>{t("This will clear all items from your list.")}</AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>{t("Cancel")}</AlertDialogCancel>
-                <AlertDialogAction onClick={handleClear}>{t("Proceed")}</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="secondary" className="flex-1" size="lg" disabled={items.filter(x => x.inCart).length === 0}>{t("Checkout")}</Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>{t("Are you want to checkout?")}</AlertDialogTitle>
-                <AlertDialogDescription>{t("This will clear all checked items. Checkouts can be viewd in your groceries history.")}</AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>{t("Cancel")}</AlertDialogCancel>
-                <AlertDialogAction onClick={handleCheckout}>{t("Proceed")}</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
+      <Container>
+        <Tabs defaultValue="inventory" className="@container">
+          <TabsList>
+            <TabsTrigger value="inventory">{t('Inventory')}</TabsTrigger>
+            <TabsTrigger value="lists">{t('Lists')}</TabsTrigger>
+            <TabsTrigger value="catalog">{t('Catalog')}</TabsTrigger>
+          </TabsList>
+          <TabsContent value="inventory" className="mt-4">
+            <InventoryView />
+          </TabsContent>
+          <TabsContent value="lists" className="mt-4">
+            <ListsView />
+          </TabsContent>
+          <TabsContent value="catalog" className="mt-4">
+            <CatalogView />
+          </TabsContent>
+        </Tabs>
       </Container>
     </Page>
   )
