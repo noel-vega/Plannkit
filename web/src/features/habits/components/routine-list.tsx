@@ -121,11 +121,13 @@ function RoutineHabitRow({ habit }: { habit: HabitWithContributions; }) {
               </button>
             ) : (
               <button
-                className="cursor-pointer relative size-10 rounded-full grid place-content-center shrink-0 transition-all duration-300"
+                className={cn("cursor-pointer relative size-10 rounded-full grid place-content-center shrink-0 transition-all duration-300", {
+                  "bg-green-600 stroke-white": isDone
+                })}
                 onClick={handleContribution}
               >
                 {isDone ? (
-                  <CheckIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 stroke-green-600" size={18} />
+                  <CheckIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 stroke-white" size={18} />
                 ) : (
                   <PlusIcon className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 text-muted-foreground/50 transition-colors duration-300" size={18} />
                 )}
