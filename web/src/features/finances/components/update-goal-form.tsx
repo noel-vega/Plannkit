@@ -96,7 +96,7 @@ function EditGoalForm(props: Props) {
   )
 }
 
-export function EditGoalDialog({ goal, ...dialogProps }: { goal: Goal } & DialogProps) {
+export function UpdateGoalDialog({ goal, ...dialogProps }: { goal: Goal } & DialogProps) {
   return (
     <Dialog {...dialogProps}>
       <DialogContent onOpenAutoFocus={e => e.preventDefault()}>

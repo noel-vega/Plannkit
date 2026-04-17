@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { useDialog } from "@/hooks"
 import { useCreateGoal } from "../hooks"
 import { useTranslation } from "react-i18next"
+import { NumericFormat } from "react-number-format"
 
 type CreateGoalFormProps = {
   spaceId: number
@@ -43,6 +44,7 @@ export function CreateGoalForm(props: CreateGoalFormProps) {
           render={({ field, fieldState }) =>
             <Field data-invalid={fieldState.invalid}>
               <FieldLabel htmlFor={field.name}>{t("Name")}</FieldLabel>
+
               <Input
                 {...field}
                 id={field.name}
@@ -58,12 +60,15 @@ export function CreateGoalForm(props: CreateGoalFormProps) {
           render={({ field, fieldState }) =>
             <Field data-invalid={fieldState.invalid}>
               <FieldLabel htmlFor={field.name}>{t("Amount")}</FieldLabel>
-              <Input
-                type="number"
-                {...field}
-                id={field.name}
-                aria-invalid={fieldState.invalid}
-                autoComplete="off"
+              <NumericFormat
+                prefix="$"
+                value={field.value}
+                onValueChange={(v) => {
+                  field.onChange(v.floatValue)
+                }}
+                customInput={Input}
+                thousandSeparator
+                type="text"
               />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
@@ -74,12 +79,15 @@ export function CreateGoalForm(props: CreateGoalFormProps) {
           render={({ field, fieldState }) =>
             <Field data-invalid={fieldState.invalid}>
               <FieldLabel htmlFor={field.name}>{t("Monthly Commitment")}</FieldLabel>
-              <Input
-                type="number"
-                {...field}
-                id={field.name}
-                aria-invalid={fieldState.invalid}
-                autoComplete="off"
+              <NumericFormat
+                prefix="$"
+                value={field.value}
+                onValueChange={(v) => {
+                  field.onChange(v.floatValue)
+                }}
+                customInput={Input}
+                thousandSeparator
+                type="text"
               />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>

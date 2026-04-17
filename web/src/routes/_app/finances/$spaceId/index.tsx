@@ -19,7 +19,7 @@ import { CreateGoalDialog } from '@/features/finances/components/create-goal-for
 import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { EditGoalDialog } from '@/features/finances/components/edit-goal-dialog'
+import { UpdateGoalDialog } from '@/features/finances/components/update-goal-form'
 
 export const Route = createFileRoute('/_app/finances/$spaceId/')({
   beforeLoad: async ({ params }) => {
@@ -140,7 +140,7 @@ function Goals(props: { goals: Goal[], spaceId: number }) {
       )}
 
       {goalAction?.action === "edit" && (
-        <EditGoalDialog goal={goalAction.goal} open onOpenChange={() => setGoalAction(null)} />
+        <UpdateGoalDialog goal={goalAction.goal} open onOpenChange={() => setGoalAction(null)} />
       )}
 
       {goalAction?.action === "delete" && (
