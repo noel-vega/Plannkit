@@ -53,8 +53,8 @@ export const links: FeatureLink[] = [
     active: true,
   },
   {
-    label: "Groceries",
-    to: "/groceries",
+    label: "Supplies",
+    to: "/supplies",
     icon: ShoppingBasketIcon,
     active: true,
   },
